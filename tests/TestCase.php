@@ -1,10 +1,8 @@
 <?php
 
-namespace Tests;
+namespace rikmeijer\purposeplan\Tests;
 
-use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 
-abstract class TestCase extends BaseTestCase
+abstract class TestCase extends PHPUnit\Framework\TestCase
 {
-    use CreatesApplication;
 }
