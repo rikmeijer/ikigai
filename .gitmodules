@@ -1,3 +1,0 @@
-[submodule "lib/functional-php"]
-	path = lib/functional-php
-	url = git@github.com:rikmeijer/functional-php.git

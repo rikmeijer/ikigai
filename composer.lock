@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9b1ed280c739145827eb372fdcf3e807",
+    "content-hash": "2f7871b3fa22bfa51fff172362fcabe3",
     "packages": [
         {
             "name": "graham-campbell/result-type",
@@ -67,6 +67,62 @@
                 }
             ],
             "time": "2023-02-25T20:23:15+00:00"
+        },
+        {
+            "name": "lambdish/phunctional",
+            "version": "v2.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Lambdish/phunctional.git",
+                "reference": "ed3482e7da134d886789abb33c6df22a5d2f271c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Lambdish/phunctional/zipball/ed3482e7da134d886789abb33c6df22a5d2f271c",
+                "reference": "ed3482e7da134d886789abb33c6df22a5d2f271c",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.2"
+            },
+            "require-dev": {
+                "phpstan/phpstan": "^0.11.16",
+                "phpunit/phpunit": "^8.4"
+            },
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "src/_bootstrap.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Eloi Poch"
+                },
+                {
+                    "name": "Jorge Ávila"
+                },
+                {
+                    "name": "Rafa Gómez"
+                }
+            ],
+            "description": "λ PHP functional library",
+            "keywords": [
+                "functional",
+                "generator",
+                "lambda",
+                "library",
+                "php"
+            ],
+            "support": {
+                "issues": "https://github.com/Lambdish/phunctional/issues",
+                "source": "https://github.com/Lambdish/phunctional/tree/v2.1.0"
+            },
+            "time": "2020-09-18T07:22:08+00:00"
         },
         {
             "name": "phpoption/phpoption",

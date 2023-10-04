@@ -2,6 +2,6 @@
 
 require dirname(__DIR__) . '/vendor/autoload.php';
 
-use function Functional\id;
+use function Lambdish\Phunctional\identity;
 
-print id('hello world');
+print identity('hello world');
