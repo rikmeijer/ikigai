@@ -2,7 +2,7 @@
 
 namespace rikmeijer\purposeplan\lib\HTTP;
 
-class Message {
+final readonly class Message {
     
     public function __construct(
             public int $code
