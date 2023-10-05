@@ -4,7 +4,7 @@ namespace rikmeijer\purposeplan\domain\Mood;
 
 use \rikmeijer\purposeplan\domain\Mood;
 
-final class Log {
+final readonly class Log {
     
     /**
      * 
