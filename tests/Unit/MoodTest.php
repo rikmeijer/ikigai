@@ -15,4 +15,10 @@ class MoodTest extends \rikmeijer\purposeplan\Tests\TestCase {
         $this->expectExceptionMessage('Cannot modify readonly property rikmeijer\purposeplan\domain\Mood::$description');
         $mood->description = 'Sad';
     }
+    public function test_MoodHasATimestamp(): void
+    {
+        $timestamp = new \DateTime();
+        $mood = new \rikmeijer\purposeplan\domain\Mood('Happy', $timestamp);
+        $this->assertEquals($timestamp, $mood->timestamp);
+    }
 }
