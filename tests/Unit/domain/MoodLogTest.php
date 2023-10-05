@@ -1,11 +1,11 @@
 <?php declare(strict_types=1);
 
-namespace rikmeijer\purposeplan\Tests\Unit;
+namespace rikmeijer\purposeplan\Tests\Unit\domain;
 
 use \rikmeijer\purposeplan\domain\Mood\Log;
 use \rikmeijer\purposeplan\domain\Mood;
 
-class MoodLogTest extends \rikmeijer\purposeplan\Tests\TestCase {
+class MoodLogTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
     
 
     public function test_AMoodLogIsACollectionOfMoods(): void
