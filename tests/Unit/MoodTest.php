@@ -2,9 +2,8 @@
 
 namespace rikmeijer\purposeplan\Tests\Unit;
 
-class MoodTest extends \rikmeijer\purposeplan\Tests\TestCase
-{
-    
+class MoodTest extends \rikmeijer\purposeplan\Tests\TestCase {
+
     public function test_MoodHasDescription(): void
     {
         $mood = new \rikmeijer\purposeplan\domain\Mood('Happy');
