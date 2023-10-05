@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace rikmeijer\purposeplan\Tests\Unit\domain;
+namespace rikmeijer\purposeplan\tests\Unit\domain;
 
-class MoodTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
+class MessageTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
 
     public function test_MoodHasDescription(): void
     {

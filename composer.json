@@ -15,15 +15,10 @@
     },
     "autoload": {
         "psr-4": {
-            "rikmeijer\\purposeplan\\domain\\" : "domain/"
+            "rikmeijer\\purposeplan\\" : ""
         },
         "files": [
         ]
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "rikmeijer\\purposeplan\\Tests\\": "tests/"
-        }
     },
     "minimum-stability": "stable",
     "prefer-stable": true

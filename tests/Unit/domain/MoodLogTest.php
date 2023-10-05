@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace rikmeijer\purposeplan\Tests\Unit\domain;
+namespace rikmeijer\purposeplan\tests\Unit\domain;
 
 use \rikmeijer\purposeplan\domain\Mood\Log;
 use \rikmeijer\purposeplan\domain\Mood;
