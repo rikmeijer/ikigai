@@ -6,7 +6,8 @@ final readonly class Message {
     
     public function __construct(
             public int $code,
-            public array $headers
+            public array $headers,
+            public ?string $body = null
     ) {}
     
 }
