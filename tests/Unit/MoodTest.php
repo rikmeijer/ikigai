@@ -15,10 +15,16 @@ class MoodTest extends \rikmeijer\purposeplan\Tests\TestCase {
         $this->expectExceptionMessage('Cannot modify readonly property rikmeijer\purposeplan\domain\Mood::$description');
         $mood->description = 'Sad';
     }
-    public function test_MoodHasATimestamp(): void
+    public function test_MoodAcceptsATimestamp(): void
     {
-        $timestamp = new \DateTime();
+        $timestamp = new \DateTimeImmutable();
         $mood = new \rikmeijer\purposeplan\domain\Mood('Happy', $timestamp);
         $this->assertEquals($timestamp, $mood->timestamp);
+    }
+    public function test_MoodRequiresAnImmutableTimestamp(): void
+    {
+        $timestamp = new \DateTime();
+        $this->expectExceptionMessageMatches('/^' . preg_quote('rikmeijer\\purposeplan\\domain\\Mood::__construct(): Argument #2 ($timestamp) must be of type DateTimeImmutable, DateTime given') . '/');
+        $mood = new \rikmeijer\purposeplan\domain\Mood('Happy', $timestamp);
     }
 }

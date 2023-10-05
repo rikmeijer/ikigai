@@ -8,7 +8,7 @@ readonly class Mood {
 
     public function __construct(
             public string $description,
-            public \DateTime $timestamp = new \DateTime()
+            public \DateTimeImmutable $timestamp = new \DateTimeImmutable()
     ) {
         
     }
