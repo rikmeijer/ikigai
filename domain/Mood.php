@@ -1,18 +1,8 @@
-<?php
-
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Scripting/PHPClass.php to edit this template
- */
+<?php declare(strict_types=1);
 
 namespace rikmeijer\purposeplan\domain;
 
-/**
- * Description of Mood
- *
- * @author rmeijer
- */
-class Mood {
+readonly class Mood {
     
     public function __construct(public string $description) {}
     
