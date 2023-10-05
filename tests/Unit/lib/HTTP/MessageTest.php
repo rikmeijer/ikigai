@@ -8,9 +8,6 @@ class MessageTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
     {
         $message = new \rikmeijer\purposeplan\lib\HTTP\Message(200);
         $this->assertEquals(200, $message->code);
-    }
-    public function test_CodeIsReadOnly(): void
-    {
         $this->assertPropertyIsReadOnly(new \rikmeijer\purposeplan\lib\HTTP\Message(200), 'code');
     }
 }
