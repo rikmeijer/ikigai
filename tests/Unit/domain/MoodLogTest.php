@@ -25,7 +25,6 @@ class MoodLogTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
                 new Mood('Sad')
         );
         $this->assertEquals('Sad', $log->moods[2]->description);
-        $this->expectExceptionMessage('Cannot modify readonly property rikmeijer\purposeplan\domain\Mood\Log::$moods');
-        $log->moods[] = new Mood('Happy');
+        $this->assertPropertyIsReadOnly($log, 'moods');
     }
 }

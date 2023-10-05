@@ -8,18 +8,15 @@ class MessageTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
     {
         $mood = new \rikmeijer\purposeplan\domain\Mood('Happy');
         $this->assertEquals('Happy', $mood->description);
+        $this->assertPropertyIsReadOnly($mood, 'description');
     }
-    public function test_MoodDescriptionIsReadOnly(): void
-    {
-        $mood = new \rikmeijer\purposeplan\domain\Mood('Happy');
-        $this->expectExceptionMessage('Cannot modify readonly property rikmeijer\purposeplan\domain\Mood::$description');
-        $mood->description = 'Sad';
-    }
+    
     public function test_MoodAcceptsATimestamp(): void
     {
         $timestamp = new \DateTimeImmutable();
         $mood = new \rikmeijer\purposeplan\domain\Mood('Happy', $timestamp);
         $this->assertEquals($timestamp, $mood->timestamp);
+        $this->assertPropertyIsReadOnly($mood, 'timestamp');
     }
     public function test_MoodRequiresAnImmutableTimestamp(): void
     {
