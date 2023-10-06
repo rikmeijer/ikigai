@@ -28,5 +28,10 @@ class RequestTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
         $this->assertEquals('HTTP/2', $request->protocol);
         $this->assertContains('Host: example.com', $request->message->headers);
         $this->assertContains('Content-Type: application\json', $request->message->headers);
+        
+        $this->assertPropertyIsReadOnly($request, 'method');
+        $this->assertPropertyIsReadOnly($request, 'path');
+        $this->assertPropertyIsReadOnly($request, 'protocol');
+        $this->assertPropertyIsReadOnly($request, 'message');
     }
 }
