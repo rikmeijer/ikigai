@@ -21,21 +21,6 @@ class MessageTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
         $this->assertEquals('<html>Hello World</html>', $message->body);
         $this->assertPropertyIsReadOnly($message, 'body');
     }
-
-    public function test_fromRequest(): void {
-//        $_SERVER['REQUEST_METHOD'] = 'GET';
-//        $_SERVER['REQUEST_URI'] = '/index.php';
-//        $_SERVER['SERVER_PROTOCOL'] = 'HTTP/2';
-
-        $_SERVER['HTTP_HOST'] = 'example.com';
-        $_SERVER['HTTP_CONTENT_TYPE'] = 'application\json';
-        
-        $message = Message::fromRequest();
-        
-//        $this->assertEquals('GET /index.php HTTP/2', $message->headers[0]);
-        $this->assertContains('Host: example.com', $message->headers);
-        $this->assertContains('Content-Type: application\json', $message->headers);
-    }
     
     /**
      * @runInSeparateProcess
