@@ -10,6 +10,7 @@
         "lambdish/phunctional": "^2.1"
     },
     "require-dev": {
+        "ext-xdebug" : "3.2.2",
         "phpunit/phpunit": "^10.1"
         
     },
