@@ -4,11 +4,11 @@ namespace rikmeijer\purposeplan\lib\UI;
 
 class Web {
     
-    static function entry() : callable {
+    static function entry(array $server) : callable {
         
-        return function(callable $headers, callable $body) {
+        return function(callable $headers, callable $body) use ($server) {
             $headers('HTTP/2 200 OK');
-            $headers('Content-Type: text/html');
+            $headers('Content-Type: ' . $server['HTTP_ACCEPT']);
             $body('Hello World');
         };
     }
