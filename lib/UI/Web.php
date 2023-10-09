@@ -22,17 +22,16 @@ class Web {
         };
     }
     
-    static function negotiate(array $acceptedTypes, callable $error) {
-        return fn(string $availableType, callable $success) => array_key_exists($availableType, $acceptedTypes) ? $success($availableType) : $error(key($acceptedTypes))('406 Not Acceptable', '');
+    static function negotiate(array $acceptedTypes, callable $status) {
+        return fn(string $availableType) => fn(callable $success, callable $error) => array_key_exists($availableType, $acceptedTypes) ? $success($status($availableType)) : $error($status(key($acceptedTypes)));
     }
         
     static function entry(array $server, callable $headers, callable $body) : callable {
-        $status = self::status($server['SERVER_PROTOCOL'], $body, $headers);
-        $negotiator = self::negotiate(self::parseRelativeQuality($server['HTTP_ACCEPT']), $status);
-        return fn(string $availableType, callable $router) => $negotiator( 
-            $availableType, 
-            fn(string $contentType) => $router($status($contentType))
-        );
+        return self::negotiate(self::parseRelativeQuality($server['HTTP_ACCEPT']), self::status($server['SERVER_PROTOCOL'], $body, $headers));
+    }
+    
+    static function notAcceptable() : callable {
+        return fn(callable $status) => $status('406 Not Acceptable', '');
     }
     
 }
