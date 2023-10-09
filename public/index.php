@@ -4,4 +4,4 @@ require dirname(__DIR__) . '/vendor/autoload.php';
 
 use function Lambdish\Phunctional\identity;
 
-print identity('hello world');
+rikmeijer\purposeplan\lib\UI\Web::entry()('header', fn(string $body) => print $body);
