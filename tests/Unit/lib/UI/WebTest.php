@@ -18,7 +18,11 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
         $headers = $this->expectHeadersSent();
         $body = $this->expectBodySent();
         
-        $response = $entry(fn() => '<!DOCTYPE html></html>');
+        $response = $entry(function(array $contentTypes, callable $headers) {
+            $headers('HTTP/2 200 OK');
+            $headers('Content-Type: ' . key($contentTypes));
+            return '<!DOCTYPE html></html>';
+        });
         $response($headers, $body);
         
         $this->assertTrue(str_starts_with($body(), "<!DOCTYPE html>"));
@@ -37,7 +41,11 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
         $headers = $this->expectHeadersSent();
         $body = $this->expectBodySent();
         
-        $response = $entry(fn() => 'Hello World');
+        $response = $entry(function(array $contentTypes, callable $headers) {
+            $headers('HTTP/2 200 OK');
+            $headers('Content-Type: ' . key($contentTypes));
+            return 'Hello World';
+        });
         $response($headers, $body);
         
         $this->assertEquals('Hello World', $body());
@@ -55,7 +63,11 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
         $headers = $this->expectHeadersSent();
         $body = $this->expectBodySent();
         
-        $response = $entry(fn() => 'Hello World');
+        $response = $entry(function(array $contentTypes, callable $headers) {
+            $headers('HTTP/2 200 OK');
+            $headers('Content-Type: ' . key($contentTypes));
+            return 'Hello World';
+        });
         $response($headers, $body);
         
         $this->assertEquals('Hello World', $body());
