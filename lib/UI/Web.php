@@ -14,25 +14,24 @@ class Web {
         return $accepting_types;
     }
     
-    static function status(string $protocol, string $contentType, callable $body, callable $headers) {
-        return function(string $status, string $content) use ($protocol, $contentType, $body, $headers) : void {
+    static function status(string $protocol, callable $body, callable $headers) {
+        return fn(string $contentType) => function(string $status, string $content) use ($protocol, $contentType, $body, $headers) : void {
             $headers($protocol . ' ' . $status);
             $headers('Content-Type: ' . $contentType);
             $body($content);
         };
     }
     
-    static function negotiate(array $acceptedTypes) {
-        return function(string $availableType, callable $success) {
-            $success($availableType);
-        };
+    static function negotiate(array $acceptedTypes, callable $error) {
+        return fn(string $availableType, callable $success) => array_key_exists($availableType, $acceptedTypes) ? $success($availableType) : $error(key($acceptedTypes))('406 Not Acceptable', '');
     }
         
     static function entry(array $server, callable $headers, callable $body) : callable {
-        $negotiator = self::negotiate(self::parseRelativeQuality($server['HTTP_ACCEPT']));
+        $status = self::status($server['SERVER_PROTOCOL'], $body, $headers);
+        $negotiator = self::negotiate(self::parseRelativeQuality($server['HTTP_ACCEPT']), $status);
         return fn(string $availableType, callable $router) => $negotiator( 
             $availableType, 
-            fn(string $contentType) => $router(self::status($server['SERVER_PROTOCOL'], $contentType, $body, $headers))
+            fn(string $contentType) => $router($status($contentType))
         );
     }
     

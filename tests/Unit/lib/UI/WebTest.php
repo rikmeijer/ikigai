@@ -28,6 +28,22 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
         $this->assertContains('Content-Type: text/html', $headers());
     }
     
+    public function test_entryMismatchInAcceptedContentTypeResultsIn406(): void
+    {
+        $headers = $this->expectHeadersSent();
+        $body = $this->expectBodySent();
+        
+        $entry = Web::entry([
+            'SERVER_PROTOCOL' => 'HTTP/1.1',
+            'HTTP_ACCEPT' => 'text/plain'
+        ], $headers, $body);
+        
+        $entry('text/html', fn(callable $status) => $status('200 OK', '<!DOCTYPE html></html>'));
+        
+        var_Dump($headers());
+        $this->assertContains('HTTP/1.1 406 Not Acceptable', $headers());
+    }
+    
     public function test_entryAcceptingApplicationJson(): void
     {
         $headers = $this->expectHeadersSent();
