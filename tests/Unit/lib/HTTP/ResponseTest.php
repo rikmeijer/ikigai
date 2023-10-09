@@ -16,13 +16,14 @@ class ResponseTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
         ));
         
         
-        $sent = null;
-        $headers_list = array();
-        Response::send($response, function(string $header) use (&$headers_list) { $headers_list[] = $header; }, function(string $body) use (&$sent) { $sent = $body; });
+        $headers = $this->expectHeadersSent();
+        $body = $this->expectBodySent();
         
-        $this->assertEquals('{"Hello" : "World"}', $sent);
-        $this->assertCount(2, $headers_list);
-        $this->assertContains('HTTP/2 200 OK', $headers_list);
-        $this->assertContains('Content-Type: application/json', $headers_list);
+        Response::send($response, $headers, $body);
+        
+        $this->assertEquals('{"Hello" : "World"}', $body());
+        $this->assertCount(2, $headers());
+        $this->assertContains('HTTP/2 200 OK', $headers());
+        $this->assertContains('Content-Type: application/json', $headers());
     }
 }

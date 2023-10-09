@@ -28,13 +28,14 @@ class MessageTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
             ], '{"Hello" : "World"}');
         
         
-        $sent = null;
-        $headers_list = array();
-        Message::send($message, function(string $header) use (&$headers_list) { $headers_list[] = $header; }, function(string $body) use (&$sent) { $sent = $body; });
+        $headers = $this->expectHeadersSent();
+        $body = $this->expectBodySent();
         
-        $this->assertEquals('{"Hello" : "World"}', $sent);
-        $this->assertCount(1, $headers_list);
-        $this->assertContains('Content-Type: application/json', $headers_list);
+        Message::send($message, $headers, $body);
+        
+        $this->assertEquals('{"Hello" : "World"}', $body());
+        $this->assertCount(1, $headers());
+        $this->assertContains('Content-Type: application/json', $headers());
     }
 }
 
