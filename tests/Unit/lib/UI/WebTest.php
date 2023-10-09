@@ -19,11 +19,7 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
         $headers = $this->expectHeadersSent();
         $body = $this->expectBodySent();
         
-        $response = $entry(function(array $contentTypes, callable $status) {
-            $headers = $status('200 OK');
-            $headers('Content-Type: ' . key($contentTypes));
-            return '<!DOCTYPE html></html>';
-        });
+        $response = $entry('text/html', fn(callable $status) => $status('200 OK', '<!DOCTYPE html></html>'));
         $response($headers, $body);
         
         $this->assertTrue(str_starts_with($body(), "<!DOCTYPE html>"));
@@ -43,11 +39,8 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
         $headers = $this->expectHeadersSent();
         $body = $this->expectBodySent();
         
-        $response = $entry(function(array $contentTypes, callable $status) {
-            $headers = $status('200 OK');
-            $headers('Content-Type: ' . key($contentTypes));
-            return 'Hello World';
-        });
+        
+        $response = $entry('appplication/json', fn(callable $status) => $status('200 OK', 'Hello World'));
         $response($headers, $body);
         
         $this->assertEquals('Hello World', $body());
@@ -66,11 +59,8 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
         $headers = $this->expectHeadersSent();
         $body = $this->expectBodySent();
         
-        $response = $entry(function(array $contentTypes, callable $status) {
-            $headers = $status('200 OK');
-            $headers('Content-Type: ' . key($contentTypes));
-            return 'Hello World';
-        });
+        
+        $response = $entry('text/plain', fn(callable $status) => $status('200 OK', 'Hello World'));
         $response($headers, $body);
         
         $this->assertEquals('Hello World', $body());
