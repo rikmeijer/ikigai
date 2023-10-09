@@ -19,8 +19,9 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
             'HTTP_ACCEPT' => 'text/html'
         ], $headers, $body);
         
-        $entry('text/plain')(fn(callable $status) => $status('200 OK', 'Hello World'), Web::skip());
-        $entry('text/html')(fn(callable $status) => $status('200 OK', '<!DOCTYPE html></html>'), Web::notAcceptable());
+        $resource = $entry('GET', '/test');
+        $resource('text/plain')(fn(callable $status) => $status('200 OK', 'Hello World'), Web::skip());
+        $resource('text/html')(fn(callable $status) => $status('200 OK', '<!DOCTYPE html></html>'), Web::notAcceptable());
         
         $this->assertTrue(str_starts_with($body(), "<!DOCTYPE html>"));
         $this->assertTrue(str_ends_with($body(), "</html>"));
@@ -39,7 +40,8 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
             'HTTP_ACCEPT' => 'text/plain'
         ], $headers, $body);
         
-        $entry('text/html')(fn(callable $status) => $status('200 OK', '<!DOCTYPE html></html>'), Web::notAcceptable());
+        $resource = $entry('GET', '/test');
+        $resource('text/html')(fn(callable $status) => $status('200 OK', '<!DOCTYPE html></html>'), Web::notAcceptable());
         
         $this->assertContains('HTTP/1.1 406 Not Acceptable', $headers());
     }
@@ -55,7 +57,8 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
             'HTTP_ACCEPT' => 'appplication/json'
         ], $headers, $body);
         
-        $entry('appplication/json')(fn(callable $status) => $status('200 OK', 'Hello World'), Web::notAcceptable());
+        $resource = $entry('GET', '/test');
+        $resource('appplication/json')(fn(callable $status) => $status('200 OK', 'Hello World'), Web::notAcceptable());
         
         $this->assertEquals('Hello World', $body());
         $this->assertCount(2, $headers());
@@ -73,8 +76,8 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
             'HTTP_ACCEPT' => 'text/plain, application/xhtml+xml, application/json;q=0.9, */*;q=0.8'
         ], $headers, $body);
         
-        
-        $entry('text/plain')(fn(callable $status) => $status('200 OK', 'Hello World'), Web::notAcceptable());
+        $resource = $entry('GET', '/test');
+        $resource('text/plain')(fn(callable $status) => $status('200 OK', 'Hello World'), Web::notAcceptable());
 
         $this->assertEquals('Hello World', $body());
         $this->assertCount(2, $headers());

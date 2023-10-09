@@ -27,7 +27,7 @@ class Web {
     }
         
     static function entry(array $server, callable $headers, callable $body) : callable {
-        return self::negotiate(self::parseRelativeQuality($server['HTTP_ACCEPT']), self::status($server['SERVER_PROTOCOL'], $body, $headers));
+        return fn(string $method, string $path) => self::negotiate(self::parseRelativeQuality($server['HTTP_ACCEPT']), self::status($server['SERVER_PROTOCOL'], $body, $headers));
     }
     
     static function notAcceptable() : callable {
