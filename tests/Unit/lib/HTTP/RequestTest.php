@@ -9,14 +9,14 @@ use \rikmeijer\purposeplan\lib\HTTP\Request;
 class RequestTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
 
     public function test_fromCurrent(): void {
-        $_SERVER['REQUEST_METHOD'] = 'GET';
-        $_SERVER['REQUEST_URI'] = '/index.php';
-        $_SERVER['SERVER_PROTOCOL'] = 'HTTP/2';
-
-        $_SERVER['HTTP_HOST'] = 'example.com';
-        $_SERVER['HTTP_CONTENT_TYPE'] = 'application\json';
         
-        $request = Request::fromCurrent();
+        $request = Request::fromCurrent([
+            'REQUEST_METHOD' => 'GET',
+            'REQUEST_URI' => '/index.php',
+            'SERVER_PROTOCOL' => 'HTTP/2',
+            'HTTP_HOST' => 'example.com',
+            'HTTP_CONTENT_TYPE' => 'application\json'
+        ]);
         
         $this->assertEquals('GET', $request->method);
         $this->assertEquals('/index.php', $request->path);

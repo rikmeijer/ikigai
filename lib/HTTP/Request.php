@@ -12,11 +12,11 @@ final readonly class Request {
             public Message $message
     ) {}
     
-    public static function fromCurrent() : self {
-        $headers = array_filter($_SERVER, fn(string $key) => str_starts_with($key, 'HTTP_'), ARRAY_FILTER_USE_KEY);
+    public static function fromCurrent(array $server) : self {
+        $headers = array_filter($server, fn(string $key) => str_starts_with($key, 'HTTP_'), ARRAY_FILTER_USE_KEY);
         $headers = array_map(fn(string $name, string $value) => ucwords(str_replace('_', '-', strtolower(substr($name, 5))), '-') . ': ' . $value, array_keys($headers), $headers);
         
-        return new self($_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_URI'], $_SERVER['SERVER_PROTOCOL'], new Message($headers));
+        return new self($server['REQUEST_METHOD'], $server['REQUEST_URI'], $server['SERVER_PROTOCOL'], new Message($headers));
     }
     
 }
