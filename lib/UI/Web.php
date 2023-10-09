@@ -15,7 +15,7 @@ class Web {
     }
     
     static function entry(array $server) : callable {
-        return fn(callable $router) => fn(callable $headers, callable $body) => $body($router(self::parseRelativeQuality($server['HTTP_ACCEPT']), fn(string $status) => $headers('HTTP/2 ' . $status), $headers));
+        return fn(callable $router) => fn(callable $headers, callable $body) => $body($router(self::parseRelativeQuality($server['HTTP_ACCEPT']), fn(string $status) => $headers($server['SERVER_PROTOCOL'] . ' ' . $status), $headers));
     }
     
 }

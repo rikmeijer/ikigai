@@ -12,6 +12,7 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
     public function test_entry(): void
     {
         $entry = Web::entry([
+            'SERVER_PROTOCOL' => 'HTTP/1.1',
             'HTTP_ACCEPT' => 'text/html'
         ]);
         
@@ -28,13 +29,14 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
         $this->assertTrue(str_starts_with($body(), "<!DOCTYPE html>"));
         $this->assertTrue(str_ends_with($body(), "</html>"));
         $this->assertCount(2, $headers());
-        $this->assertContains('HTTP/2 200 OK', $headers());
+        $this->assertContains('HTTP/1.1 200 OK', $headers());
         $this->assertContains('Content-Type: text/html', $headers());
     }
     
     public function test_entryAcceptingApplicationJson(): void
     {
         $entry = Web::entry([
+            'SERVER_PROTOCOL' => 'HTTP/2',
             'HTTP_ACCEPT' => 'appplication/json'
         ]);
         
@@ -57,6 +59,7 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
     public function test_entryAcceptingRelativeQualities(): void
     {
         $entry = Web::entry([
+            'SERVER_PROTOCOL' => 'HTTP/2',
             'HTTP_ACCEPT' => 'text/plain, application/xhtml+xml, application/json;q=0.9, */*;q=0.8'
         ]);
         
