@@ -18,9 +18,9 @@ final readonly class Message {
         return new self(array_values($headers));
     }
     
-    public static function send(self $message) {
-        array_map('header', $message->headers);
-        print $message->body;
+    public static function send(self $message, callable $headers, callable $body) {
+        array_map($headers, $message->headers);
+        $body($message->body);
     }
     
 }

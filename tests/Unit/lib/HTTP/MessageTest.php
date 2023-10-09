@@ -21,23 +21,18 @@ class MessageTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
         $this->assertEquals('<html>Hello World</html>', $message->body);
         $this->assertPropertyIsReadOnly($message, 'body');
     }
-    
-    /**
-     * @runInSeparateProcess
-     */
+
     public function test_send(): void {
         $message = new \rikmeijer\purposeplan\lib\HTTP\Message([
             'Content-Type: application/json'
             ], '{"Hello" : "World"}');
         
         
-        ob_start();
-        Message::send($message);
+        $sent = null;
+        $headers_list = array();
+        Message::send($message, function(string $header) use (&$headers_list) { $headers_list[] = $header; }, function(string $body) use (&$sent) { $sent = $body; });
         
-        $headers_list = xdebug_get_headers();
-        header_remove();
-        
-        $this->assertEquals('{"Hello" : "World"}', ob_get_clean());
+        $this->assertEquals('{"Hello" : "World"}', $sent);
         $this->assertCount(1, $headers_list);
         $this->assertContains('Content-Type: application/json', $headers_list);
     }

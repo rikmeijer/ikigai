@@ -6,11 +6,6 @@ namespace rikmeijer\purposeplan\tests\Unit\lib\HTTP;
 
 use \rikmeijer\purposeplan\lib\HTTP\Request;
 
-/**
- * Description of RequestTest
- *
- * @author rmeijer
- */
 class RequestTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
 
     public function test_fromCurrent(): void {
