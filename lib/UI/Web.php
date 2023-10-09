@@ -34,4 +34,7 @@ class Web {
         return fn(callable $status) => $status('406 Not Acceptable', '');
     }
     
+    static function skip() : callable {
+        return function(callable $status) : void {};
+    }
 }

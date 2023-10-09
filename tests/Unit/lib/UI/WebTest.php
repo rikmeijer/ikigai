@@ -19,6 +19,7 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
             'HTTP_ACCEPT' => 'text/html'
         ], $headers, $body);
         
+        $entry('text/plain')(fn(callable $status) => $status('200 OK', 'Hello World'), Web::skip());
         $entry('text/html')(fn(callable $status) => $status('200 OK', '<!DOCTYPE html></html>'), Web::notAcceptable());
         
         $this->assertTrue(str_starts_with($body(), "<!DOCTYPE html>"));
