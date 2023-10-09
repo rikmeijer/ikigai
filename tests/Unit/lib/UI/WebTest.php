@@ -11,16 +11,15 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
 
     public function test_entry(): void
     {
-        $entry = Web::entry([
-            'SERVER_PROTOCOL' => 'HTTP/1.1',
-            'HTTP_ACCEPT' => 'text/html'
-        ]);
-        
         $headers = $this->expectHeadersSent();
         $body = $this->expectBodySent();
         
-        $response = $entry('text/html', fn(callable $status) => $status('200 OK', '<!DOCTYPE html></html>'));
-        $response($headers, $body);
+        $entry = Web::entry([
+            'SERVER_PROTOCOL' => 'HTTP/1.1',
+            'HTTP_ACCEPT' => 'text/html'
+        ], $headers, $body);
+        
+        $entry('text/html', fn(callable $status) => $status('200 OK', '<!DOCTYPE html></html>'));
         
         $this->assertTrue(str_starts_with($body(), "<!DOCTYPE html>"));
         $this->assertTrue(str_ends_with($body(), "</html>"));
@@ -31,17 +30,16 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
     
     public function test_entryAcceptingApplicationJson(): void
     {
-        $entry = Web::entry([
-            'SERVER_PROTOCOL' => 'HTTP/2',
-            'HTTP_ACCEPT' => 'appplication/json'
-        ]);
-        
         $headers = $this->expectHeadersSent();
         $body = $this->expectBodySent();
         
         
-        $response = $entry('appplication/json', fn(callable $status) => $status('200 OK', 'Hello World'));
-        $response($headers, $body);
+        $entry = Web::entry([
+            'SERVER_PROTOCOL' => 'HTTP/2',
+            'HTTP_ACCEPT' => 'appplication/json'
+        ], $headers, $body);
+        
+        $entry('appplication/json', fn(callable $status) => $status('200 OK', 'Hello World'));
         
         $this->assertEquals('Hello World', $body());
         $this->assertCount(2, $headers());
@@ -51,18 +49,17 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
     
     public function test_entryAcceptingRelativeQualities(): void
     {
-        $entry = Web::entry([
-            'SERVER_PROTOCOL' => 'HTTP/2',
-            'HTTP_ACCEPT' => 'text/plain, application/xhtml+xml, application/json;q=0.9, */*;q=0.8'
-        ]);
-        
         $headers = $this->expectHeadersSent();
         $body = $this->expectBodySent();
         
+        $entry = Web::entry([
+            'SERVER_PROTOCOL' => 'HTTP/2',
+            'HTTP_ACCEPT' => 'text/plain, application/xhtml+xml, application/json;q=0.9, */*;q=0.8'
+        ], $headers, $body);
         
-        $response = $entry('text/plain', fn(callable $status) => $status('200 OK', 'Hello World'));
-        $response($headers, $body);
         
+        $entry('text/plain', fn(callable $status) => $status('200 OK', 'Hello World'));
+
         $this->assertEquals('Hello World', $body());
         $this->assertCount(2, $headers());
         $this->assertContains('HTTP/2 200 OK', $headers());
