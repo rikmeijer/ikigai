@@ -15,10 +15,10 @@ class Web {
     }
     
     static function entry(array $server) : callable {
-        return function(callable $headers, callable $body) use ($server) {
+        return fn(callable $router) => function(callable $headers, callable $body) use ($router, $server) {
             $headers('HTTP/2 200 OK');
             $headers('Content-Type: ' . key(self::parseRelativeQuality($server['HTTP_ACCEPT'])));
-            $body('Hello World');
+            $body($router());
         };
     }
     
