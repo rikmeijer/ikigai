@@ -39,8 +39,6 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
         ], $headers, $body);
         
         $entry('text/html', fn(callable $status) => $status('200 OK', '<!DOCTYPE html></html>'));
-        
-        var_Dump($headers());
         $this->assertContains('HTTP/1.1 406 Not Acceptable', $headers());
     }
     
