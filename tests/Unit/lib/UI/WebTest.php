@@ -19,8 +19,8 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
         $headers = $this->expectHeadersSent();
         $body = $this->expectBodySent();
         
-        $response = $entry(function(array $contentTypes, callable $status, callable $headers) {
-            $status('200 OK');
+        $response = $entry(function(array $contentTypes, callable $status) {
+            $headers = $status('200 OK');
             $headers('Content-Type: ' . key($contentTypes));
             return '<!DOCTYPE html></html>';
         });
@@ -43,8 +43,8 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
         $headers = $this->expectHeadersSent();
         $body = $this->expectBodySent();
         
-        $response = $entry(function(array $contentTypes, callable $status, callable $headers) {
-            $status('200 OK');
+        $response = $entry(function(array $contentTypes, callable $status) {
+            $headers = $status('200 OK');
             $headers('Content-Type: ' . key($contentTypes));
             return 'Hello World';
         });
@@ -66,8 +66,8 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
         $headers = $this->expectHeadersSent();
         $body = $this->expectBodySent();
         
-        $response = $entry(function(array $contentTypes, callable $status, callable $headers) {
-            $status('200 OK');
+        $response = $entry(function(array $contentTypes, callable $status) {
+            $headers = $status('200 OK');
             $headers('Content-Type: ' . key($contentTypes));
             return 'Hello World';
         });

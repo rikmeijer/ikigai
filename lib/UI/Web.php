@@ -14,8 +14,15 @@ class Web {
         return $accepting_types;
     }
     
+    static function status(string $protocol, callable $headers) {
+        return function(string $status) use ($protocol, $headers) {
+            $headers($protocol . ' ' . $status);
+            return $headers;
+        };
+    }
+    
     static function entry(array $server) : callable {
-        return fn(callable $router) => fn(callable $headers, callable $body) => $body($router(self::parseRelativeQuality($server['HTTP_ACCEPT']), fn(string $status) => $headers($server['SERVER_PROTOCOL'] . ' ' . $status), $headers));
+        return fn(callable $router) => fn(callable $headers, callable $body) => $body($router(self::parseRelativeQuality($server['HTTP_ACCEPT']), self::status($server['SERVER_PROTOCOL'], $headers)));
     }
     
 }
