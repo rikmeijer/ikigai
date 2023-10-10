@@ -23,16 +23,8 @@ class Web {
         };
     }
     
-    static function status(string $protocol, callable $headers, callable $body) {
-        return fn(string $contentType) => function(string $status, string $content) use ($protocol, $contentType, $body, $headers) : void {
-            $headers($protocol . ' ' . $status);
-            $headers('Content-Type: ' . $contentType);
-            $body($content);
-        };
-    }
-    
     static function entry(array $server, callable $routings) : callable {
-        $protocol = $server['SERVER_PROTOCOL'];
+        $protocol = fn(string $code) => $server['SERVER_PROTOCOL'] . ' ' . $code;
         $acceptedTypes = fn(array $availableTypes) => self::parseRelativeQuality($server['HTTP_ACCEPT'])($availableTypes) ?? self::notAcceptable();
         $requestMethod = fn(string $method) => $method === $server['REQUEST_METHOD'];
         $path = $server['REQUEST_URI'];    
@@ -56,7 +48,13 @@ class Web {
 
             $routings(self::resourceMatcher($methods, $path));
 
-            $endpoint(self::status($protocol, $headers, $body));
+            $protocol = fn(string $code) => $headers($protocol($code));
+            
+            $endpoint(function(string $contentType, string $status, string $content) use ($protocol, $body, $headers) : void {
+                $protocol($status);
+                $headers('Content-Type: ' . $contentType);
+                $body($content);
+            });
             
         };
     }
@@ -71,12 +69,12 @@ class Web {
     }
     
     static function notAcceptable() : callable {
-        return fn(callable $status) => $status('text/plain')('406 Not Acceptable', '');
+        return fn(callable $status) => $status('text/plain', '406 Not Acceptable', '');
     }
     static function methodNotAllowed() : callable {
-        return fn(callable $status) => $status('text/plain')('405 Method Not Allowed', '');
+        return fn(callable $status) => $status('text/plain', '405 Method Not Allowed', '');
     }
     static function fileNotFound() : callable {
-        return fn(callable $status) => $status('text/plain')('404 File Not Found', '');
+        return fn(callable $status) => $status('text/plain', '404 File Not Found', '');
     }
 }
