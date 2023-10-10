@@ -21,9 +21,13 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
             'HTTP_ACCEPT' => 'text/html'
         ], $headers, $body);
         
-        $entry('test', function(callable $endpoint) {
-            $endpoint('text/plain')(fn(callable $status) => $status('200 OK', 'Hello World'), Web::skip());
-            $endpoint('text/html')(fn(callable $status) => $status('200 OK', '<!DOCTYPE html></html>'), Web::notAcceptable());
+        $entry('test', function(callable $method) {
+            $method('GET', function(callable $negotiate) {
+                $negotiate([
+                    'text/plain' => fn(callable $status) => $status('200 OK', 'Hello World'),
+                    'text/html' => fn(callable $status) => $status('200 OK', '<!DOCTYPE html></html>')
+                ]);
+            });
         });
         
         $this->assertTrue(str_starts_with($body(), "<!DOCTYPE html>"));
@@ -45,8 +49,12 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
             'HTTP_ACCEPT' => 'text/plain'
         ], $headers, $body);
         
-        $entry('test', function(callable $endpoint) {
-            $endpoint('text/html')(fn(callable $status) => $status('200 OK', '<!DOCTYPE html></html>'), Web::notAcceptable());
+        $entry('test', function(callable $method) {
+            $method('GET', function(callable $negotiate) {
+                $negotiate([
+                    'text/html' => fn(callable $status) => $status('200 OK', '<!DOCTYPE html></html>')
+                ]);
+            });
         });
         
         $this->assertContains('HTTP/1.1 406 Not Acceptable', $headers());
@@ -65,8 +73,12 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
             'HTTP_ACCEPT' => 'appplication/json'
         ], $headers, $body);
         
-        $entry('test', function(callable $endpoint) {
-            $endpoint('appplication/json')(fn(callable $status) => $status('200 OK', 'Hello World'), Web::notAcceptable());
+        $entry('test', function(callable $method) {
+            $method('GET', function(callable $negotiate) {
+                $negotiate([
+                    'appplication/json' => fn(callable $status) => $status('200 OK', 'Hello World')
+                ]);
+            });
         });
         
         $this->assertEquals('Hello World', $body());
@@ -87,8 +99,12 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
             'HTTP_ACCEPT' => 'text/plain, application/xhtml+xml, application/json;q=0.9, */*;q=0.8'
         ], $headers, $body);
         
-        $entry('test', function(callable $endpoint) {
-            $endpoint('text/plain')(fn(callable $status) => $status('200 OK', 'Hello World'), Web::notAcceptable());
+        $entry('test', function(callable $method) {
+            $method('GET', function(callable $negotiate) {
+                $negotiate([
+                    'text/plain' => fn(callable $status) => $status('200 OK', 'Hello World')
+                ]);
+            });
         });
         
         $this->assertEquals('Hello World', $body());

@@ -22,12 +22,22 @@ class Web {
         };
     }
     
+    static function array_first_key_exists(array $keys, array $haystack, callable $status) {
+                var_dump($haystack, $keys);
+        foreach ($haystack as $contentTypeAccepted => $value) {
+            if (array_key_exists($contentTypeAccepted, $keys)) {
+                return $keys[$contentTypeAccepted]($status($contentTypeAccepted));
+            }
+        }
+        return self::notAcceptable()($status('text/plain'));
+    }
+    
     static function negotiate(array $acceptedTypes, callable $status) {
-        return fn(string $availableType) => fn(callable $success, callable $error) => array_key_exists($availableType, $acceptedTypes) ? $success($status($availableType)) : $error($status(key($acceptedTypes)));
+        return fn(array $availableTypes) => self::array_first_key_exists($availableTypes, $acceptedTypes, $status);
     }
     
     static function entry(array $server, callable $headers, callable $body) : callable {
-        return fn(string $identifier, callable $resource) => $resource(self::negotiate(self::parseRelativeQuality($server['HTTP_ACCEPT']), self::status($server['SERVER_PROTOCOL'], $body, $headers)));
+        return fn(string $identifier, callable $resource) => $resource(fn(string $method, callable $endpoint) => $endpoint(self::negotiate(self::parseRelativeQuality($server['HTTP_ACCEPT']), self::status($server['SERVER_PROTOCOL'], $body, $headers))));
     }
     
     static function notAcceptable() : callable {
