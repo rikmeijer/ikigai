@@ -32,7 +32,7 @@ class Web {
     
     static function entry(array $server, callable $routings) : callable {
         $protocol = $server['SERVER_PROTOCOL'];
-        $acceptedTypes = self::parseRelativeQuality($server['HTTP_ACCEPT']);
+        $acceptedTypes = fn(array $availableTypes) => self::parseRelativeQuality($server['HTTP_ACCEPT'])($availableTypes) ?? self::notAcceptable();
         $requestMethod = fn(string $method) => $method === $server['REQUEST_METHOD'];
         $path = $server['REQUEST_URI'];    
 
@@ -40,9 +40,8 @@ class Web {
         return function(callable $headers, callable $body) use ($protocol, $acceptedTypes, $requestMethod, $path, $routings) {
             $endpoint = self::fileNotFound();
             
-            
             $contentNegotiator = function(array $availableTypes) use (&$endpoint, $acceptedTypes) {
-                $endpoint = $acceptedTypes($availableTypes) ?? self::notAcceptable();
+                $endpoint = $acceptedTypes($availableTypes);
             };
             
             $methodMatcher = function(string $method, callable $endpoints) use (&$endpoint, $requestMethod, $contentNegotiator) {
