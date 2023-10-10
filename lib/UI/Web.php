@@ -36,20 +36,26 @@ class Web {
         $requestMethod = fn(string $method) => $method === $server['REQUEST_METHOD'];
         $path = $server['REQUEST_URI'];    
 
+        
         return function(callable $headers, callable $body) use ($protocol, $acceptedTypes, $requestMethod, $path, $routings) {
             $endpoint = self::fileNotFound();
-            $routings(function(string $identifier, callable $resource) use (&$endpoint, $acceptedTypes, $requestMethod, $path) {
-                if (str_starts_with($path, '/' . $identifier)) {
-                    $resource(function(string $method, callable $endpoints) use (&$endpoint, $requestMethod, $acceptedTypes) {
-                        $endpoint = self::methodNotAllowed();
-                        if ($requestMethod($method)) {
-                            $endpoints(function(array $availableTypes) use (&$endpoint, $acceptedTypes) {
-                                $endpoint = $acceptedTypes($availableTypes) ?? self::notAcceptable();
-                            });
-                        }
-                    });
+            
+            
+            $contentNegotiator = function(array $availableTypes) use (&$endpoint, $acceptedTypes) {
+                $endpoint = $acceptedTypes($availableTypes) ?? self::notAcceptable();
+            };
+            
+            $methodMatcher = function(string $method, callable $endpoints) use (&$endpoint, $requestMethod, $contentNegotiator) {
+                $endpoint = self::methodNotAllowed();
+                if ($requestMethod($method)) {
+                    $endpoints($contentNegotiator);
                 }
-
+            };
+            
+            $routings(function(string $identifier, callable $resource) use ($path, $methodMatcher) {
+                if (str_starts_with($path, '/' . $identifier)) {
+                    $resource($methodMatcher);
+                }
             });
 
             $endpoint[1](self::status($protocol, $headers, $body)($endpoint[0]));
