@@ -17,7 +17,7 @@ class Web {
             
             foreach ($typesAccepted as $typeAccepted => $value) {
                 if (array_key_exists($typeAccepted, $availableTypes)) {
-                    return [$typeAccepted, $availableTypes[$typeAccepted]];
+                    return $availableTypes[$typeAccepted];
                 }
             }
         };
@@ -56,7 +56,7 @@ class Web {
 
             $routings(self::resourceMatcher($methods, $path));
 
-            $endpoint[1](self::status($protocol, $headers, $body)($endpoint[0]));
+            $endpoint(self::status($protocol, $headers, $body));
             
         };
     }
@@ -70,13 +70,13 @@ class Web {
         return Functional::partial_left(fn(string $identifier, callable $resource) => $ifelse($identifier)($resource));
     }
     
-    static function notAcceptable() : array {
-        return ['text/plain', fn(callable $status) => $status('406 Not Acceptable', '')];
+    static function notAcceptable() : callable {
+        return fn(callable $status) => $status('text/plain')('406 Not Acceptable', '');
     }
-    static function methodNotAllowed() : array {
-        return ['text/plain', fn(callable $status) => $status('405 Method Not Allowed', '')];
+    static function methodNotAllowed() : callable {
+        return fn(callable $status) => $status('text/plain')('405 Method Not Allowed', '');
     }
-    static function fileNotFound() : array {
-        return ['text/plain', fn(callable $status) => $status('404 File Not Found', '')];
+    static function fileNotFound() : callable {
+        return fn(callable $status) => $status('text/plain')('404 File Not Found', '');
     }
 }

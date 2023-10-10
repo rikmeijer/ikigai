@@ -19,8 +19,8 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
             $route('test', function(callable $get, callable $update, callable $put, callable $delete, callable $head, callable $child) {
                 $get(function(callable $negotiate) {
                     $negotiate([
-                        'text/plain' => fn(callable $status) => $status('200 OK', 'Hello World'),
-                        'text/html' => fn(callable $status) => $status('200 OK', '<!DOCTYPE html></html>')
+                        'text/plain' => fn(callable $status) => $status('text/plain')('200 OK', 'Hello World'),
+                        'text/html' => fn(callable $status) => $status('text/html')('200 OK', '<!DOCTYPE html></html>')
                     ]);
                 });
             });
@@ -50,8 +50,8 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
                 $child('fubar', function(callable $get, callable $update, callable $put, callable $delete, callable $head, callable $child) {
                     $get(function(callable $negotiate) {
                         $negotiate([
-                            'text/plain' => fn(callable $status) => $status('200 OK', 'Hello World'),
-                            'text/html' => fn(callable $status) => $status('200 OK', '<!DOCTYPE html></html>')
+                            'text/plain' => fn(callable $status) => $status('text/plain')('200 OK', 'Hello World'),
+                            'text/html' => fn(callable $status) => $status('text/html')('200 OK', '<!DOCTYPE html></html>')
                         ]);
                     });
                 });
@@ -126,7 +126,7 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
             $route('test', function(callable $get, callable $update, callable $put, callable $delete, callable $head, callable $child) {
                 $get(function(callable $negotiate) {
                     $negotiate([
-                        'text/html' => fn(callable $status) => $status('200 OK', '<!DOCTYPE html></html>')
+                        'text/html' => fn(callable $status) => $status('text/html')('200 OK', '<!DOCTYPE html></html>')
                     ]);
                 });
             });
@@ -145,12 +145,12 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
             'REQUEST_METHOD' => 'GET',
             'REQUEST_URI' => '/test',
             'SERVER_PROTOCOL' => 'HTTP/2',
-            'HTTP_ACCEPT' => 'appplication/json'
+            'HTTP_ACCEPT' => 'application/json'
         ], function(callable $route) {
             $route('test', function(callable $get, callable $update, callable $put, callable $delete, callable $head, callable $child) {
                 $get(function(callable $negotiate) {
                     $negotiate([
-                        'appplication/json' => fn(callable $status) => $status('200 OK', 'Hello World')
+                        'application/json' => fn(callable $status) => $status('application/json')('200 OK', 'Hello World')
                     ]);
                 });
             });
@@ -163,7 +163,7 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
         $this->assertEquals('Hello World', $body());
         $this->assertCount(2, $headers());
         $this->assertContains('HTTP/2 200 OK', $headers());
-        $this->assertContains('Content-Type: appplication/json', $headers());
+        $this->assertContains('Content-Type: application/json', $headers());
     }
     
     public function test_entryAcceptingRelativeQualities(): void
@@ -178,7 +178,7 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
             $route('test', function(callable $get, callable $update, callable $put, callable $delete, callable $head, callable $child) {
                 $get(function(callable $negotiate) {
                     $negotiate([
-                        'text/plain' => fn(callable $status) => $status('200 OK', 'Hello World')
+                        'text/plain' => fn(callable $status) => $status('text/plain')('200 OK', 'Hello World')
                     ]);
                 });
             });
