@@ -51,11 +51,16 @@ class Web {
                 }
             };
             
-            $routings(function(string $identifier, callable $resource) use ($path, $methodMatcher) {
-                if (str_starts_with($path, '/' . $identifier)) {
-                    $resource($methodMatcher);
-                }
-            });
+            $resourceMatcher;
+            $resourceMatcher = function(string $path) use (&$resourceMatcher, $methodMatcher) {
+                return function(string $identifier, callable $resource) use ($path, &$resourceMatcher, $methodMatcher) {
+                    if (str_starts_with($path, '/' . $identifier)) {
+                        $resource($methodMatcher, $resourceMatcher(substr($path, strlen($identifier) + 1)));
+                    }
+                };
+            };
+            
+            $routings($resourceMatcher($path));
 
             $endpoint[1](self::status($protocol, $headers, $body)($endpoint[0]));
             
