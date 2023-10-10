@@ -62,7 +62,12 @@ class Web {
     }
     
     static function resourceMatcher(array $methods, string $path) {
-        return Functional::partial_left(fn(array $methods, string $path, string $identifier, callable $resource) => Functional::if_else(fn() => str_starts_with($path, '/' . $identifier), fn() => $resource(...array_merge($methods, ['child' => self::resourceMatcher($methods, substr($path, strlen($identifier) + 1))])), fn() => null), $methods, $path);
+        $ifelse = Functional::if_else(
+            fn(string $identifier) => str_starts_with($path, '/' . $identifier), 
+            fn(string $identifier) => fn(callable $resource) => $resource(...array_merge($methods, ['child' => self::resourceMatcher($methods, substr($path, strlen($identifier) + 1))])), 
+            fn(string $identifier) => fn(callable $resource) => null
+        );
+        return Functional::partial_left(fn(string $identifier, callable $resource) => $ifelse($identifier)($resource));
     }
     
     static function notAcceptable() : array {
