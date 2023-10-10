@@ -65,7 +65,7 @@ class Web {
         $ifelse = Functional::if_else(
             fn(string $identifier) => str_starts_with($path, '/' . $identifier), 
             fn(string $identifier) => fn(callable $resource) => $resource(...array_merge($methods, ['child' => self::resourceMatcher($methods, substr($path, strlen($identifier) + 1))])), 
-            fn(string $identifier) => fn(callable $resource) => null
+            fn(string $identifier) => Functional::nothing()
         );
         return Functional::partial_left(fn(string $identifier, callable $resource) => $ifelse($identifier)($resource));
     }

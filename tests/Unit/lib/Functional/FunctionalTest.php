@@ -36,4 +36,10 @@ class FunctionalTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
         $this->assertEquals('True', $ifelse(true));
         
     }
+    
+    
+    public function test_nothing() {
+        $this->assertNull(Functional::nothing()());
+        
+    }
 }

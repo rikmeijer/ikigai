@@ -24,4 +24,8 @@ final class Functional {
     static function if_else(callable $evaluation, callable $true, callable $false) {
         return fn(mixed $value) => $evaluation($value) ? $true($value) : $false($value);
     }
+    
+    static function nothing() {
+        return fn() => null;
+    }
 }
