@@ -64,8 +64,7 @@ class Web {
     static function resourceMatcher(array $methods, string $path) {
         return Functional::partial_left(function(array $methods, string $path, string $identifier, callable $resource) {
             if (str_starts_with($path, '/' . $identifier)) {
-                $methods['child'] = self::resourceMatcher($methods, substr($path, strlen($identifier) + 1));
-                $resource(...$methods);
+                $resource(...array_merge($methods, ['child' => self::resourceMatcher($methods, substr($path, strlen($identifier) + 1))]));
             }
         }, $methods, $path);
     }
