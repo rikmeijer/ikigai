@@ -25,9 +25,9 @@ class Web {
     static function negotiate(array $acceptedTypes, callable $status) {
         return fn(string $availableType) => fn(callable $success, callable $error) => array_key_exists($availableType, $acceptedTypes) ? $success($status($availableType)) : $error($status(key($acceptedTypes)));
     }
-        
+    
     static function entry(array $server, callable $headers, callable $body) : callable {
-        return fn(string $method, string $path) => self::negotiate(self::parseRelativeQuality($server['HTTP_ACCEPT']), self::status($server['SERVER_PROTOCOL'], $body, $headers));
+        return fn(string $identifier, callable $resource) => $resource(self::negotiate(self::parseRelativeQuality($server['HTTP_ACCEPT']), self::status($server['SERVER_PROTOCOL'], $body, $headers)));
     }
     
     static function notAcceptable() : callable {
