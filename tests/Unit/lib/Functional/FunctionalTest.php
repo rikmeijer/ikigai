@@ -31,4 +31,9 @@ class FunctionalTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
         $this->assertEquals(['0: a', '1: b', '2: c'], $map);
     }
     
+    public function test_if_else() {
+        
+        $this->assertEquals('True', Functional::if_else(fn() => true, fn() => 'True', fn() => 'False'));
+        
+    }
 }

@@ -20,4 +20,8 @@ final class Functional {
         }
         return $map;
     }
+    
+    static function if_else(callable $evaluation, callable $true, callable $false) {
+        return $evaluation() ? $true() : $false();
+    }
 }
