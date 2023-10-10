@@ -14,4 +14,13 @@ class FunctionalTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
         $this->assertEquals(25, $fn_partial(5));
     }
     
+    
+    public function test_partial_left_too_much_arguments() {
+        $fn = fn($a, $b) => $a * $b;
+        
+        $fn_partial = Functional::partial_left($fn, 5);
+        
+        $this->assertEquals(25, $fn_partial(5, 6));
+    }
+    
 }
