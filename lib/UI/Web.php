@@ -2,6 +2,8 @@
 
 namespace rikmeijer\purposeplan\lib\UI;
 
+use rikmeijer\purposeplan\lib\Functional\Functional;
+
 class Web {
     
     static function parseRelativeQuality(string $header_value) : callable {
@@ -29,10 +31,6 @@ class Web {
         };
     }
     
-    static function partial_left(callable $fn, mixed ...$args) {
-        return fn() => $fn(...array_merge($args, func_get_args()));
-    }
-    
     static function entry(array $server, callable $routings) : callable {
         $protocol = $server['SERVER_PROTOCOL'];
         $acceptedTypes = fn(array $availableTypes) => self::parseRelativeQuality($server['HTTP_ACCEPT'])($availableTypes) ?? self::notAcceptable();
@@ -55,11 +53,11 @@ class Web {
             };
             
             $methods = [
-                'get' => self::partial_left($methodMatcher, 'GET'),
-                'update' => self::partial_left($methodMatcher, 'UPDATE'),
-                'put' => self::partial_left($methodMatcher, 'PUT'),
-                'delete' => self::partial_left($methodMatcher, 'DELETE'),
-                'head' => self::partial_left($methodMatcher, 'HEAD'),
+                'get' => Functional::partial_left($methodMatcher, 'GET'),
+                'update' => Functional::partial_left($methodMatcher, 'UPDATE'),
+                'put' => Functional::partial_left($methodMatcher, 'PUT'),
+                'delete' => Functional::partial_left($methodMatcher, 'DELETE'),
+                'head' => Functional::partial_left($methodMatcher, 'HEAD'),
             ];
             
             $resourceMatcher;

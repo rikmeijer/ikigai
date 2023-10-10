@@ -8,7 +8,6 @@ use \rikmeijer\purposeplan\lib\UI\Web;
 
 class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
 
-
     public function test_entry(): void
     {
         $response = Web::entry([
