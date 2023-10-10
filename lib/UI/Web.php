@@ -22,29 +22,42 @@ class Web {
         };
     }
     
-    static function array_first_key_exists(array $keys, array $haystack, callable $status) {
-                var_dump($haystack, $keys);
-        foreach ($haystack as $contentTypeAccepted => $value) {
-            if (array_key_exists($contentTypeAccepted, $keys)) {
-                return $keys[$contentTypeAccepted]($status($contentTypeAccepted));
-            }
-        }
-        return self::notAcceptable()($status('text/plain'));
-    }
-    
-    static function negotiate(array $acceptedTypes, callable $status) {
-        return fn(array $availableTypes) => self::array_first_key_exists($availableTypes, $acceptedTypes, $status);
-    }
     
     static function entry(array $server, callable $headers, callable $body) : callable {
-        return fn(string $identifier, callable $resource) => $resource(fn(string $method, callable $endpoint) => $endpoint(self::negotiate(self::parseRelativeQuality($server['HTTP_ACCEPT']), self::status($server['SERVER_PROTOCOL'], $body, $headers))));
+        
+        $status = self::status($server['SERVER_PROTOCOL'], $body, $headers);
+        $acceptedTypes = self::parseRelativeQuality($server['HTTP_ACCEPT']);
+        $requestMethod = fn(string $method) => $method === $server['REQUEST_METHOD'];
+        return function(string $identifier, callable $resource) use ($acceptedTypes, $requestMethod, $status) {
+            $endpoint;
+                
+            $resource(function(string $method, callable $endpoints) use (&$endpoint, $requestMethod, $acceptedTypes, $status) {
+                if ($requestMethod($method) === false) {
+                    return;
+                }
+                
+                $endpoints(function(array $availableTypes) use (&$endpoint, $acceptedTypes) {
+                    foreach ($acceptedTypes as $contentTypeAccepted => $value) {
+                        if (array_key_exists($contentTypeAccepted, $availableTypes)) {
+                            $endpoint = [$contentTypeAccepted, $availableTypes[$contentTypeAccepted]];
+                            return;
+                        }
+                    }
+                    $endpoint = self::notAcceptable();
+                });
+            });
+                
+            if (!isset($endpoint)) {
+                $endpoint = self::methodNotAllowed();
+            }
+            $endpoint[1]($status($endpoint[0]));
+        };
     }
     
-    static function notAcceptable() : callable {
-        return fn(callable $status) => $status('406 Not Acceptable', '');
+    static function notAcceptable() : array {
+        return ['text/plain', fn(callable $status) => $status('406 Not Acceptable', '')];
     }
-    
-    static function skip() : callable {
-        return function(callable $status) : void {};
+    static function methodNotAllowed() : array {
+        return ['text/plain', fn(callable $status) => $status('405 Method Not Allowed', '')];
     }
 }

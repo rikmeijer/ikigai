@@ -37,6 +37,28 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
         $this->assertContains('Content-Type: text/html', $headers());
     }
     
+    
+    public function test_entryUnsupportedRequestMethodResultsIn405(): void
+    {
+        $headers = $this->expectHeadersSent();
+        $body = $this->expectBodySent();
+        
+        $entry = Web::entry([
+            'REQUEST_METHOD' => 'POST',
+            'REQUEST_URI' => '/',
+            'SERVER_PROTOCOL' => 'HTTP/1.1',
+            'HTTP_ACCEPT' => 'text/html'
+        ], $headers, $body);
+        
+        $entry('test', function(callable $method) {
+            $method('GET', function(callable $negotiate) {
+                $negotiate([]);
+            });
+        });
+        
+        $this->assertEquals('HTTP/1.1 405 Method Not Allowed', $headers()[0]);
+    }
+    
     public function test_entryMismatchInAcceptedContentTypeResultsIn406(): void
     {
         $headers = $this->expectHeadersSent();
