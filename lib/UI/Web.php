@@ -54,10 +54,7 @@ class Web {
             
             $methods = Functional::map(['get', 'update', 'put', 'delete', 'head'], fn($value, $key) => [$key => Functional::partial_left($methodMatcher, strtoupper($value))]);
 
-            
-            $resourceMatcher = self::resourceMatcher($methods, $path);
-            
-            $routings($resourceMatcher);
+            $routings(self::resourceMatcher($methods, $path));
 
             $endpoint[1](self::status($protocol, $headers, $body)($endpoint[0]));
             
