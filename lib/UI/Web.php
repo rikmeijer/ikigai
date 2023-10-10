@@ -23,13 +23,16 @@ class Web {
     }
     
     
-    static function entry(array $server, callable $headers, callable $body) : callable {
-        
+    static function entry(array $server, callable $headers, callable $body, callable $routings) : void {
         $status = self::status($server['SERVER_PROTOCOL'], $body, $headers);
         $acceptedTypes = self::parseRelativeQuality($server['HTTP_ACCEPT']);
         $requestMethod = fn(string $method) => $method === $server['REQUEST_METHOD'];
-        return function(string $identifier, callable $resource) use ($acceptedTypes, $requestMethod, $status) {
-            $endpoint;
+        $path = $server['REQUEST_URI'];    
+        $endpoint;
+        $routings(function(string $identifier, callable $resource) use (&$endpoint, $acceptedTypes, $requestMethod, $status, $path) {
+            if (str_starts_with($path, '/' . $identifier) === false) {
+                return;
+            }
                 
             $resource(function(string $method, callable $endpoints) use (&$endpoint, $requestMethod, $acceptedTypes, $status) {
                 if ($requestMethod($method) === false) {
@@ -50,8 +53,12 @@ class Web {
             if (!isset($endpoint)) {
                 $endpoint = self::methodNotAllowed();
             }
-            $endpoint[1]($status($endpoint[0]));
-        };
+        });
+                
+        if (!isset($endpoint)) {
+            $endpoint = self::fileNotFound();
+        }
+        $endpoint[1]($status($endpoint[0]));
     }
     
     static function notAcceptable() : array {
@@ -59,5 +66,8 @@ class Web {
     }
     static function methodNotAllowed() : array {
         return ['text/plain', fn(callable $status) => $status('405 Method Not Allowed', '')];
+    }
+    static function fileNotFound() : array {
+        return ['text/plain', fn(callable $status) => $status('404 File Not Found', '')];
     }
 }
