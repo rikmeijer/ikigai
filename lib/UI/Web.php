@@ -52,13 +52,8 @@ class Web {
                 }
             };
             
-            $methods = [
-                'get' => Functional::partial_left($methodMatcher, 'GET'),
-                'update' => Functional::partial_left($methodMatcher, 'UPDATE'),
-                'put' => Functional::partial_left($methodMatcher, 'PUT'),
-                'delete' => Functional::partial_left($methodMatcher, 'DELETE'),
-                'head' => Functional::partial_left($methodMatcher, 'HEAD'),
-            ];
+            $methods = Functional::map(['get', 'update', 'put', 'delete', 'head'], fn($value, $key) => [$key => Functional::partial_left($methodMatcher, strtoupper($value))]);
+
             
             $resourceMatcher;
             $resourceMatcher = function(string $path) use (&$resourceMatcher, $methodMatcher, $methods) {

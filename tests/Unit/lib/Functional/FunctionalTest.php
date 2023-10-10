@@ -23,4 +23,12 @@ class FunctionalTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
         $this->assertEquals(25, $fn_partial(5, 6));
     }
     
+    public function test_map() {
+        $fn = fn($value, $key) => [$key => $key . ': ' . $value];
+        
+        $map = Functional::map(['a', 'b', 'c'], $fn);
+        
+        $this->assertEquals(['0: a', '1: b', '2: c'], $map);
+    }
+    
 }
