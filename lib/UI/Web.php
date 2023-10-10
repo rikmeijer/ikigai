@@ -21,7 +21,7 @@ class Web {
         };
     }
     
-    static function status(string $protocol, callable $body, callable $headers) {
+    static function status(string $protocol, callable $headers, callable $body) {
         return fn(string $contentType) => function(string $status, string $content) use ($protocol, $contentType, $body, $headers) : void {
             $headers($protocol . ' ' . $status);
             $headers('Content-Type: ' . $contentType);
@@ -30,15 +30,14 @@ class Web {
     }
     
     
-    static function entry(array $server, callable $headers, callable $body, callable $routings) : void {
-        $status = self::status($server['SERVER_PROTOCOL'], $body, $headers);
+    static function entry(array $server, callable $routings) : callable {
         $acceptedTypes = self::parseRelativeQuality($server['HTTP_ACCEPT']);
         $requestMethod = fn(string $method) => $method === $server['REQUEST_METHOD'];
         $path = $server['REQUEST_URI'];    
         $endpoint = self::fileNotFound();
-        $routings(function(string $identifier, callable $resource) use (&$endpoint, $acceptedTypes, $requestMethod, $status, $path) {
+        $routings(function(string $identifier, callable $resource) use (&$endpoint, $acceptedTypes, $requestMethod, $path) {
             if (str_starts_with($path, '/' . $identifier)) {
-                $resource(function(string $method, callable $endpoints) use (&$endpoint, $requestMethod, $acceptedTypes, $status) {
+                $resource(function(string $method, callable $endpoints) use (&$endpoint, $requestMethod, $acceptedTypes) {
                     $endpoint = self::methodNotAllowed();
                     if ($requestMethod($method)) {
                         $endpoints(function(array $availableTypes) use (&$endpoint, $acceptedTypes) {
@@ -49,7 +48,7 @@ class Web {
             }
                 
         });
-        $endpoint[1]($status($endpoint[0]));
+        return fn(callable $headers, callable $body) => $endpoint[1](self::status($server['SERVER_PROTOCOL'], $headers, $body)($endpoint[0]));
     }
     
     static function notAcceptable() : array {
