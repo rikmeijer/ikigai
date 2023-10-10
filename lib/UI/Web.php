@@ -31,24 +31,30 @@ class Web {
     
     
     static function entry(array $server, callable $routings) : callable {
+        $protocol = $server['SERVER_PROTOCOL'];
         $acceptedTypes = self::parseRelativeQuality($server['HTTP_ACCEPT']);
         $requestMethod = fn(string $method) => $method === $server['REQUEST_METHOD'];
         $path = $server['REQUEST_URI'];    
-        $endpoint = self::fileNotFound();
-        $routings(function(string $identifier, callable $resource) use (&$endpoint, $acceptedTypes, $requestMethod, $path) {
-            if (str_starts_with($path, '/' . $identifier)) {
-                $resource(function(string $method, callable $endpoints) use (&$endpoint, $requestMethod, $acceptedTypes) {
-                    $endpoint = self::methodNotAllowed();
-                    if ($requestMethod($method)) {
-                        $endpoints(function(array $availableTypes) use (&$endpoint, $acceptedTypes) {
-                            $endpoint = $acceptedTypes($availableTypes) ?? self::notAcceptable();
-                        });
-                    }
-                });
-            }
-                
-        });
-        return fn(callable $headers, callable $body) => $endpoint[1](self::status($server['SERVER_PROTOCOL'], $headers, $body)($endpoint[0]));
+
+        return function(callable $headers, callable $body) use ($protocol, $acceptedTypes, $requestMethod, $path, $routings) {
+            $endpoint = self::fileNotFound();
+            $routings(function(string $identifier, callable $resource) use (&$endpoint, $acceptedTypes, $requestMethod, $path) {
+                if (str_starts_with($path, '/' . $identifier)) {
+                    $resource(function(string $method, callable $endpoints) use (&$endpoint, $requestMethod, $acceptedTypes) {
+                        $endpoint = self::methodNotAllowed();
+                        if ($requestMethod($method)) {
+                            $endpoints(function(array $availableTypes) use (&$endpoint, $acceptedTypes) {
+                                $endpoint = $acceptedTypes($availableTypes) ?? self::notAcceptable();
+                            });
+                        }
+                    });
+                }
+
+            });
+
+            $endpoint[1](self::status($protocol, $headers, $body)($endpoint[0]));
+            
+        };
     }
     
     static function notAcceptable() : array {
