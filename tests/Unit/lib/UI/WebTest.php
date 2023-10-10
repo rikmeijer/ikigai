@@ -19,8 +19,8 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
             $route('test', function(callable $get, callable $update, callable $put, callable $delete, callable $head, callable $child) {
                 $get(function(callable $negotiate) {
                     $negotiate([
-                        'text/plain' => fn(callable $status) => $status('text/plain', '200 OK', 'Hello World'),
-                        'text/html' => fn(callable $status) => $status('text/html', '200 OK', '<!DOCTYPE html></html>')
+                        'text/plain' => fn(callable $status) => $status('200 OK', 'Hello World'),
+                        'text/html' => fn(callable $status) => $status('200 OK', '<!DOCTYPE html></html>')
                     ]);
                 });
             });
@@ -50,8 +50,8 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
                 $child('fubar', function(callable $get, callable $update, callable $put, callable $delete, callable $head, callable $child) {
                     $get(function(callable $negotiate) {
                         $negotiate([
-                            'text/plain' => fn(callable $status) => $status('text/plain', '200 OK', 'Hello World'),
-                            'text/html' => fn(callable $status) => $status('text/html', '200 OK', '<!DOCTYPE html></html>')
+                            'text/plain' => fn(callable $status) => $status('200 OK', 'Hello World'),
+                            'text/html' => fn(callable $status) => $status('200 OK', '<!DOCTYPE html></html>')
                         ]);
                     });
                 });
@@ -150,7 +150,7 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
             $route('test', function(callable $get, callable $update, callable $put, callable $delete, callable $head, callable $child) {
                 $get(function(callable $negotiate) {
                     $negotiate([
-                        'application/json' => fn(callable $status) => $status('application/json', '200 OK', 'Hello World')
+                        'application/json' => fn(callable $status) => $status('200 OK', 'Hello World')
                     ]);
                 });
             });
@@ -178,7 +178,7 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
             $route('test', function(callable $get, callable $update, callable $put, callable $delete, callable $head, callable $child) {
                 $get(function(callable $negotiate) {
                     $negotiate([
-                        'text/plain' => fn(callable $status) => $status('text/plain', '200 OK', 'Hello World')
+                        'text/plain' => fn(callable $status) => $status('200 OK', 'Hello World')
                     ]);
                 });
             });

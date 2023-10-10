@@ -13,12 +13,14 @@ final class Functional {
         return fn() => $fn(...array_merge($args, func_get_args()));
     }
     
-    static function map(array $array, callable $fn) {
-        $map = [];
-        foreach ($array as $key => $value) {
-            $map = array_merge($map, $fn($value, $key));
-        }
-        return $map;
+    static function map(callable $fn) : callable {
+        return function(array $array) use ($fn) {
+            $map = [];
+            foreach ($array as $key => $value) {
+                $map = array_merge($map, (array)$fn($value, $key));
+            }
+            return $map;
+        };
     }
     
     static function if_else(callable $evaluation, callable $true, callable $false) {
@@ -27,5 +29,10 @@ final class Functional {
     
     static function nothing() {
         return fn() => null;
+    }
+    
+    static function arsort(array $array) {
+        arsort($array);
+        return $array;
     }
 }

@@ -26,9 +26,9 @@ class FunctionalTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
     public function test_map() {
         $fn = fn($value, $key) => [$key => $key . ': ' . $value];
         
-        $map = Functional::map(['a', 'b', 'c'], $fn);
+        $map = Functional::map($fn);
         
-        $this->assertEquals(['0: a', '1: b', '2: c'], $map);
+        $this->assertEquals(['0: a', '1: b', '2: c'], $map(['a', 'b', 'c']));
     }
     
     public function test_if_else() {
