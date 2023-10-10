@@ -4,14 +4,21 @@ namespace rikmeijer\purposeplan\lib\UI;
 
 class Web {
     
-    static function parseRelativeQuality(string $header_value) : array {
-        $accepting_types = array_reduce(explode(',', $header_value), function ($res, $el) {
-            list($l, $q) = array_merge(explode(';q=', $el), [1]); 
-            $res[$l] = (float) $q; 
-            return $res; 
-        }, []);
-        arsort($accepting_types);
-        return $accepting_types;
+    static function parseRelativeQuality(string $header_value) : callable {
+        return function(array $availableTypes) use ($header_value) {
+            $typesAccepted = array_reduce(explode(',', $header_value), function ($res, $el) {
+                list($l, $q) = array_merge(explode(';q=', $el), [1]); 
+                $res[$l] = (float) $q; 
+                return $res; 
+            }, []);
+            arsort($typesAccepted);
+            
+            foreach ($typesAccepted as $typeAccepted => $value) {
+                if (array_key_exists($typeAccepted, $availableTypes)) {
+                    return [$typeAccepted, $availableTypes[$typeAccepted]];
+                }
+            }
+        };
     }
     
     static function status(string $protocol, callable $body, callable $headers) {
@@ -35,13 +42,7 @@ class Web {
                     $endpoint = self::methodNotAllowed();
                     if ($requestMethod($method)) {
                         $endpoints(function(array $availableTypes) use (&$endpoint, $acceptedTypes) {
-                            $endpoint = self::notAcceptable();
-                            foreach ($acceptedTypes as $contentTypeAccepted => $value) {
-                                if (array_key_exists($contentTypeAccepted, $availableTypes)) {
-                                    $endpoint = [$contentTypeAccepted, $availableTypes[$contentTypeAccepted]];
-                                    return;
-                                }
-                            }
+                            $endpoint = $acceptedTypes($availableTypes) ?? self::notAcceptable();
                         });
                     }
                 });
