@@ -28,36 +28,26 @@ class Web {
         $acceptedTypes = self::parseRelativeQuality($server['HTTP_ACCEPT']);
         $requestMethod = fn(string $method) => $method === $server['REQUEST_METHOD'];
         $path = $server['REQUEST_URI'];    
-        $endpoint;
+        $endpoint = self::fileNotFound();
         $routings(function(string $identifier, callable $resource) use (&$endpoint, $acceptedTypes, $requestMethod, $status, $path) {
-            if (str_starts_with($path, '/' . $identifier) === false) {
-                return;
-            }
-                
-            $resource(function(string $method, callable $endpoints) use (&$endpoint, $requestMethod, $acceptedTypes, $status) {
-                if ($requestMethod($method) === false) {
-                    return;
-                }
-                
-                $endpoints(function(array $availableTypes) use (&$endpoint, $acceptedTypes) {
-                    foreach ($acceptedTypes as $contentTypeAccepted => $value) {
-                        if (array_key_exists($contentTypeAccepted, $availableTypes)) {
-                            $endpoint = [$contentTypeAccepted, $availableTypes[$contentTypeAccepted]];
-                            return;
-                        }
+            if (str_starts_with($path, '/' . $identifier)) {
+                $resource(function(string $method, callable $endpoints) use (&$endpoint, $requestMethod, $acceptedTypes, $status) {
+                    $endpoint = self::methodNotAllowed();
+                    if ($requestMethod($method)) {
+                        $endpoints(function(array $availableTypes) use (&$endpoint, $acceptedTypes) {
+                            $endpoint = self::notAcceptable();
+                            foreach ($acceptedTypes as $contentTypeAccepted => $value) {
+                                if (array_key_exists($contentTypeAccepted, $availableTypes)) {
+                                    $endpoint = [$contentTypeAccepted, $availableTypes[$contentTypeAccepted]];
+                                    return;
+                                }
+                            }
+                        });
                     }
-                    $endpoint = self::notAcceptable();
                 });
-            });
-                
-            if (!isset($endpoint)) {
-                $endpoint = self::methodNotAllowed();
             }
-        });
                 
-        if (!isset($endpoint)) {
-            $endpoint = self::fileNotFound();
-        }
+        });
         $endpoint[1]($status($endpoint[0]));
     }
     
