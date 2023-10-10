@@ -55,21 +55,22 @@ class Web {
             $methods = Functional::map(['get', 'update', 'put', 'delete', 'head'], fn($value, $key) => [$key => Functional::partial_left($methodMatcher, strtoupper($value))]);
 
             
-            $resourceMatcher;
-            $resourceMatcher = function(string $path) use (&$resourceMatcher, $methodMatcher, $methods) {
-                return function(string $identifier, callable $resource) use ($path, &$resourceMatcher, $methods) {
-                    if (str_starts_with($path, '/' . $identifier)) {
-                        $methods['child'] = $resourceMatcher(substr($path, strlen($identifier) + 1));
-                        $resource(...$methods);
-                    }
-                };
-            };
+            $resourceMatcher = self::resourceMatcher($methods, $path);
             
-            $routings($resourceMatcher($path));
+            $routings($resourceMatcher);
 
             $endpoint[1](self::status($protocol, $headers, $body)($endpoint[0]));
             
         };
+    }
+    
+    static function resourceMatcher(array $methods, string $path) {
+        return Functional::partial_left(function(array $methods, string $path, string $identifier, callable $resource) {
+            if (str_starts_with($path, '/' . $identifier)) {
+                $methods['child'] = self::resourceMatcher($methods, substr($path, strlen($identifier) + 1));
+                $resource(...$methods);
+            }
+        }, $methods, $path);
     }
     
     static function notAcceptable() : array {
