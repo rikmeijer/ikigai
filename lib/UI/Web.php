@@ -29,6 +29,9 @@ class Web {
         };
     }
     
+    static function partial_left(callable $fn, mixed ...$args) {
+        return fn() => $fn(...array_merge($args, func_get_args()));
+    }
     
     static function entry(array $server, callable $routings) : callable {
         $protocol = $server['SERVER_PROTOCOL'];
@@ -51,11 +54,20 @@ class Web {
                 }
             };
             
+            $methods = [
+                'get' => self::partial_left($methodMatcher, 'GET'),
+                'update' => self::partial_left($methodMatcher, 'UPDATE'),
+                'put' => self::partial_left($methodMatcher, 'PUT'),
+                'delete' => self::partial_left($methodMatcher, 'DELETE'),
+                'head' => self::partial_left($methodMatcher, 'HEAD'),
+            ];
+            
             $resourceMatcher;
-            $resourceMatcher = function(string $path) use (&$resourceMatcher, $methodMatcher) {
-                return function(string $identifier, callable $resource) use ($path, &$resourceMatcher, $methodMatcher) {
+            $resourceMatcher = function(string $path) use (&$resourceMatcher, $methodMatcher, $methods) {
+                return function(string $identifier, callable $resource) use ($path, &$resourceMatcher, $methods) {
                     if (str_starts_with($path, '/' . $identifier)) {
-                        $resource($methodMatcher, $resourceMatcher(substr($path, strlen($identifier) + 1)));
+                        $methods['child'] = $resourceMatcher(substr($path, strlen($identifier) + 1));
+                        $resource(...$methods);
                     }
                 };
             };

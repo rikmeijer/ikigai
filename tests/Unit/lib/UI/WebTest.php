@@ -17,8 +17,8 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
             'SERVER_PROTOCOL' => 'HTTP/1.1',
             'HTTP_ACCEPT' => 'text/html'
         ], function(callable $route) {
-            $route('test', function(callable $method) {
-                $method('GET', function(callable $negotiate) {
+            $route('test', function(callable $get, callable $update, callable $put, callable $delete, callable $head, callable $child) {
+                $get(function(callable $negotiate) {
                     $negotiate([
                         'text/plain' => fn(callable $status) => $status('200 OK', 'Hello World'),
                         'text/html' => fn(callable $status) => $status('200 OK', '<!DOCTYPE html></html>')
@@ -47,9 +47,9 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
             'SERVER_PROTOCOL' => 'HTTP/1.1',
             'HTTP_ACCEPT' => 'text/html'
         ], function(callable $route) {
-            $route('test', function(callable $method, callable $child) {
-                $child('fubar', function(callable $method, callable $child) {
-                    $method('GET', function(callable $negotiate) {
+            $route('test', function(callable $get, callable $update, callable $put, callable $delete, callable $head, callable $child) {
+                $child('fubar', function(callable $get, callable $update, callable $put, callable $delete, callable $head, callable $child) {
+                    $get(function(callable $negotiate) {
                         $negotiate([
                             'text/plain' => fn(callable $status) => $status('200 OK', 'Hello World'),
                             'text/html' => fn(callable $status) => $status('200 OK', '<!DOCTYPE html></html>')
@@ -78,8 +78,8 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
             'SERVER_PROTOCOL' => 'HTTP/1.1',
             'HTTP_ACCEPT' => 'text/html'
         ], function(callable $route) {
-            $route('test', function(callable $method) {
-                $method('GET', function(callable $negotiate) {
+            $route('test', function(callable $get, callable $update, callable $put, callable $delete, callable $head, callable $child) {
+                $get(function(callable $negotiate) {
                     $negotiate([]);
                 });
             });
@@ -101,8 +101,8 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
             'SERVER_PROTOCOL' => 'HTTP/1.1',
             'HTTP_ACCEPT' => 'text/html'
         ], function(callable $route) {
-            $route('test', function(callable $method) {
-                $method('GET', function(callable $negotiate) {
+            $route('test', function(callable $get, callable $update, callable $put, callable $delete, callable $head, callable $child) {
+                $get(function(callable $negotiate) {
                     $negotiate([]);
                 });
             });
@@ -124,8 +124,8 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
             'SERVER_PROTOCOL' => 'HTTP/1.1',
             'HTTP_ACCEPT' => 'text/plain'
         ], function(callable $route) {
-            $route('test', function(callable $method) {
-                $method('GET', function(callable $negotiate) {
+            $route('test', function(callable $get, callable $update, callable $put, callable $delete, callable $head, callable $child) {
+                $get(function(callable $negotiate) {
                     $negotiate([
                         'text/html' => fn(callable $status) => $status('200 OK', '<!DOCTYPE html></html>')
                     ]);
@@ -148,8 +148,8 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
             'SERVER_PROTOCOL' => 'HTTP/2',
             'HTTP_ACCEPT' => 'appplication/json'
         ], function(callable $route) {
-            $route('test', function(callable $method) {
-                $method('GET', function(callable $negotiate) {
+            $route('test', function(callable $get, callable $update, callable $put, callable $delete, callable $head, callable $child) {
+                $get(function(callable $negotiate) {
                     $negotiate([
                         'appplication/json' => fn(callable $status) => $status('200 OK', 'Hello World')
                     ]);
@@ -176,8 +176,8 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
             'SERVER_PROTOCOL' => 'HTTP/2',
             'HTTP_ACCEPT' => 'text/plain, application/xhtml+xml, application/json;q=0.9, */*;q=0.8'
         ], function(callable $route) {
-            $route('test', function(callable $method) {
-                $method('GET', function(callable $negotiate) {
+            $route('test', function(callable $get, callable $update, callable $put, callable $delete, callable $head, callable $child) {
+                $get(function(callable $negotiate) {
                     $negotiate([
                         'text/plain' => fn(callable $status) => $status('200 OK', 'Hello World')
                     ]);
