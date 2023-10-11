@@ -49,6 +49,17 @@ class FunctionalTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
     }
     
     
+    public function test_compose() {
+        
+        $composed = Functional::compose(
+            fn($value) => $value. 'a',
+            fn($value) => $value . 'b'
+        );
+        
+        $this->assertEquals('gab', $composed('g'));
+    }
+    
+    
     public function test_findNonExistent() {
         $fn = fn($value) => $value === 'd';
         

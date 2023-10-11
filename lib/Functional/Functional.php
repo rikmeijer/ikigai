@@ -39,6 +39,10 @@ final class Functional {
         return fn(array $array, mixed $intial = null) => array_reduce($array, $fn, $intial);
     }
     
+    static function compose(callable ...$fns) : callable {
+        return fn(mixed $intial) => self::reduce(fn($carry, callable $fn) => $fn($carry))($fns, $intial);
+    }
+    
     static function if_else(callable $evaluation, callable $true, callable $false) {
         return fn(mixed $value) => $evaluation($value) ? $true($value) : $false($value);
     }
