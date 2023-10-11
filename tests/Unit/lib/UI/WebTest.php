@@ -73,7 +73,7 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
         });
         
         $headers = $this->expectHeadersSent(['HTTP/1.1 404 File Not Found', 'Content-Type: text/plain']);
-        $body = $this->expectBodySent('');
+        $body = $this->expectBodySent('File Not Found');
         $response($headers, $body);
     }
     
@@ -95,7 +95,7 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
         });
         
         $headers = $this->expectHeadersSent(['HTTP/1.1 405 Method Not Allowed', 'Content-Type: text/plain']);
-        $body = $this->expectBodySent('');
+        $body = $this->expectBodySent('Method Not Allowed');
         $response($headers, $body);
     }
     
@@ -117,7 +117,7 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
         });
         
         $headers = $this->expectHeadersSent(['HTTP/1.1 406 Not Acceptable', 'Content-Type: text/plain']);
-        $body = $this->expectBodySent('');
+        $body = $this->expectBodySent('Not Acceptable');
         $response($headers, $body);
     }
     

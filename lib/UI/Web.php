@@ -30,7 +30,7 @@ class Web {
                 $body($content);
                 $sent = true;
             };
-            $error = fn(string $code, string $description) => $respond('text/plain', $code . ' ' . $description, '');
+            $error = fn(string $code, string $description) => $respond('text/plain', $code . ' ' . $description, $description);
             
             $acceptedTypes = fn(array $availableTypes) => Functional::find(
                     fn(float $value, string $typeAccepted) => array_key_exists($typeAccepted, $availableTypes), 
