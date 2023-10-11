@@ -33,13 +33,13 @@ class Web {
             
             $acceptedTypes = fn(array $availableTypes) => Functional::find(
                     fn(float $value, string $typeAccepted) => array_key_exists($typeAccepted, $availableTypes), 
-                    fn(float $value, string $typeAccepted) => Functional::partial_left($availableTypes[$typeAccepted], Functional::partial_left($respond, $typeAccepted)),
+                    fn(float $value, string $typeAccepted) => Functional::partial_left($availableTypes[$typeAccepted], Functional::partial_left($respond, $typeAccepted))(),
                     fn() => self::notAcceptable($respond)
             )(Functional::arsort($typesAccepted()));
             
             
             $contentNegotiator = function(array $availableTypes) use ($acceptedTypes) {
-                $acceptedTypes($availableTypes)();
+                $acceptedTypes($availableTypes);
             };
             
             $methodMatcher = function(string $method, callable $endpoints) use ($requestMethod, $contentNegotiator) {
@@ -52,7 +52,7 @@ class Web {
 
             $routings(self::resourceMatcher($methods, $path, $respond));
             
-            self::fileNotFound($respond)();
+            self::fileNotFound($respond);
         };
     }
     
@@ -61,19 +61,19 @@ class Web {
             Functional::partial_left('str_starts_with', $path), 
             Functional::compose(
                 fn(string $resource_path) => $resource(...array_merge($methods, ['child' => self::resourceMatcher($methods, substr($path, strlen($resource_path)), $respond)])), 
-                fn() => self::methodNotAllowed($respond)(),
+                fn() => self::methodNotAllowed($respond),
             ),
             fn() => Functional::nothing()
         )('/' . $identifier);
     }
     
-    static function notAcceptable(callable $respond) : callable {
-        return fn() => $respond('text/plain', '406 Not Acceptable', '');
+    static function notAcceptable(callable $respond) : void {
+        $respond('text/plain', '406 Not Acceptable', '');
     }
-    static function methodNotAllowed(callable $respond) : callable {
-        return fn() => $respond('text/plain', '405 Method Not Allowed', '');
+    static function methodNotAllowed(callable $respond) : void {
+        $respond('text/plain', '405 Method Not Allowed', '');
     }
-    static function fileNotFound(callable $status) : callable {
-        return fn() => $status('text/plain', '404 File Not Found', '');
+    static function fileNotFound(callable $status) : void {
+        $status('text/plain', '404 File Not Found', '');
     }
 }

@@ -9,8 +9,8 @@ namespace rikmeijer\purposeplan\lib\Functional;
  */
 final class Functional {
     
-    static function partial_left(callable $fn, mixed ...$args) {
-        return fn() => $fn(...array_merge($args, func_get_args()));
+    static function partial_left(callable $fn, mixed ...$args_left) {
+        return fn(mixed ...$args) => $fn(...array_merge($args_left, $args));
     }
     
     static function map(callable $fn) : callable {
