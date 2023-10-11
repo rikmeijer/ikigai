@@ -18,7 +18,7 @@ class Web {
         $path = $server['REQUEST_URI'];    
 
         
-        return function(callable $headers, callable $body) use ($protocol, $typesAccepted, $requestMethod, $path, $routings) {
+        return function(callable $headers, callable $body) use ($protocol, $typesAccepted, $requestMethod, $path, $routings) : void  {
             $protocol = fn(string $code) => $headers($protocol($code));
             $status = function(string $contentType, string $status, string $content) use ($protocol, $body, $headers) : void {
                 static $sent = false;
@@ -58,13 +58,13 @@ class Web {
     
     static function resourceMatcher(array $methods, string $path, callable $status) {
         return fn(string $identifier, callable $resource) => Functional::if_else(
-            fn(string $identifier) => str_starts_with($path, '/' . $identifier), 
-            fn(string $identifier) => Functional::compose(
-                fn() => $resource(...array_merge($methods, ['child' => self::resourceMatcher($methods, substr($path, strlen($identifier) + 1), $status)])), 
+            Functional::partial_left('str_starts_with', $path), 
+            Functional::compose(
+                fn(string $resource_path) => $resource(...array_merge($methods, ['child' => self::resourceMatcher($methods, substr($path, strlen($resource_path)), $status)])), 
                 fn() => self::methodNotAllowed($status)(),
-            )(),
-            fn(string $identifier) => Functional::nothing()
-        )($identifier);
+            ),
+            fn() => Functional::nothing()
+        )('/' . $identifier);
     }
     
     static function notAcceptable(callable $status) : callable {
