@@ -60,7 +60,7 @@ class Web {
             fn(string $identifier) => fn(callable $resource) => $resource(...array_merge($methods, ['child' => self::resourceMatcher($methods, substr($path, strlen($identifier) + 1))])), 
             fn(string $identifier) => Functional::nothing()
         );
-        return Functional::partial_left(fn(string $identifier, callable $resource) => $ifelse($identifier)($resource));
+        return fn(string $identifier, callable $resource) => $ifelse($identifier)($resource);
     }
     
     static function notAcceptable(callable $status) : callable {
