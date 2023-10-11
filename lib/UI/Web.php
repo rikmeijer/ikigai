@@ -35,7 +35,7 @@ class Web {
             
             $endpoint = self::fileNotFound($status);
             
-            $contentNegotiator = function(array $availableTypes) use (&$endpoint, $status, $acceptedTypes) {
+            $contentNegotiator = function(array $availableTypes) use (&$endpoint, $acceptedTypes) {
                 $endpoint = $acceptedTypes($availableTypes);
             };
             
