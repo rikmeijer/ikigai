@@ -30,11 +30,12 @@ class Web {
                 $body($content);
                 $sent = true;
             };
+            $error = fn(string $line) => $respond('text/plain', $line, '');
             
             $acceptedTypes = fn(array $availableTypes) => Functional::find(
                     fn(float $value, string $typeAccepted) => array_key_exists($typeAccepted, $availableTypes), 
                     fn(float $value, string $typeAccepted) => Functional::partial_left($availableTypes[$typeAccepted], Functional::partial_left($respond, $typeAccepted))(),
-                    fn() => $respond(...self::error('406 Not Acceptable'))
+                    fn() => $error('406 Not Acceptable')
             )(Functional::arsort($typesAccepted()));
             
             
@@ -50,24 +51,20 @@ class Web {
             
             $methods = Functional::map(fn($value) => Functional::partial_left($methodMatcher, strtoupper($value)))(['get', 'update', 'put', 'delete', 'head']);
 
-            $routings(self::resourceMatcher($methods, $path, $respond));
+            $routings(self::resourceMatcher($methods, $path, $error));
             
-            $respond(...self::error('404 File Not Found'));
+            $error('404 File Not Found');
         };
     }
     
-    static function resourceMatcher(array $methods, string $path, callable $respond) {
+    static function resourceMatcher(array $methods, string $path, callable $error) {
         return fn(string $identifier, callable $resource) => Functional::if_else(
             Functional::partial_left('str_starts_with', $path), 
             Functional::compose(
-                fn(string $resource_path) => $resource(...array_merge($methods, ['child' => self::resourceMatcher($methods, substr($path, strlen($resource_path)), $respond)])), 
-                fn() => $respond(...self::error('405 Method Not Allowed')),
+                fn(string $resource_path) => $resource(...array_merge($methods, ['child' => self::resourceMatcher($methods, substr($path, strlen($resource_path)), $error)])), 
+                fn() => $error('405 Method Not Allowed'),
             ),
             fn() => Functional::nothing()
         )('/' . $identifier);
-    }
-    
-    static function error(string $line) : array {
-        return ['text/plain', $line, ''];
     }
 }
