@@ -14,7 +14,7 @@ class Web {
             return $res; 
         }, []);
         
-        $requestMethod = fn(string $method) => $method === $server['REQUEST_METHOD'];
+        $requestMethod = fn(string $method) => strtoupper($method) === $server['REQUEST_METHOD'];
         $path = $server['REQUEST_URI'];    
 
         
@@ -43,13 +43,13 @@ class Web {
                 $acceptedTypes($availableTypes);
             };
             
-            $methodMatcher = function(string $method, callable $endpoints) use ($requestMethod, $contentNegotiator) {
-                if ($requestMethod($method)) {
-                    $endpoints($contentNegotiator);
-                }
-            };
             
-            $methods = Functional::map(fn($value) => Functional::partial_left($methodMatcher, strtoupper($value)))(['get', 'update', 'put', 'delete', 'head']);
+            $methods = Functional::map(fn(string $value) => 
+                    fn(callable $endpoints) => Functional::if_else(
+                                $requestMethod, 
+                                fn($value) => $endpoints($contentNegotiator), 
+                                Functional::nothing()
+                        )($value))(['get', 'update', 'put', 'delete', 'head']);
 
             $routings(self::resourceMatcher($methods, $path, $error));
             
