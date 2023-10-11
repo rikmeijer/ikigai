@@ -21,9 +21,14 @@ class Web {
         return function(callable $headers, callable $body) use ($protocol, $typesAccepted, $requestMethod, $path, $routings) {
             $protocol = fn(string $code) => $headers($protocol($code));
             $status = function(string $contentType, string $status, string $content) use ($protocol, $body, $headers) : void {
+                static $sent = false;
+                if ($sent) {
+                    return;
+                }
                 $protocol($status);
                 $headers('Content-Type: ' . $contentType);
                 $body($content);
+                $sent = true;
             };
             
             $acceptedTypes = fn(array $availableTypes) => Functional::find(
@@ -33,14 +38,11 @@ class Web {
             )(Functional::arsort($typesAccepted()));
             
             
-            $endpoint = self::fileNotFound($status);
-            
-            $contentNegotiator = function(array $availableTypes) use (&$endpoint, $acceptedTypes) {
-                $endpoint = $acceptedTypes($availableTypes);
+            $contentNegotiator = function(array $availableTypes) use ($acceptedTypes) {
+                $acceptedTypes($availableTypes)();
             };
             
-            $methodMatcher = function(string $method, callable $endpoints) use (&$endpoint, $status, $requestMethod, $contentNegotiator) {
-                $endpoint = self::methodNotAllowed($status);
+            $methodMatcher = function(string $method, callable $endpoints) use ($requestMethod, $contentNegotiator) {
                 if ($requestMethod($method)) {
                     $endpoints($contentNegotiator);
                 }
@@ -48,16 +50,19 @@ class Web {
             
             $methods = Functional::map(fn($value) => Functional::partial_left($methodMatcher, strtoupper($value)))(['get', 'update', 'put', 'delete', 'head']);
 
-            $routings(self::resourceMatcher($methods, $path));
+            $routings(self::resourceMatcher($methods, $path, $status));
             
-            $endpoint();
+            self::fileNotFound($status)();
         };
     }
     
-    static function resourceMatcher(array $methods, string $path) {
+    static function resourceMatcher(array $methods, string $path, callable $status) {
         return fn(string $identifier, callable $resource) => Functional::if_else(
             fn(string $identifier) => str_starts_with($path, '/' . $identifier), 
-            fn(string $identifier) => $resource(...array_merge($methods, ['child' => self::resourceMatcher($methods, substr($path, strlen($identifier) + 1))])), 
+            fn(string $identifier) => Functional::compose(
+                fn() => $resource(...array_merge($methods, ['child' => self::resourceMatcher($methods, substr($path, strlen($identifier) + 1), $status)])), 
+                fn() => self::methodNotAllowed($status)(),
+            )(),
             fn(string $identifier) => Functional::nothing()
         )($identifier);
     }

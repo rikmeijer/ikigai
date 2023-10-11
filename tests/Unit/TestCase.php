@@ -10,23 +10,15 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         $this->assertTrue((new \ReflectionProperty($object, $property))->isReadOnly(), $message);
     }
     
-    public function expectHeadersSent() : callable {
-        $headers_list = [];
-        return function(?string $header = null) use (&$headers_list) { 
-            if (is_null($header)) { 
-                return $headers_list; 
-            } 
-            $headers_list[] = $header; 
+    public function expectHeadersSent(array $expectedHeaders) : callable {
+        return function(?string $header = null) use (&$expectedHeaders) { 
+            $this->assertEquals(array_shift($expectedHeaders), $header); 
         };
     }
     
-    public function expectBodySent() : callable {
-        $sent = null;
-        return function(?string $body = null) use (&$sent) { 
-            if (is_null($body)) { 
-                return $sent; 
-            } 
-            $sent = $body; 
+    public function expectBodySent(string $expectedBody) : callable {
+        return function(?string $body = null) use ($expectedBody) { 
+            $this->assertEquals($expectedBody, $body); 
         };
     }
 }

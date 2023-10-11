@@ -26,15 +26,9 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
             });
         });
         
-        $headers = $this->expectHeadersSent();
-        $body = $this->expectBodySent();
+        $headers = $this->expectHeadersSent(['HTTP/1.1 200 OK', 'Content-Type: text/html']);
+        $body = $this->expectBodySent('<!DOCTYPE html></html>');
         $response($headers, $body);
-        
-        $this->assertTrue(str_starts_with($body(), "<!DOCTYPE html>"));
-        $this->assertTrue(str_ends_with($body(), "</html>"));
-        $this->assertCount(2, $headers());
-        $this->assertContains('HTTP/1.1 200 OK', $headers());
-        $this->assertContains('Content-Type: text/html', $headers());
     }
     
     
@@ -58,15 +52,9 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
             });
         });
         
-        $headers = $this->expectHeadersSent();
-        $body = $this->expectBodySent();
+        $headers = $this->expectHeadersSent(['HTTP/1.1 200 OK', 'Content-Type: text/html']);
+        $body = $this->expectBodySent('<!DOCTYPE html></html>');
         $response($headers, $body);
-        
-        $this->assertTrue(str_starts_with($body(), "<!DOCTYPE html>"));
-        $this->assertTrue(str_ends_with($body(), "</html>"));
-        $this->assertCount(2, $headers());
-        $this->assertContains('HTTP/1.1 200 OK', $headers());
-        $this->assertContains('Content-Type: text/html', $headers());
     }
     
     public function test_entryMissingResourceResultsIn404(): void
@@ -84,11 +72,9 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
             });
         });
         
-        $headers = $this->expectHeadersSent();
-        $body = $this->expectBodySent();
+        $headers = $this->expectHeadersSent(['HTTP/1.1 404 File Not Found', 'Content-Type: text/plain']);
+        $body = $this->expectBodySent('');
         $response($headers, $body);
-        
-        $this->assertEquals('HTTP/1.1 404 File Not Found', $headers()[0]);
     }
     
     
@@ -108,11 +94,9 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
 
         });
         
-        $headers = $this->expectHeadersSent();
-        $body = $this->expectBodySent();
+        $headers = $this->expectHeadersSent(['HTTP/1.1 405 Method Not Allowed', 'Content-Type: text/plain']);
+        $body = $this->expectBodySent('');
         $response($headers, $body);
-        
-        $this->assertEquals('HTTP/1.1 405 Method Not Allowed', $headers()[0]);
     }
     
     public function test_entryMismatchInAcceptedContentTypeResultsIn406(): void
@@ -132,11 +116,9 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
             });
         });
         
-        $headers = $this->expectHeadersSent();
-        $body = $this->expectBodySent();
+        $headers = $this->expectHeadersSent(['HTTP/1.1 406 Not Acceptable', 'Content-Type: text/plain']);
+        $body = $this->expectBodySent('');
         $response($headers, $body);
-        
-        $this->assertContains('HTTP/1.1 406 Not Acceptable', $headers());
     }
     
     public function test_entryAcceptingApplicationJson(): void
@@ -156,14 +138,9 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
             });
         });
         
-        $headers = $this->expectHeadersSent();
-        $body = $this->expectBodySent();
+        $headers = $this->expectHeadersSent(['HTTP/2 200 OK', 'Content-Type: application/json']);
+        $body = $this->expectBodySent('Hello World');
         $response($headers, $body);
-        
-        $this->assertEquals('Hello World', $body());
-        $this->assertCount(2, $headers());
-        $this->assertContains('HTTP/2 200 OK', $headers());
-        $this->assertContains('Content-Type: application/json', $headers());
     }
     
     public function test_entryAcceptingRelativeQualities(): void
@@ -184,14 +161,11 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
             });
         });
         
-        $headers = $this->expectHeadersSent();
-        $body = $this->expectBodySent();
+        $headers = $this->expectHeadersSent([
+            'HTTP/2 200 OK',
+            'Content-Type: text/plain',
+        ]);
+        $body = $this->expectBodySent('Hello World');
         $response($headers, $body);
-        
-        
-        $this->assertEquals('Hello World', $body());
-        $this->assertCount(2, $headers());
-        $this->assertContains('HTTP/2 200 OK', $headers());
-        $this->assertContains('Content-Type: text/plain', $headers());
     }
 }

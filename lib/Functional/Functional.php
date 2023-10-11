@@ -40,7 +40,7 @@ final class Functional {
     }
     
     static function compose(callable ...$fns) : callable {
-        return fn(mixed $intial) => self::reduce(fn($carry, callable $fn) => $fn($carry))($fns, $intial);
+        return fn(mixed $intial = null) => self::reduce(fn($carry, callable $fn) => $fn($carry))($fns, $intial);
     }
     
     static function if_else(callable $evaluation, callable $true, callable $false) {

@@ -16,14 +16,9 @@ class ResponseTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
         ));
         
         
-        $headers = $this->expectHeadersSent();
-        $body = $this->expectBodySent();
+        $headers = $this->expectHeadersSent(['HTTP/2 200 OK', 'Content-Type: application/json']);
+        $body = $this->expectBodySent('{"Hello" : "World"}');
         
         Response::send($response, $headers, $body);
-        
-        $this->assertEquals('{"Hello" : "World"}', $body());
-        $this->assertCount(2, $headers());
-        $this->assertContains('HTTP/2 200 OK', $headers());
-        $this->assertContains('Content-Type: application/json', $headers());
     }
 }
