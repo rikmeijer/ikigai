@@ -47,7 +47,7 @@ class Web {
                 }
             };
             
-            $methods = Functional::map(fn($value, $key) => [$key => Functional::partial_left($methodMatcher, strtoupper($value))])(['get', 'update', 'put', 'delete', 'head']);
+            $methods = Functional::map(fn($value) => Functional::partial_left($methodMatcher, strtoupper($value)))(['get', 'update', 'put', 'delete', 'head']);
 
             $routings(self::resourceMatcher($methods, $path));
             

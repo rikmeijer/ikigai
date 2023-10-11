@@ -24,11 +24,19 @@ class FunctionalTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
     }
     
     public function test_map() {
-        $fn = fn($value, $key) => [$key => $key . ': ' . $value];
+        $fn = fn($value, $key) => $key . ': ' . $value;
         
         $map = Functional::map($fn);
         
         $this->assertEquals(['0: a', '1: b', '2: c'], $map(['a', 'b', 'c']));
+    }
+    
+    public function test_reduce() {
+        $fn = fn($carry, $value) => $carry .= $value;
+        
+        $reduce = Functional::reduce($fn);
+        
+        $this->assertEquals('abc', $reduce(['a', 'b', 'c']));
     }
     
     public function test_if_else() {

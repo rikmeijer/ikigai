@@ -17,10 +17,14 @@ final class Functional {
         return function(array $array) use ($fn) {
             $map = [];
             foreach ($array as $key => $value) {
-                $map = array_merge($map, (array)$fn($value, $key));
+                $map[$key] = $fn($value, $key);
             }
             return $map;
         };
+    }
+    
+    static function reduce(callable $fn) : callable {
+        return fn(array $array, mixed $intial = null) => array_reduce($array, $fn, $intial);
     }
     
     static function if_else(callable $evaluation, callable $true, callable $false) {
