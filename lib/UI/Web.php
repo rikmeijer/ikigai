@@ -55,12 +55,11 @@ class Web {
     }
     
     static function resourceMatcher(array $methods, string $path) {
-        $ifelse = Functional::if_else(
+        return fn(string $identifier, callable $resource) => Functional::if_else(
             fn(string $identifier) => str_starts_with($path, '/' . $identifier), 
-            fn(string $identifier) => fn(callable $resource) => $resource(...array_merge($methods, ['child' => self::resourceMatcher($methods, substr($path, strlen($identifier) + 1))])), 
+            fn(string $identifier) => $resource(...array_merge($methods, ['child' => self::resourceMatcher($methods, substr($path, strlen($identifier) + 1))])), 
             fn(string $identifier) => Functional::nothing()
-        );
-        return fn(string $identifier, callable $resource) => $ifelse($identifier)($resource);
+        )($identifier);
     }
     
     static function notAcceptable(callable $status) : callable {
