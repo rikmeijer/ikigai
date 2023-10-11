@@ -30,12 +30,12 @@ class Web {
                 $body($content);
                 $sent = true;
             };
-            $error = fn(string $line) => $respond('text/plain', $line, '');
+            $error = fn(string $code, string $description) => $respond('text/plain', $code . ' ' . $description, '');
             
             $acceptedTypes = fn(array $availableTypes) => Functional::find(
                     fn(float $value, string $typeAccepted) => array_key_exists($typeAccepted, $availableTypes), 
                     fn(float $value, string $typeAccepted) => Functional::partial_left($availableTypes[$typeAccepted], Functional::partial_left($respond, $typeAccepted))(),
-                    fn() => $error('406 Not Acceptable')
+                    fn() => $error('406', 'Not Acceptable')
             )(Functional::arsort($typesAccepted()));
             
             
@@ -53,7 +53,7 @@ class Web {
 
             $routings(self::resourceMatcher($methods, $path, $error));
             
-            $error('404 File Not Found');
+            $error('404', 'File Not Found');
         };
     }
     
@@ -62,7 +62,7 @@ class Web {
             Functional::partial_left('str_starts_with', $path), 
             Functional::compose(
                 fn(string $resource_path) => $resource(...array_merge($methods, ['child' => self::resourceMatcher($methods, substr($path, strlen($resource_path)), $error)])), 
-                fn() => $error('405 Method Not Allowed'),
+                fn() => $error('405', 'Method Not Allowed'),
             ),
             fn() => Functional::nothing()
         )('/' . $identifier);
