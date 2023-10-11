@@ -23,6 +23,18 @@ final class Functional {
         };
     }
     
+    
+    static function find(callable $condition, callable $process, callable $fail) : callable {
+        return function(array $array) use ($condition, $process, $fail) {
+            foreach ($array as $key => $value) {
+                if ($condition($value, $key)) {
+                    return $process($value, $key);
+                }
+            }
+            return $fail($value, $key);
+        };
+    }
+    
     static function reduce(callable $fn) : callable {
         return fn(array $array, mixed $intial = null) => array_reduce($array, $fn, $intial);
     }

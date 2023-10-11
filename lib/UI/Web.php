@@ -26,18 +26,17 @@ class Web {
                 $body($content);
             };
             
-            $acceptedTypes = function(array $availableTypes) use ($typesAccepted, $status) {
-                foreach (Functional::arsort($typesAccepted()) as $typeAccepted => $value) {
-                    if (array_key_exists($typeAccepted, $availableTypes)) {
-                        return Functional::partial_left($availableTypes[$typeAccepted], Functional::partial_left($status, $typeAccepted));
-                    }
-                }
-            };
+            $acceptedTypes = fn(array $availableTypes) => Functional::find(
+                    fn(float $value, string $typeAccepted) => array_key_exists($typeAccepted, $availableTypes), 
+                    fn(float $value, string $typeAccepted) => Functional::partial_left($availableTypes[$typeAccepted], Functional::partial_left($status, $typeAccepted)),
+                    fn() => self::notAcceptable($status)
+            )(Functional::arsort($typesAccepted()));
+            
             
             $endpoint = self::fileNotFound($status);
             
             $contentNegotiator = function(array $availableTypes) use (&$endpoint, $status, $acceptedTypes) {
-                $endpoint = $acceptedTypes($availableTypes) ?? self::notAcceptable($status);
+                $endpoint = $acceptedTypes($availableTypes);
             };
             
             $methodMatcher = function(string $method, callable $endpoints) use (&$endpoint, $status, $requestMethod, $contentNegotiator) {

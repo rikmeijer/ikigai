@@ -39,6 +39,24 @@ class FunctionalTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
         $this->assertEquals('abc', $reduce(['a', 'b', 'c']));
     }
     
+    
+    public function test_find() {
+        $fn = fn($value) => $value === 'b';
+        
+        $reduce = Functional::find($fn, fn($value, $key) => $key, Functional::nothing());
+        
+        $this->assertEquals(1, $reduce(['a', 'b', 'c']));
+    }
+    
+    
+    public function test_findNonExistent() {
+        $fn = fn($value) => $value === 'd';
+        
+        $reduce = Functional::find($fn, fn($value, $key) => $key, fn() => 'Not Found');
+        
+        $this->assertEquals('Not Found', $reduce(['a', 'b', 'c']));
+    }
+    
     public function test_if_else() {
         $ifelse = Functional::if_else(fn($value) => $value === true, fn() => 'True', fn() => 'False');
         $this->assertEquals('True', $ifelse(true));
