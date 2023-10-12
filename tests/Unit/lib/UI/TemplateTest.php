@@ -14,4 +14,8 @@ class TemplateTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
         $this->assertEquals('<html>Hello World</html>', Template::render('<html><block name="test" /></html>', ...['test' => fn() => 'Hello World']));
     }
     
+    public function test_replaceTPLElementsAlternative(): void
+    {
+        $this->assertEquals('<html>Hello Universe</html>', Template::render('<html><block name="test" /></html>', ...['test' => fn() => 'Hello Universe']));
+    }
 }
