@@ -7,7 +7,7 @@ namespace rikmeijer\purposeplan\lib\UI;
 class Template {
     
     static function render(string $html, callable ...$blocks) {
-        return '<html>'.$blocks['test']().'</html>';
+        return preg_replace_callback('/<block\s+name="(\w+)"\s+\/>/', fn(array $matches) => $blocks[$matches[1]](), $html);
     }
     
 }
