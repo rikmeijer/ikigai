@@ -14,8 +14,7 @@ class Web {
             return $res; 
         }, []);
         
-        chdir(dirname(dirname(__DIR__)));
-        $template_path = fn(string $identifier) => realpath($_ENV['TEMPLATE_DIR']) . DIRECTORY_SEPARATOR . $identifier . '.html';
+        $template_path = fn($identifier) => Template::path($identifier);
         
         $template = fn(string $identifier, callable ...$blocks) => Template::render(file_get_contents($template_path($identifier)), ...$blocks);
         $requestMethod = fn(string $method) => strtoupper($method) === $server['REQUEST_METHOD'];

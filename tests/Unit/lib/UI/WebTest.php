@@ -7,7 +7,7 @@ namespace rikmeijer\purposeplan\tests\Unit\lib\UI;
 use \rikmeijer\purposeplan\lib\UI\Web;
 
 class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
-
+    
     public function test_entry(): void
     {
         $response = Web::entry([
@@ -15,16 +15,16 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
             'REQUEST_URI' => '/test',
             'SERVER_PROTOCOL' => 'HTTP/1.1',
             'HTTP_ACCEPT' => 'text/html'
-        ], function(callable $route) {
+            ], function(callable $route) {
             $route('test', function(callable $get, callable $update, callable $put, callable $delete, callable $head, callable $child) {
-                $get(function(callable $negotiate) {
-                    $negotiate([
-                        'text/plain' => fn(callable $status) => $status('200 OK', 'Hello World'),
-                        'text/html' => fn(callable $status) => $status('200 OK', '<!DOCTYPE html></html>')
-                    ]);
+                    $get(function(callable $negotiate) {
+                        $negotiate([
+                            'text/plain' => fn(callable $status) => $status('200 OK', 'Hello World'),
+                            'text/html' => fn(callable $status) => $status('200 OK', '<!DOCTYPE html></html>')
+                        ]);
+                    });
                 });
             });
-        });
         
         $headers = $this->expectHeadersSent(['HTTP/1.1 200 OK', 'Content-Type: text/html']);
         $body = $this->expectBodySent('<!DOCTYPE html></html>');
