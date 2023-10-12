@@ -32,24 +32,15 @@ class Web {
             };
             $error = fn(string $code, string $description) => $respond('text/plain', $code . ' ' . $description, $description);
             
-            $acceptedTypes = fn(array $availableTypes) => Functional::find(
-                    fn(float $value, string $typeAccepted) => array_key_exists($typeAccepted, $availableTypes), 
-                    fn(float $value, string $typeAccepted) => Functional::partial_left($availableTypes[$typeAccepted], Functional::partial_left($respond, $typeAccepted))(),
-                    fn() => $error('406', 'Not Acceptable')
-            )(Functional::arsort($typesAccepted()));
-            
-            
-            $contentNegotiator = function(array $availableTypes) use ($acceptedTypes) {
-                $acceptedTypes($availableTypes);
-            };
-            
-            
-            $methods = Functional::map(fn(string $value) => 
-                    fn(callable $endpoints) => Functional::if_else(
-                                $requestMethod, 
-                                fn($value) => $endpoints($contentNegotiator), 
-                                Functional::nothing()
-                        )($value))(['get', 'update', 'put', 'delete', 'head']);
+            $methods = Functional::map(fn(string $value) => fn(callable $endpoints) => Functional::if_else(
+                    $requestMethod, 
+                    fn($value) => $endpoints(fn(array $availableTypes) => Functional::find(
+                            fn(float $value, string $typeAccepted) => array_key_exists($typeAccepted, $availableTypes), 
+                            fn(float $value, string $typeAccepted) => Functional::partial_left($availableTypes[$typeAccepted], Functional::partial_left($respond, $typeAccepted))(),
+                            fn() => $error('406', 'Not Acceptable')
+                    )(Functional::arsort($typesAccepted()))), 
+                    Functional::nothing()
+            )($value))(['get', 'update', 'put', 'delete', 'head']);
 
             $routings(self::resourceMatcher($methods, $path, $error));
             
