@@ -13,7 +13,8 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         curl_setopt_array($this->curl, [
             CURLOPT_HTTPHEADER => [
                 'Accept: text/html'
-            ]
+            ],
+            CURLOPT_RETURNTRANSFER => true
         ]);
         $this->result = curl_exec($this->curl);
     }
