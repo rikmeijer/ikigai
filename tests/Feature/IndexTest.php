@@ -1,5 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
+namespace rikmeijer\purposeplan\tests\Feature;
+
 class IndexTest extends \rikmeijer\purposeplan\Tests\Feature\TestCase {
     
     public function testIndexPageShowsHelloWorld() {
