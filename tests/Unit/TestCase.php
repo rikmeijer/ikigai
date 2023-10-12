@@ -21,4 +21,9 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
             $this->assertEquals($expectedBody, $body); 
         };
     }
+    public function expectBodySentCallback(callable $fn) : callable {
+        return function(?string $body = null) use ($expectedBody) { 
+            $this->assertTrue($fn($body)); 
+        };
+    }
 }

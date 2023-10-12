@@ -14,11 +14,12 @@ class Web {
             return $res; 
         }, []);
         
+        $template = fn(string $identifier, callable ...$blocks) => Template::render(file_get_contents($_ENV['TEMPLATE_DIR'] . DIRECTORY_SEPARATOR . $identifier . '.html'), ...$blocks);
         $requestMethod = fn(string $method) => strtoupper($method) === $server['REQUEST_METHOD'];
         $path = $server['REQUEST_URI'];    
 
         
-        return function(callable $headers, callable $body) use ($protocol, $typesAccepted, $requestMethod, $path, $routings) : void  {
+        return function(callable $headers, callable $body) use ($protocol, $typesAccepted, $template, $requestMethod, $path, $routings) : void  {
             $protocol = fn(string $code) => $headers($protocol($code));
             $respond = function(string $contentType, string $status, string $content) use ($protocol, $body, $headers) : void {
                 static $sent = false;
@@ -32,11 +33,13 @@ class Web {
             };
             $error = fn(string $code, string $description) => $respond('text/plain', $code . ' ' . $description, $description);
             
+            $template = fn(string $type, string $identifier, callable ...$blocks) => $respond($type, '200 OK', $template($identifier, ...$blocks));
+            
             $methods = Functional::map(fn(string $value) => fn(callable $endpoints) => Functional::if_else(
                     $requestMethod, 
                     fn($value) => $endpoints(fn(array $availableTypes) => Functional::find(
                             fn(float $value, string $typeAccepted) => array_key_exists($typeAccepted, $availableTypes), 
-                            fn(float $value, string $typeAccepted) => Functional::partial_left($availableTypes[$typeAccepted], Functional::partial_left($respond, $typeAccepted))(),
+                            fn(float $value, string $typeAccepted) => Functional::partial_left($availableTypes[$typeAccepted], Functional::partial_left($respond, $typeAccepted), Functional::partial_left($template, $typeAccepted))(),
                             fn() => $error('406', 'Not Acceptable')
                     )(Functional::arsort($typesAccepted()))), 
                     Functional::nothing()

@@ -168,4 +168,34 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
         $body = $this->expectBodySent('Hello World');
         $response($headers, $body);
     }
+    
+    public function test_entryRenderTemplate(): void
+    {
+        $_ENV['TEMPLATE_DIR'] = sys_get_temp_dir();
+        file_put_contents(sys_get_temp_dir() . '/index.html', '<block name="content" />');
+        
+        $response = Web::entry([
+            'REQUEST_METHOD' => 'GET',
+            'REQUEST_URI' => '/test',
+            'SERVER_PROTOCOL' => 'HTTP/2',
+            'HTTP_ACCEPT' => 'text/plain, application/xhtml+xml, application/json;q=0.9, */*;q=0.8'
+        ], function(callable $route) {
+            $route('test', function(callable $get, callable $update, callable $put, callable $delete, callable $head, callable $child) {
+                $get(function(callable $negotiate) {
+                    $negotiate([
+                        'text/plain' => fn(callable $status, callable $template) => $template('index', ...[
+                            'content' => fn() => 'Hello Universe'
+                        ])
+                    ]);
+                });
+            });
+        });
+        
+        $headers = $this->expectHeadersSent([
+            'HTTP/2 200 OK',
+            'Content-Type: text/plain',
+        ]);
+        $body = $this->expectBodySent('Hello Universe');
+        $response($headers, $body);
+    }
 }
