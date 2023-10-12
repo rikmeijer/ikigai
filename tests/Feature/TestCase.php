@@ -26,4 +26,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     public function assertBodyEquals(string $expectedBody) {
         $this->assertEquals($expectedBody, $this->result);
     }
+    public function assertBodyContains(string $needle) {
+        $this->assertTrue(str_contains($this->result, $needle), "'$needle' not in '$this->result'");
+    }
 }
