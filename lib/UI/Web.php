@@ -36,7 +36,7 @@ class Web {
                     $requestMethod, 
                     fn($value) => $endpoints(fn(array $availableTypes) => Functional::find(
                             fn(float $value, string $typeAccepted) => array_key_exists($typeAccepted, $availableTypes), 
-                            fn(float $value, string $typeAccepted) => Functional::partial_left($availableTypes[$typeAccepted], Functional::partial_left($respond, $typeAccepted), self::template(Functional::partial_left($respond, $typeAccepted)))(),
+                            fn(float $value, string $typeAccepted) => Functional::partial_left($availableTypes[$typeAccepted], self::template(Functional::partial_left($respond, $typeAccepted)))(),
                             fn() => $error('406', 'Not Acceptable')
                     )(Functional::arsort($typesAccepted()))), 
                     Functional::nothing()

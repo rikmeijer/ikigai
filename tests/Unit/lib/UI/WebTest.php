@@ -21,8 +21,8 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
             $route('test', function(callable $get, callable $update, callable $put, callable $delete, callable $head, callable $child) use ($template_identifier) {
                     $get(function(callable $negotiate) use ($template_identifier) {
                         $negotiate([
-                            'text/plain' => fn(callable $status, callable $template) => $template('missing'),
-                            'text/html' => fn(callable $status, callable $template) => $template($template_identifier)
+                            'text/plain' => fn(callable $template) => $template('missing'),
+                            'text/html' => fn(callable $template) => $template($template_identifier)
                         ]);
                     });
                 });
@@ -48,8 +48,8 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
                 $child('fubar', function(callable $get, callable $update, callable $put, callable $delete, callable $head, callable $child) use ($template_identifier) {
                     $get(function(callable $negotiate) use ($template_identifier) {
                         $negotiate([
-                            'text/plain' => fn(callable $status, callable $template) => $template('missing'),
-                            'text/html' => fn(callable $status, callable $template) => $template($template_identifier)
+                            'text/plain' => fn(callable $template) => $template('missing'),
+                            'text/html' => fn(callable $template) => $template($template_identifier)
                         ]);
                     });
                 });
@@ -116,7 +116,7 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
             $route('test', function(callable $get, callable $update, callable $put, callable $delete, callable $head, callable $child) use ($template_identifier) {
                 $get(function(callable $negotiate) use ($template_identifier) {
                     $negotiate([
-                        'text/html' => fn(callable $status, callable $template) => $template($template_identifier)
+                        'text/html' => fn(callable $template) => $template($template_identifier)
                     ]);
                 });
             });
@@ -140,7 +140,7 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
             $route('test', function(callable $get, callable $update, callable $put, callable $delete, callable $head, callable $child) use ($template_identifier) {
                 $get(function(callable $negotiate) use ($template_identifier) {
                     $negotiate([
-                        'application/json' => fn(callable $status, callable $template) => $template($template_identifier)
+                        'application/json' => fn(callable $template) => $template($template_identifier)
                     ]);
                 });
             });
@@ -164,7 +164,7 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
             $route('test', function(callable $get, callable $update, callable $put, callable $delete, callable $head, callable $child) use ($template_identifier) {
                 $get(function(callable $negotiate) use ($template_identifier) {
                     $negotiate([
-                        'text/plain' => fn(callable $status, callable $template) => $template($template_identifier)
+                        'text/plain' => fn(callable $template) => $template($template_identifier)
                     ]);
                 });
             });
@@ -191,7 +191,7 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
             $route('test', function(callable $get, callable $update, callable $put, callable $delete, callable $head, callable $child) use ($template_identifier) {
                 $get(function(callable $negotiate) use ($template_identifier) {
                     $negotiate([
-                        'text/plain' => fn(callable $status, callable $template) => $template($template_identifier, ...[
+                        'text/plain' => fn(callable $template) => $template($template_identifier, ...[
                             'content' => fn() => 'Hello Universe'
                         ])
                     ]);
