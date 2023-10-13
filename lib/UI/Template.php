@@ -19,11 +19,11 @@ class Template {
         return realpath($_ENV['TEMPLATE_DIR']);
     }
     
-    static function negotiate(array $acceptedTypes, string $identifier) : string {
+    static function negotiate(array $acceptedTypes, string $identifier, callable $else) : string {
         return \rikmeijer\purposeplan\lib\Functional\Functional::find(
                 fn(string $acceptedType) => file_exists(self::directory() . '/' . $identifier . '.' . self::typeToExtension($acceptedType)),
                 fn(string $acceptedType) => file_get_contents(self::directory() . '/' . $identifier . '.' . self::typeToExtension($acceptedType)),
-                fn(string $acceptedType) => trigger_error($acceptedType . ' not found', E_USER_ERROR)
+                fn(string $acceptedType) => $else()
         )($acceptedTypes);
     }
     

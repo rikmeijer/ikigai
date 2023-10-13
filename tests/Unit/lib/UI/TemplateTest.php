@@ -30,7 +30,15 @@ class TemplateTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
             'text/plain' => 'Hello World'
         ]);
         
-        $this->assertEquals('<html>Hello World</html>', Template::render(Template::negotiate(['text/html', 'text/plain'], $template_identifier['text/html'])));
+        $this->assertEquals('<html>Hello World</html>', Template::render(Template::negotiate(['text/html', 'text/plain'], $template_identifier['text/html'], fn() => false)));
     }
     
+    public function test_selectByUnselectableAcceptedType(): void
+    {
+        $template_identifier = $this->prepareTemplates([
+            'text/plain' => 'Hello World'
+        ]);
+        
+        $this->assertEquals('false', Template::render(Template::negotiate(['text/html'], $template_identifier['text/plain'], fn() => 'false')));
+    }
 }
