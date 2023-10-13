@@ -10,17 +10,19 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
     
     public function test_entry(): void
     {
+        $template_identifier = $this->prepareTemplate('<!DOCTYPE html></html>');
+        
         $response = Web::entry([
             'REQUEST_METHOD' => 'GET',
             'REQUEST_URI' => '/test',
             'SERVER_PROTOCOL' => 'HTTP/1.1',
             'HTTP_ACCEPT' => 'text/html'
-            ], function(callable $route) {
-            $route('test', function(callable $get, callable $update, callable $put, callable $delete, callable $head, callable $child) {
-                    $get(function(callable $negotiate) {
+            ], function(callable $route) use ($template_identifier) {
+            $route('test', function(callable $get, callable $update, callable $put, callable $delete, callable $head, callable $child) use ($template_identifier) {
+                    $get(function(callable $negotiate) use ($template_identifier) {
                         $negotiate([
-                            'text/plain' => fn(callable $status) => $status('200 OK', 'Hello World'),
-                            'text/html' => fn(callable $status) => $status('200 OK', '<!DOCTYPE html></html>')
+                            'text/plain' => fn(callable $status, callable $template) => $template('missing'),
+                            'text/html' => fn(callable $status, callable $template) => $template($template_identifier)
                         ]);
                     });
                 });
@@ -34,18 +36,20 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
     
     public function test_entryChildResource(): void
     {
+        $template_identifier = $this->prepareTemplate('<!DOCTYPE html></html>');
+        
         $response = Web::entry([
             'REQUEST_METHOD' => 'GET',
             'REQUEST_URI' => '/test/fubar',
             'SERVER_PROTOCOL' => 'HTTP/1.1',
             'HTTP_ACCEPT' => 'text/html'
-        ], function(callable $route) {
-            $route('test', function(callable $get, callable $update, callable $put, callable $delete, callable $head, callable $child) {
-                $child('fubar', function(callable $get, callable $update, callable $put, callable $delete, callable $head, callable $child) {
-                    $get(function(callable $negotiate) {
+        ], function(callable $route) use ($template_identifier) {
+            $route('test', function(callable $get, callable $update, callable $put, callable $delete, callable $head, callable $child) use ($template_identifier) {
+                $child('fubar', function(callable $get, callable $update, callable $put, callable $delete, callable $head, callable $child) use ($template_identifier) {
+                    $get(function(callable $negotiate) use ($template_identifier) {
                         $negotiate([
-                            'text/plain' => fn(callable $status) => $status('200 OK', 'Hello World'),
-                            'text/html' => fn(callable $status) => $status('200 OK', '<!DOCTYPE html></html>')
+                            'text/plain' => fn(callable $status, callable $template) => $template('missing'),
+                            'text/html' => fn(callable $status, callable $template) => $template($template_identifier)
                         ]);
                     });
                 });
@@ -101,16 +105,18 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
     
     public function test_entryMismatchInAcceptedContentTypeResultsIn406(): void
     {
+        $template_identifier = $this->prepareTemplate('<!DOCTYPE html></html>');
+        
         $response = Web::entry([
             'REQUEST_METHOD' => 'GET',
             'REQUEST_URI' => '/test',
             'SERVER_PROTOCOL' => 'HTTP/1.1',
             'HTTP_ACCEPT' => 'text/plain'
-        ], function(callable $route) {
-            $route('test', function(callable $get, callable $update, callable $put, callable $delete, callable $head, callable $child) {
-                $get(function(callable $negotiate) {
+        ], function(callable $route) use ($template_identifier) {
+            $route('test', function(callable $get, callable $update, callable $put, callable $delete, callable $head, callable $child) use ($template_identifier) {
+                $get(function(callable $negotiate) use ($template_identifier) {
                     $negotiate([
-                        'text/html' => fn(callable $status) => $status('text/html', '200 OK', '<!DOCTYPE html></html>')
+                        'text/html' => fn(callable $status, callable $template) => $template($template_identifier)
                     ]);
                 });
             });
@@ -123,16 +129,18 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
     
     public function test_entryAcceptingApplicationJson(): void
     {
+        $template_identifier = $this->prepareTemplate('Hello World');
+        
         $response = Web::entry([
             'REQUEST_METHOD' => 'GET',
             'REQUEST_URI' => '/test',
             'SERVER_PROTOCOL' => 'HTTP/2',
             'HTTP_ACCEPT' => 'application/json'
-        ], function(callable $route) {
-            $route('test', function(callable $get, callable $update, callable $put, callable $delete, callable $head, callable $child) {
-                $get(function(callable $negotiate) {
+        ], function(callable $route) use ($template_identifier) {
+            $route('test', function(callable $get, callable $update, callable $put, callable $delete, callable $head, callable $child) use ($template_identifier) {
+                $get(function(callable $negotiate) use ($template_identifier) {
                     $negotiate([
-                        'application/json' => fn(callable $status) => $status('200 OK', 'Hello World')
+                        'application/json' => fn(callable $status, callable $template) => $template($template_identifier)
                     ]);
                 });
             });
@@ -145,17 +153,18 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
     
     public function test_entryAcceptingRelativeQualities(): void
     {
+        $template_identifier = $this->prepareTemplate('Hello World');
         
         $response = Web::entry([
             'REQUEST_METHOD' => 'GET',
             'REQUEST_URI' => '/test',
             'SERVER_PROTOCOL' => 'HTTP/2',
             'HTTP_ACCEPT' => 'text/plain, application/xhtml+xml, application/json;q=0.9, */*;q=0.8'
-        ], function(callable $route) {
-            $route('test', function(callable $get, callable $update, callable $put, callable $delete, callable $head, callable $child) {
-                $get(function(callable $negotiate) {
+        ], function(callable $route) use ($template_identifier) {
+            $route('test', function(callable $get, callable $update, callable $put, callable $delete, callable $head, callable $child) use ($template_identifier) {
+                $get(function(callable $negotiate) use ($template_identifier) {
                     $negotiate([
-                        'text/plain' => fn(callable $status) => $status('200 OK', 'Hello World')
+                        'text/plain' => fn(callable $status, callable $template) => $template($template_identifier)
                     ]);
                 });
             });
@@ -171,19 +180,18 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
     
     public function test_entryRenderTemplate(): void
     {
-        $_ENV['TEMPLATE_DIR'] = sys_get_temp_dir();
-        file_put_contents(sys_get_temp_dir() . '/index.html', '<block name="content" />');
+        $template_identifier = $this->prepareTemplate('<block name="content" />');
         
         $response = Web::entry([
             'REQUEST_METHOD' => 'GET',
             'REQUEST_URI' => '/test',
             'SERVER_PROTOCOL' => 'HTTP/2',
             'HTTP_ACCEPT' => 'text/plain, application/xhtml+xml, application/json;q=0.9, */*;q=0.8'
-        ], function(callable $route) {
-            $route('test', function(callable $get, callable $update, callable $put, callable $delete, callable $head, callable $child) {
-                $get(function(callable $negotiate) {
+        ], function(callable $route) use ($template_identifier) {
+            $route('test', function(callable $get, callable $update, callable $put, callable $delete, callable $head, callable $child) use ($template_identifier) {
+                $get(function(callable $negotiate) use ($template_identifier) {
                     $negotiate([
-                        'text/plain' => fn(callable $status, callable $template) => $template('index', ...[
+                        'text/plain' => fn(callable $status, callable $template) => $template($template_identifier, ...[
                             'content' => fn() => 'Hello Universe'
                         ])
                     ]);

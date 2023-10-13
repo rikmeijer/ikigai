@@ -26,4 +26,11 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
             $this->assertTrue($fn($body)); 
         };
     }
+    
+    public function prepareTemplate(string $contents) {
+        $_ENV['TEMPLATE_DIR'] = sys_get_temp_dir();
+        $template_identifier = uniqid('tpl_');
+        file_put_contents($_ENV['TEMPLATE_DIR'] . DIRECTORY_SEPARATOR . $template_identifier . '.html', $contents);
+        return $template_identifier; 
+    }
 }
