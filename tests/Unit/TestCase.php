@@ -33,4 +33,13 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         file_put_contents($_ENV['TEMPLATE_DIR'] . DIRECTORY_SEPARATOR . $template_identifier . '.html', $contents);
         return $template_identifier; 
     }
+    
+    public function prepareTemplates(array $templateByContentType) {
+        $_ENV['TEMPLATE_DIR'] = sys_get_temp_dir();
+        return \rikmeijer\purposeplan\lib\Functional\Functional::map(function(string $contents, string $contentType) {
+            $template_identifier = uniqid('tpl_');
+            file_put_contents($_ENV['TEMPLATE_DIR'] . DIRECTORY_SEPARATOR . $template_identifier . '.' . \rikmeijer\purposeplan\lib\UI\Template::typeToExtension($contentType), $contents);
+            return $template_identifier; 
+        })($templateByContentType);
+    }
 }

@@ -24,14 +24,14 @@ final class Functional {
     }
     
     
-    static function find(callable $condition, callable $process, callable $fail) : callable {
-        return function(array $array) use ($condition, $process, $fail) {
+    static function find(callable $condition, callable $if, callable $else) : callable {
+        return function(array $array) use ($condition, $if, $else) {
             foreach ($array as $key => $value) {
                 if ($condition($value, $key)) {
-                    return $process($value, $key);
+                    return $if($value, $key);
                 }
             }
-            return $fail($value, $key);
+            return $else($value, $key);
         };
     }
     

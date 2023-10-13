@@ -21,4 +21,16 @@ class TemplateTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
             'universe' => fn() => 'Hello Universe'
         ]));
     }
+    
+    
+    public function test_selectByAcceptedType(): void
+    {
+        $template_identifier = $this->prepareTemplates([
+            'text/html' => '<html>Hello World</html>',
+            'text/plain' => 'Hello World'
+        ]);
+        
+        $this->assertEquals('<html>Hello World</html>', Template::render(Template::negotiate(['text/html', 'text/plain'], $template_identifier['text/html'])));
+    }
+    
 }
