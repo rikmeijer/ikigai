@@ -14,9 +14,6 @@ class Web {
             return $res; 
         }, []);
         
-        $template_path = fn($identifier) => Template::path($identifier);
-        
-        $template = fn(string $identifier, callable ...$blocks) => Template::render(file_get_contents($template_path($identifier)), ...$blocks);
         $requestMethod = fn(string $method) => strtoupper($method) === $server['REQUEST_METHOD'];
         $path = $server['REQUEST_URI'];    
 
@@ -35,13 +32,11 @@ class Web {
             };
             $error = fn(string $code, string $description) => $respond('text/plain', $code . ' ' . $description, $description);
             
-            $template = fn(string $type, string $identifier, callable ...$blocks) => $respond($type, '200 OK', $template($identifier, ...$blocks));
-            
             $methods = Functional::map(fn(string $value) => fn(callable $endpoints) => Functional::if_else(
                     $requestMethod, 
                     fn($value) => $endpoints(fn(array $availableTypes) => Functional::find(
                             fn(float $value, string $typeAccepted) => array_key_exists($typeAccepted, $availableTypes), 
-                            fn(float $value, string $typeAccepted) => Functional::partial_left($availableTypes[$typeAccepted], Functional::partial_left($respond, $typeAccepted), Functional::partial_left($template, $typeAccepted))(),
+                            fn(float $value, string $typeAccepted) => Functional::partial_left($availableTypes[$typeAccepted], Functional::partial_left($respond, $typeAccepted), self::template(Functional::partial_left($respond, $typeAccepted)))(),
                             fn() => $error('406', 'Not Acceptable')
                     )(Functional::arsort($typesAccepted()))), 
                     Functional::nothing()
@@ -51,6 +46,10 @@ class Web {
             
             $error('404', 'File Not Found');
         };
+    }
+    
+    static function template(callable $respond) {
+        return fn(string $identifier, callable ...$blocks) => $respond('200 OK', Template::render(file_get_contents(Template::path($identifier)), ...$blocks));
     }
     
     static function resourceMatcher(array $methods, string $path, callable $error) {
