@@ -1,4 +1,4 @@
-# PurposePlan
+# Ikigai
 
 A purpose gives direction in your activities. It helps you prioritizing in your life and daily events, allowing you to give attention to what matters to you. Construct a plan to live towards your purpose.
 
