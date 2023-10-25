@@ -10,7 +10,7 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
     
     public function test_entry(): void
     {
-        $template_identifier = $this->prepareTemplate('<!DOCTYPE html></html>');
+        $template_identifier = $this->prepareTemplate('get', '<!DOCTYPE html></html>');
         
         $response = Web::entry([
             'REQUEST_METHOD' => 'GET',
@@ -36,7 +36,7 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
     
     public function test_entryChildResource(): void
     {
-        $template_identifier = $this->prepareTemplate('<!DOCTYPE html></html>');
+        $template_identifier = $this->prepareTemplate('get', '<!DOCTYPE html></html>');
         
         $response = Web::entry([
             'REQUEST_METHOD' => 'GET',
@@ -105,7 +105,7 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
     
     public function test_entryMismatchInAcceptedContentTypeResultsIn406(): void
     {
-        $template_identifier = $this->prepareTemplate('<!DOCTYPE html></html>');
+        $template_identifier = $this->prepareTemplate('get', '<!DOCTYPE html></html>');
         
         $response = Web::entry([
             'REQUEST_METHOD' => 'GET',
@@ -129,7 +129,7 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
     
     public function test_entryAcceptingApplicationJson(): void
     {
-        $template_identifier = $this->prepareTemplate('Hello World');
+        $template_identifier = $this->prepareTemplate('get', 'Hello World');
         
         $response = Web::entry([
             'REQUEST_METHOD' => 'GET',
@@ -153,7 +153,7 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
     
     public function test_entryAcceptingRelativeQualities(): void
     {
-        $template_identifier = $this->prepareTemplate('Hello World');
+        $template_identifier = $this->prepareTemplate('get', 'Hello World');
         
         $response = Web::entry([
             'REQUEST_METHOD' => 'GET',
@@ -180,7 +180,7 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
     
     public function test_entryRenderTemplate(): void
     {
-        $template_identifier = $this->prepareTemplate('<block name="content" />');
+        $template_identifier = $this->prepareTemplate('get', '<block name="content" />');
         
         $response = Web::entry([
             'REQUEST_METHOD' => 'GET',
