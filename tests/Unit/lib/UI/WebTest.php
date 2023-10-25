@@ -17,9 +17,9 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
             'REQUEST_URI' => '/test',
             'SERVER_PROTOCOL' => 'HTTP/1.1',
             'HTTP_ACCEPT' => 'text/html'
-            ], function(callable $route) use ($template_identifier) {
-            $route('test', function(callable $get, callable $update, callable $put, callable $delete, callable $head, callable $child) use ($template_identifier) {
-                    $get(function(callable $negotiate) use ($template_identifier) {
+            ], function(callable $route) {
+            $route('test', function(callable $get, callable $update, callable $put, callable $delete, callable $head, callable $child) {
+                    $get(function(callable $negotiate) {
                         $negotiate([
                             'text/plain' => fn(callable $template) => $template('missing'),
                             'text/html' => fn(callable $template) => $template()
@@ -43,10 +43,10 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
             'REQUEST_URI' => '/test/fubar',
             'SERVER_PROTOCOL' => 'HTTP/1.1',
             'HTTP_ACCEPT' => 'text/html'
-        ], function(callable $route) use ($template_identifier) {
-            $route('test', function(callable $get, callable $update, callable $put, callable $delete, callable $head, callable $child) use ($template_identifier) {
-                $child('fubar', function(callable $get, callable $update, callable $put, callable $delete, callable $head, callable $child) use ($template_identifier) {
-                    $get(function(callable $negotiate) use ($template_identifier) {
+        ], function(callable $route) {
+            $route('test', function(callable $get, callable $update, callable $put, callable $delete, callable $head, callable $child) {
+                $child('fubar', function(callable $get, callable $update, callable $put, callable $delete, callable $head, callable $child) {
+                    $get(function(callable $negotiate) {
                         $negotiate([
                             'text/plain' => fn(callable $template) => $template('missing'),
                             'text/html' => fn(callable $template) => $template()
@@ -112,9 +112,9 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
             'REQUEST_URI' => '/test',
             'SERVER_PROTOCOL' => 'HTTP/1.1',
             'HTTP_ACCEPT' => 'text/plain'
-        ], function(callable $route) use ($template_identifier) {
-            $route('test', function(callable $get, callable $update, callable $put, callable $delete, callable $head, callable $child) use ($template_identifier) {
-                $get(function(callable $negotiate) use ($template_identifier) {
+        ], function(callable $route) {
+            $route('test', function(callable $get, callable $update, callable $put, callable $delete, callable $head, callable $child) {
+                $get(function(callable $negotiate) {
                     $negotiate([
                         'text/html' => fn(callable $template) => $template()
                     ]);
@@ -136,9 +136,9 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
             'REQUEST_URI' => '/test',
             'SERVER_PROTOCOL' => 'HTTP/2',
             'HTTP_ACCEPT' => 'application/json'
-        ], function(callable $route) use ($template_identifier) {
-            $route('test', function(callable $get, callable $update, callable $put, callable $delete, callable $head, callable $child) use ($template_identifier) {
-                $get(function(callable $negotiate) use ($template_identifier) {
+        ], function(callable $route) {
+            $route('test', function(callable $get, callable $update, callable $put, callable $delete, callable $head, callable $child) {
+                $get(function(callable $negotiate) {
                     $negotiate([
                         'application/json' => fn(callable $template) => $template()
                     ]);
@@ -160,9 +160,9 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
             'REQUEST_URI' => '/test',
             'SERVER_PROTOCOL' => 'HTTP/2',
             'HTTP_ACCEPT' => 'text/plain, application/xhtml+xml, application/json;q=0.9, */*;q=0.8'
-        ], function(callable $route) use ($template_identifier) {
-            $route('test', function(callable $get, callable $update, callable $put, callable $delete, callable $head, callable $child) use ($template_identifier) {
-                $get(function(callable $negotiate) use ($template_identifier) {
+        ], function(callable $route) {
+            $route('test', function(callable $get, callable $update, callable $put, callable $delete, callable $head, callable $child) {
+                $get(function(callable $negotiate) {
                     $negotiate([
                         'text/plain' => fn(callable $template) => $template()
                     ]);
@@ -187,9 +187,9 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
             'REQUEST_URI' => '/test',
             'SERVER_PROTOCOL' => 'HTTP/2',
             'HTTP_ACCEPT' => 'text/plain, application/xhtml+xml, application/json;q=0.9, */*;q=0.8'
-        ], function(callable $route) use ($template_identifier) {
-            $route('test', function(callable $get, callable $update, callable $put, callable $delete, callable $head, callable $child) use ($template_identifier) {
-                $get(function(callable $negotiate) use ($template_identifier) {
+        ], function(callable $route) {
+            $route('test', function(callable $get, callable $update, callable $put, callable $delete, callable $head, callable $child) {
+                $get(function(callable $negotiate) {
                     $negotiate([
                         'text/plain' => fn(callable $template) => $template(...[
                             'content' => fn() => 'Hello Universe'
