@@ -18,7 +18,7 @@ class Web {
         $path = $server['REQUEST_URI'];    
 
         
-        return function(callable $headers, callable $body) use ($protocol, $typesAccepted, $requestMethod, $path, $routings) : void  {
+        return function(callable $headers, callable $body) use ($protocol, $typesAccepted, $requestMethod, $path, $routings, $server) : void  {
             $protocol = fn(string $code) => $headers($protocol($code));
             $respond = function(string $contentType, string $status, string $content) use ($protocol, $body, $headers) : void {
                 static $sent = false;
@@ -36,7 +36,7 @@ class Web {
                     $requestMethod, 
                     fn($value) => $endpoints(fn(array $availableTypes) => Functional::find(
                             fn(float $value, string $typeAccepted) => array_key_exists($typeAccepted, $availableTypes), 
-                            fn(float $value, string $typeAccepted) => Functional::partial_left($availableTypes[$typeAccepted], self::template(Functional::partial_left($respond, $typeAccepted)))(),
+                            fn(float $value, string $typeAccepted) => Functional::partial_left($availableTypes[$typeAccepted], self::template($server['REQUEST_METHOD'], Functional::partial_left($respond, $typeAccepted)))(),
                             fn() => $error('406', 'Not Acceptable')
                     )(Functional::arsort($typesAccepted()))), 
                     Functional::nothing()
@@ -48,8 +48,8 @@ class Web {
         };
     }
     
-    static function template(callable $respond) {
-        return fn(string $identifier, callable ...$blocks) => $respond('200 OK', Template::render(file_get_contents(Template::path($identifier)), ...$blocks));
+    static function template(string $identifier, callable $respond) {
+        return fn(callable ...$blocks) => $respond('200 OK', Template::render(file_get_contents(Template::path($identifier)), ...$blocks));
     }
     
     static function resourceMatcher(array $methods, string $path, callable $error) {
