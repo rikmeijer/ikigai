@@ -6,8 +6,12 @@ namespace rikmeijer\purposeplan\lib\UI;
 
 class Template {
     
-    static function path(string $identifier) {
-        return self::directory() . DIRECTORY_SEPARATOR . $identifier . '.html';
+    static function path(string $identifier, string $contentType) {
+        return self::directory() . DIRECTORY_SEPARATOR . $identifier . '.' . match ($contentType) {
+            'text/html' => 'html',
+            'text/plain' => 'txt',
+            'application/json' => 'json.php'
+        };
     }
     
     static function render(string $html, callable ...$blocks) {

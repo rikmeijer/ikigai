@@ -10,7 +10,7 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
     
     public function test_entry(): void
     {
-        $this->prepareTemplate('get', '<!DOCTYPE html></html>');
+        $this->prepareTemplate('get.html', '<!DOCTYPE html></html>');
         
         $response = Web::entry([
             'REQUEST_METHOD' => 'GET',
@@ -36,7 +36,7 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
     
     public function test_entryChildResource(): void
     {
-        $this->prepareTemplate('get', '<!DOCTYPE html></html>');
+        $this->prepareTemplate('get.html', '<!DOCTYPE html></html>');
         
         $response = Web::entry([
             'REQUEST_METHOD' => 'GET',
@@ -105,7 +105,7 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
     
     public function test_entryMismatchInAcceptedContentTypeResultsIn406(): void
     {
-        $this->prepareTemplate('get', '<!DOCTYPE html></html>');
+        $this->prepareTemplate('get.html', '<!DOCTYPE html></html>');
         
         $response = Web::entry([
             'REQUEST_METHOD' => 'GET',
@@ -129,7 +129,7 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
     
     public function test_entryAcceptingApplicationJson(): void
     {
-        $this->prepareTemplate('get', 'Hello World');
+        $this->prepareTemplate('get.json.php', 'Hello World');
         
         $response = Web::entry([
             'REQUEST_METHOD' => 'GET',
@@ -153,7 +153,7 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
     
     public function test_entryAcceptingRelativeQualities(): void
     {
-        $this->prepareTemplate('get', 'Hello World');
+        $this->prepareTemplate('get.txt', 'Hello World');
         
         $response = Web::entry([
             'REQUEST_METHOD' => 'GET',
@@ -180,7 +180,7 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
     
     public function test_entryRenderTemplate(): void
     {
-        $this->prepareTemplate('get', '<block name="content" />');
+        $this->prepareTemplate('get.txt', '<block name="content" />');
         
         $response = Web::entry([
             'REQUEST_METHOD' => 'GET',

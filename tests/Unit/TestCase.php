@@ -29,7 +29,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     
     public function prepareTemplate(string $template_identifier, string $contents) {
         $_ENV['TEMPLATE_DIR'] = sys_get_temp_dir();
-        file_put_contents($_ENV['TEMPLATE_DIR'] . DIRECTORY_SEPARATOR . $template_identifier . '.html', $contents);
+        file_put_contents($_ENV['TEMPLATE_DIR'] . DIRECTORY_SEPARATOR . $template_identifier, $contents);
         return $template_identifier; 
     }
     
