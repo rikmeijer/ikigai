@@ -18,7 +18,7 @@ class Web {
         $path = $server['REQUEST_URI'];    
 
         
-        return function(callable $headers, callable $body) use ($protocol, $typesAccepted, $template, $requestMethod, $path, $routings) : void  {
+        return function(callable $headers, callable $body) use ($protocol, $typesAccepted, $requestMethod, $path, $routings) : void  {
             $protocol = fn(string $code) => $headers($protocol($code));
             $respond = function(string $contentType, string $status, string $content) use ($protocol, $body, $headers) : void {
                 static $sent = false;

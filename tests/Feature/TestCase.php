@@ -17,10 +17,12 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
             CURLOPT_RETURNTRANSFER => true
         ]);
         $this->result = curl_exec($this->curl);
+        $this->assertStringNotContainsString('Warning', $this->result);
+        $this->assertStringNotContainsString('Error', $this->result);
     }
     
     public function assertResponseCode(string $expectedCode) {
-        $this->assertEquals($expectedCode, curl_getinfo($this->curl, CURLINFO_HTTP_CODE));
+        $this->assertEquals($expectedCode, curl_getinfo($this->curl,  CURLINFO_RESPONSE_CODE));
     }
     
     public function assertBodyEquals(string $expectedBody) {
