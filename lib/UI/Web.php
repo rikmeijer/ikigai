@@ -18,7 +18,11 @@ class Web {
         $path = $server['REQUEST_URI'];    
 
         
-        return function(callable $headers, callable $body) use ($protocol, $typesAccepted, $requestMethod, $path, $routings, $server) : void  {
+        $template = Functional::partial_left([Template::class, 'negotiate'], 
+                    array_keys(Functional::arsort($typesAccepted())), 
+                    strtolower($server['REQUEST_METHOD']));
+        
+        return function(callable $headers, callable $body) use ($protocol, $template, $path, $routings) : void  {
             $protocol = fn(string $code) => $headers($protocol($code));
             $respond = function(string $contentType, string $status, string $content) use ($protocol, $body, $headers) : void {
                 static $sent = false;
@@ -32,9 +36,7 @@ class Web {
             };
             $error = fn(string $code, string $description) => $respond('text/plain', $code . ' ' . $description, $description);
             
-            $routings(self::resourceMatcher(fn(callable ...$blocks) => Template::negotiate(
-                    array_keys(Functional::arsort($typesAccepted())), 
-                    strtolower($server['REQUEST_METHOD']), 
+            $routings(self::resourceMatcher(fn(callable ...$blocks) => $template(
                     fn(string $type, string $content) => $respond($type, '200 OK', Template::render($content, ...$blocks)), 
                     fn() => $error('405', 'Method Not Allowed'),
                     fn() => $error('406', 'Not Acceptable')
