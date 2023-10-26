@@ -27,9 +27,28 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         };
     }
     
-    public function prepareTemplate(string $template_identifier, string $contents) {
+    private function setTemplateDir() {
         $_ENV['TEMPLATE_DIR'] = sys_get_temp_dir();
-        file_put_contents($_ENV['TEMPLATE_DIR'] . DIRECTORY_SEPARATOR . $template_identifier, $contents);
+        return $_ENV['TEMPLATE_DIR'];
+    }
+    
+    public function prepareLogic(string $path, string $logic) {
+        $logic_path = $this->setTemplateDir() . $path . '.php';
+        $this->assertGreaterThan(0, file_put_contents($logic_path, '<?php return fn() => ' . $logic . ';'), 'Nothing written to `'.$logic_path.'`');
+        $this->assertFileExists($logic_path);
+    }
+    
+    public function prepareTemplate(string $path, string $template_identifier, string $contents) {
+        
+        $template_path = $this->setTemplateDir() . $path;
+        if (is_dir($template_path) === false) {
+            $this->assertTrue(mkdir($template_path, recursive:true), 'Unable to create template directory `'.$_ENV['TEMPLATE_DIR'] . $path.'`');
+        }
+        
+        $template_file = $template_path . DIRECTORY_SEPARATOR . $template_identifier;
+        file_put_contents($template_file, $contents);
+        $this->assertFileExists($template_file);
+        
         return $template_identifier; 
     }
     

@@ -31,7 +31,18 @@ class TemplateTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
             'text/plain' => 'Hello World'
         ]);
         
-        Template::negotiate(['text/html', 'text/plain'], $method, fn(string $type, string $contents) => $this->assertEquals('<html>Hello World</html>', Template::render($contents)), fn() => false, fn() => false);
+        Template::negotiate(['text/html', 'text/plain'], '/', $method, fn(string $type, callable $contents) => $this->assertEquals('<html>Hello World</html>', $contents()), fn() => false, fn() => false, fn() => false);
+    }
+    
+    
+    public function test_selectByMissingTemplateDirectory(): void
+    {
+        $method = uniqid();
+        $this->prepareTemplates($method, [
+            'text/html' => 'Hello World'
+        ]);
+        
+        Template::negotiate(['text/html'], '/blabla', 'post', fn(string $type, string $contents) => $this->assertNull(true), fn() => $this->assertTrue(true), fn() => $this->assertFalse(true), fn() => $this->assertFalse(true));
     }
     
     public function test_selectByMissingTemplateIdentifier(): void
@@ -41,7 +52,7 @@ class TemplateTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
             'text/html' => 'Hello World'
         ]);
         
-        Template::negotiate(['text/html'], 'post', fn(string $type, string $contents) => $this->assertNull(true), fn() => $this->assertTrue(true), fn() => $this->assertFalse(true));
+        Template::negotiate(['text/html'], '/', 'post', fn(string $type, string $contents) => $this->assertNull(true), fn() => $this->assertFalse(true), fn() => $this->assertTrue(true), fn() => $this->assertFalse(true));
     }
     
     public function test_selectByUnselectableAcceptedType(): void
@@ -51,6 +62,6 @@ class TemplateTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
             'text/plain' => 'Hello World'
         ]);
         
-        Template::negotiate(['text/html'], $method, fn(string $type, string $contents) => $this->assertFalse(true), fn() => $this->assertNull(true), fn() => $this->assertTrue(true));
+        Template::negotiate(['text/html'], '/', $method, fn(string $type, string $contents) => $this->assertFalse(true), fn() => $this->assertFalse(true), fn() => $this->assertNull(true), fn() => $this->assertTrue(true));
     }
 }

@@ -6,7 +6,7 @@ use rikmeijer\purposeplan\lib\Functional\Functional;
 
 class Web {
     
-    static function entry(array $server, callable $routings) : callable {
+    static function entry(array $server) : callable {
         $protocol = fn(string $code) => $server['SERVER_PROTOCOL'] . ' ' . $code;
         $path = $server['REQUEST_URI'];    
 
@@ -16,10 +16,10 @@ class Web {
             list($l, $q) = array_merge(explode(';q=', $el), [1]); 
             $res[$l] = (float) $q; 
             return $res; 
-        }, []))), 
+        }, []))), $path,  
                     strtolower($server['REQUEST_METHOD']));
         
-        return function(callable $headers, callable $body) use ($protocol, $template, $path, $routings) : void  {
+        return function(callable $headers, callable $body) use ($protocol, $template) : void  {
             $protocol = fn(string $code) => $headers($protocol($code));
             $respond = function(string $contentType, string $status, string $content) use ($protocol, $body, $headers) : void {
                 static $sent = false;
@@ -33,19 +33,13 @@ class Web {
             };
             $error = fn(string $code, string $description) => $respond('text/plain', $code . ' ' . $description, $description);
             
-            $routings(self::resourceMatcher(fn(callable ...$blocks) => $template(
-                    fn(string $type, string $content) => $respond($type, '200 OK', Template::render($content, ...$blocks)), 
+            $template(
+                    fn(string $type, callable $render) => $respond($type, '200 OK', $render()), 
+                    fn() => $error('404', 'File Not Found'),
                     fn() => $error('405', 'Method Not Allowed'),
                     fn() => $error('406', 'Not Acceptable')
-                    ), $path, $error));
-            
-            
-            $error('404', 'File Not Found');
+                    );
         };
-    }
-    
-    static function template(string $identifier, string $contentType, callable $respond) {
-        return fn(callable ...$blocks) => $respond($contentType, '200 OK', Template::render(file_get_contents(Template::path($identifier, $contentType)), ...$blocks));
     }
     
     static function resourceMatcher(callable $template, string $path, callable $error) {

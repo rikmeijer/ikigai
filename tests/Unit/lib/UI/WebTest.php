@@ -11,18 +11,15 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
     public function test_entry(): void
     {
         $method = uniqid();
-        $this->prepareTemplate($method . '.html', '<!DOCTYPE html></html>');
+        $path = '/test';
+        $this->prepareTemplate($path, $method . '.html', '<!DOCTYPE html></html>');
         
         $response = Web::entry([
             'REQUEST_METHOD' => strtoupper($method),
-            'REQUEST_URI' => '/test',
+            'REQUEST_URI' => $path,
             'SERVER_PROTOCOL' => 'HTTP/1.1',
             'HTTP_ACCEPT' => 'text/html'
-            ], function(callable $route) {
-            $route('test', function(callable $template) {
-                    $template();
-            });
-            });
+            ]);
         $headers = $this->expectHeadersSent(['HTTP/1.1 200 OK', 'Content-Type: text/html']);
         $body = $this->expectBodySent('<!DOCTYPE html></html>');
         $response($headers, $body);
@@ -32,20 +29,15 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
     public function test_entryChildResource(): void
     {
         $method = uniqid();
-        $this->prepareTemplate($method . '.html', '<!DOCTYPE html></html>');
+        $path = '/test/fubar';
+        $this->prepareTemplate($path, $method . '.html', '<!DOCTYPE html></html>');
         
         $response = Web::entry([
             'REQUEST_METHOD' => strtoupper($method),
-            'REQUEST_URI' => '/test/fubar',
+            'REQUEST_URI' => $path,
             'SERVER_PROTOCOL' => 'HTTP/1.1',
             'HTTP_ACCEPT' => 'text/html'
-        ], function(callable $route) {
-            $route('test', fn() => null)(function(callable $route) {
-                $route('fubar', function(callable $template) {
-                    $template();
-                });
-            });
-        });
+        ]);
         
         $headers = $this->expectHeadersSent(['HTTP/1.1 200 OK', 'Content-Type: text/html']);
         $body = $this->expectBodySent('<!DOCTYPE html></html>');
@@ -55,24 +47,15 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
     public function test_entryMultipleChildrenResource(): void
     {
         $method = uniqid();
-        $this->prepareTemplate($method . '.html', '<!DOCTYPE html></html>');
+        $path = '/test/fuber';
+        $this->prepareTemplate($path, $method . '.html', '<!DOCTYPE html></html>');
         
         $response = Web::entry([
             'REQUEST_METHOD' => strtoupper($method),
-            'REQUEST_URI' => '/test/fuber',
+            'REQUEST_URI' => $path,
             'SERVER_PROTOCOL' => 'HTTP/1.1',
             'HTTP_ACCEPT' => 'text/html'
-        ], function(callable $route) {
-            $route('test', fn() => null)(function(callable $route) {
-                $route('fubar', function(callable $template) {
-                        $this->assertFalse(true);
-
-                });
-                $route('fuber', function(callable $template) {
-                        $template();
-                });
-            });
-        });
+        ]);
         
         $headers = $this->expectHeadersSent(['HTTP/1.1 200 OK', 'Content-Type: text/html']);
         $body = $this->expectBodySent('<!DOCTYPE html></html>');
@@ -82,17 +65,14 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
     public function test_entryMissingResourceResultsIn404(): void
     {
         $method = uniqid();
+        $path = '/notexistant';
         
         $response = Web::entry([
             'REQUEST_METHOD' => strtoupper($method),
-            'REQUEST_URI' => '/notexistant',
+            'REQUEST_URI' => $path,
             'SERVER_PROTOCOL' => 'HTTP/1.1',
             'HTTP_ACCEPT' => 'text/html'
-        ], function(callable $route) {
-            $route('test', function(callable $template) {
-                    $template();
-            });
-        });
+        ]);
         
         $headers = $this->expectHeadersSent(['HTTP/1.1 404 File Not Found', 'Content-Type: text/plain']);
         $body = $this->expectBodySent('File Not Found');
@@ -103,19 +83,15 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
     public function test_entryUnsupportedRequestMethodResultsIn405(): void
     {
         $method = uniqid();
-        $this->prepareTemplate($method . '.html', '<!DOCTYPE html></html>');
+        $path = '/test';
+        $this->prepareTemplate($path, $method . '.html', '<!DOCTYPE html></html>');
         
         $response = Web::entry([
             'REQUEST_METHOD' => 'POST',
-            'REQUEST_URI' => '/test',
+            'REQUEST_URI' => $path,
             'SERVER_PROTOCOL' => 'HTTP/1.1',
             'HTTP_ACCEPT' => 'text/html'
-        ], function(callable $route) {
-            $route('test', function(callable $template) {
-                    $template();
-            });
-
-        });
+        ]);
         
         $headers = $this->expectHeadersSent(['HTTP/1.1 405 Method Not Allowed', 'Content-Type: text/plain']);
         $body = $this->expectBodySent('Method Not Allowed');
@@ -125,18 +101,15 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
     public function test_entryMismatchInAcceptedContentTypeResultsIn406(): void
     {
         $method = uniqid();
-        $this->prepareTemplate($method . '.html', '<!DOCTYPE html></html>');
+        $path = '/test';
+        $this->prepareTemplate($path, $method . '.html', '<!DOCTYPE html></html>');
         
         $response = Web::entry([
             'REQUEST_METHOD' => strtoupper($method),
-            'REQUEST_URI' => '/test',
+            'REQUEST_URI' => $path,
             'SERVER_PROTOCOL' => 'HTTP/1.1',
             'HTTP_ACCEPT' => 'text/plain'
-        ], function(callable $route) {
-            $route('test', function(callable $template) {
-                    $template();
-            });
-        });
+        ]);
         
         $headers = $this->expectHeadersSent(['HTTP/1.1 406 Not Acceptable', 'Content-Type: text/plain']);
         $body = $this->expectBodySent('Not Acceptable');
@@ -146,18 +119,15 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
     public function test_entryAcceptingApplicationJson(): void
     {
         $method = uniqid();
-        $this->prepareTemplate($method . '.json.php', 'Hello World');
+        $path = '/test';
+        $this->prepareTemplate($path, $method . '.json.php', 'Hello World');
         
         $response = Web::entry([
             'REQUEST_METHOD' => strtoupper($method),
-            'REQUEST_URI' => '/test',
+            'REQUEST_URI' => $path,
             'SERVER_PROTOCOL' => 'HTTP/2',
             'HTTP_ACCEPT' => 'application/json'
-        ], function(callable $route) {
-            $route('test', function(callable $template) {
-                    $template();
-            });
-        });
+        ]);
         
         $headers = $this->expectHeadersSent(['HTTP/2 200 OK', 'Content-Type: application/json']);
         $body = $this->expectBodySent('Hello World');
@@ -167,18 +137,15 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
     public function test_entryAcceptingRelativeQualities(): void
     {
         $method = uniqid();
-        $this->prepareTemplate($method . '.txt', 'Hello World');
+        $path = '/test';
+        $this->prepareTemplate($path, $method . '.txt', 'Hello World');
         
         $response = Web::entry([
             'REQUEST_METHOD' => strtoupper($method),
-            'REQUEST_URI' => '/test',
+            'REQUEST_URI' => $path,
             'SERVER_PROTOCOL' => 'HTTP/2',
             'HTTP_ACCEPT' => 'text/plain, application/xhtml+xml, application/json;q=0.9, */*;q=0.8'
-        ], function(callable $route) {
-            $route('test', function(callable $template) {
-                    $template();
-            });
-        });
+        ]);
         
         $headers = $this->expectHeadersSent([
             'HTTP/2 200 OK',
@@ -191,20 +158,18 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
     public function test_entryRenderTemplate(): void
     {
         $method = uniqid();
-        $this->prepareTemplate($method . '.txt', '<block name="content" />');
+        $path = '/test';
+        $this->prepareTemplate($path, $method . '.txt', '<block name="content" />');
+        $this->prepareLogic($path, "[
+                            'content' => fn() => 'Hello Universe'
+                        ]");
         
         $response = Web::entry([
             'REQUEST_METHOD' => strtoupper($method),
-            'REQUEST_URI' => '/test',
+            'REQUEST_URI' => $path,
             'SERVER_PROTOCOL' => 'HTTP/2',
             'HTTP_ACCEPT' => 'text/plain, application/xhtml+xml, application/json;q=0.9, */*;q=0.8'
-        ], function(callable $route) {
-            $route('test', function(callable $template) {
-                $template(...[
-                            'content' => fn() => 'Hello Universe'
-                        ]);
-            });
-        });
+        ]);
         
         $headers = $this->expectHeadersSent([
             'HTTP/2 200 OK',
