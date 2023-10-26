@@ -19,7 +19,7 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
             'SERVER_PROTOCOL' => 'HTTP/1.1',
             'HTTP_ACCEPT' => 'text/html'
             ], function(callable $route) {
-            $route('test', function(callable $template, callable $child) {
+            $route('test', function(callable $template) {
                     $template();
             });
             });
@@ -40,8 +40,37 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
             'SERVER_PROTOCOL' => 'HTTP/1.1',
             'HTTP_ACCEPT' => 'text/html'
         ], function(callable $route) {
-            $route('test', function(callable $template, callable $child) {
+            $route('test', fn() => null)(function(callable $route) {
+                $route('fubar', function(callable $template) {
                     $template();
+                });
+            });
+        });
+        
+        $headers = $this->expectHeadersSent(['HTTP/1.1 200 OK', 'Content-Type: text/html']);
+        $body = $this->expectBodySent('<!DOCTYPE html></html>');
+        $response($headers, $body);
+    }
+    
+    public function test_entryMultipleChildrenResource(): void
+    {
+        $method = uniqid();
+        $this->prepareTemplate($method . '.html', '<!DOCTYPE html></html>');
+        
+        $response = Web::entry([
+            'REQUEST_METHOD' => strtoupper($method),
+            'REQUEST_URI' => '/test/fuber',
+            'SERVER_PROTOCOL' => 'HTTP/1.1',
+            'HTTP_ACCEPT' => 'text/html'
+        ], function(callable $route) {
+            $route('test', fn() => null)(function(callable $route) {
+                $route('fubar', function(callable $template) {
+                        $this->assertFalse(true);
+
+                });
+                $route('fuber', function(callable $template) {
+                        $template();
+                });
             });
         });
         
@@ -60,7 +89,7 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
             'SERVER_PROTOCOL' => 'HTTP/1.1',
             'HTTP_ACCEPT' => 'text/html'
         ], function(callable $route) {
-            $route('test', function(callable $template, callable $child) {
+            $route('test', function(callable $template) {
                     $template();
             });
         });
@@ -82,7 +111,7 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
             'SERVER_PROTOCOL' => 'HTTP/1.1',
             'HTTP_ACCEPT' => 'text/html'
         ], function(callable $route) {
-            $route('test', function(callable $template, callable $child) {
+            $route('test', function(callable $template) {
                     $template();
             });
 
@@ -104,7 +133,7 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
             'SERVER_PROTOCOL' => 'HTTP/1.1',
             'HTTP_ACCEPT' => 'text/plain'
         ], function(callable $route) {
-            $route('test', function(callable $template, callable $child) {
+            $route('test', function(callable $template) {
                     $template();
             });
         });
@@ -125,7 +154,7 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
             'SERVER_PROTOCOL' => 'HTTP/2',
             'HTTP_ACCEPT' => 'application/json'
         ], function(callable $route) {
-            $route('test', function(callable $template, callable $child) {
+            $route('test', function(callable $template) {
                     $template();
             });
         });
@@ -146,7 +175,7 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
             'SERVER_PROTOCOL' => 'HTTP/2',
             'HTTP_ACCEPT' => 'text/plain, application/xhtml+xml, application/json;q=0.9, */*;q=0.8'
         ], function(callable $route) {
-            $route('test', function(callable $template, callable $child) {
+            $route('test', function(callable $template) {
                     $template();
             });
         });
@@ -170,7 +199,7 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
             'SERVER_PROTOCOL' => 'HTTP/2',
             'HTTP_ACCEPT' => 'text/plain, application/xhtml+xml, application/json;q=0.9, */*;q=0.8'
         ], function(callable $route) {
-            $route('test', function(callable $template, callable $child) {
+            $route('test', function(callable $template) {
                 $template(...[
                             'content' => fn() => 'Hello Universe'
                         ]);

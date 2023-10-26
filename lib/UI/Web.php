@@ -52,7 +52,10 @@ class Web {
     static function resourceMatcher(callable $template, string $path, callable $error) {
         return fn(string $identifier, callable $resource) => Functional::if_else(
             Functional::partial_left('str_starts_with', $path), 
-            fn(string $resource_path) => $resource($template, self::resourceMatcher($template, substr($path, strlen($resource_path)), $error)),
+            Functional::tail(
+               fn(string $resource_path) => $resource($template),
+               fn(mixed $composed, string $resource_path) => fn(callable $router) => $router(self::resourceMatcher($template, substr($path, strlen($resource_path)), $error))
+            ),
             fn() => Functional::nothing()
         )('/' . $identifier);
     }

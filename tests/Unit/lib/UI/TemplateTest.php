@@ -25,29 +25,32 @@ class TemplateTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
     
     public function test_selectByAcceptedType(): void
     {
-        $this->prepareTemplates('get', [
+        $method = uniqid();
+        $this->prepareTemplates($method, [
             'text/html' => '<html>Hello World</html>',
             'text/plain' => 'Hello World'
         ]);
         
-        Template::negotiate(['text/html', 'text/plain'], 'get', fn(string $type, string $contents) => $this->assertEquals('<html>Hello World</html>', Template::render($contents)), fn() => false, fn() => false);
+        Template::negotiate(['text/html', 'text/plain'], $method, fn(string $type, string $contents) => $this->assertEquals('<html>Hello World</html>', Template::render($contents)), fn() => false, fn() => false);
     }
     
     public function test_selectByMissingTemplateIdentifier(): void
     {
-        $this->prepareTemplates('get', [
-            'text/plain' => 'Hello World'
+        $method = uniqid();
+        $this->prepareTemplates($method, [
+            'text/html' => 'Hello World'
         ]);
         
-        Template::negotiate(['text/html'], 'post', fn(string $type, string $contents) => $this->assertEquals('flase', Template::render($contents)), fn() => $this->assertTrue(true), fn() => trigger_error('WRONG'));
+        Template::negotiate(['text/html'], 'post', fn(string $type, string $contents) => $this->assertNull(true), fn() => $this->assertTrue(true), fn() => $this->assertFalse(true));
     }
     
     public function test_selectByUnselectableAcceptedType(): void
     {
-        $this->prepareTemplates('get', [
+        $method = uniqid();
+        $this->prepareTemplates($method, [
             'text/plain' => 'Hello World'
         ]);
         
-        Template::negotiate(['text/html'], 'get', fn(string $type, string $contents) => trigger_error('WRONG'), fn() => trigger_error('WRONG'), fn() => $this->assertTrue(true));
+        Template::negotiate(['text/html'], $method, fn(string $type, string $contents) => $this->assertFalse(true), fn() => $this->assertNull(true), fn() => $this->assertTrue(true));
     }
 }

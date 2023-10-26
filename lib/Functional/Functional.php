@@ -43,6 +43,12 @@ final class Functional {
         return fn(mixed $intial = null) => self::reduce(fn($carry, callable $fn) => $fn($carry))($fns, $intial);
     }
     
+    static function tail(callable ...$fns) : callable {
+        $tail_fn = array_pop($fns);
+        $composed = self::compose(...$fns);
+        return fn(mixed ...$args) => $tail_fn($composed(...$args), ...$args);
+    }
+    
     static function if_else(callable $evaluation, callable $true, callable $false) {
         return fn(mixed $value) => $evaluation($value) ? $true($value) : $false($value);
     }
