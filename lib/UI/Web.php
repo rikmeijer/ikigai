@@ -32,16 +32,6 @@ class Web {
             };
             $error = fn(string $code, string $description) => $respond('text/plain', $code . ' ' . $description, $description);
             
-            $methods = Functional::map(fn(string $value) => fn(callable $endpoints) => Functional::if_else(
-                    $requestMethod, 
-                    fn($value) => $endpoints(fn(array $availableTypes) => Functional::find(
-                            fn(float $value, string $typeAccepted) => array_key_exists($typeAccepted, $availableTypes), 
-                            fn(float $value, string $typeAccepted) => Functional::partial_left($availableTypes[$typeAccepted], self::template($server['REQUEST_METHOD'], $typeAccepted, $respond))(),
-                            fn() => $error('406', 'Not Acceptable')
-                    )(Functional::arsort($typesAccepted()))), 
-                    Functional::nothing()
-            )($value))(['get', 'update', 'put', 'delete', 'head']);
-            
             $routings(self::resourceMatcher(fn(callable ...$blocks) => Template::negotiate(
                     array_keys(Functional::arsort($typesAccepted())), 
                     strtolower($server['REQUEST_METHOD']), 
