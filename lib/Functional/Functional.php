@@ -31,7 +31,7 @@ final class Functional {
                     return $if($value, $key);
                 }
             }
-            return $else($value, $key);
+            return $else();
         };
     }
     

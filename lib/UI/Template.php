@@ -10,7 +10,8 @@ class Template {
         return self::directory() . DIRECTORY_SEPARATOR . $identifier . '.' . match ($contentType) {
             'text/html' => 'html',
             'text/plain' => 'txt',
-            'application/json' => 'json.php'
+            'application/json' => 'json.php',
+            '*/*' => '*'
         };
     }
     
@@ -23,12 +24,16 @@ class Template {
         return realpath($_ENV['TEMPLATE_DIR']);
     }
     
-    static function negotiate(array $acceptedTypes, string $identifier, callable $else) : string {
-        return \rikmeijer\purposeplan\lib\Functional\Functional::find(
-                fn(string $acceptedType) => file_exists(self::directory() . '/' . $identifier . '.' . self::typeToExtension($acceptedType)),
-                fn(string $acceptedType) => file_get_contents(self::directory() . '/' . $identifier . '.' . self::typeToExtension($acceptedType)),
-                fn(string $acceptedType) => $else()
-        )($acceptedTypes);
+    static function negotiate(array $acceptedTypes, string $identifier, callable $found, callable $missingIdentifier, callable $missingType) : void {
+        \rikmeijer\purposeplan\lib\Functional\Functional::if_else(
+            fn(callable $path) => count(glob($path('*/*'))) > 0, 
+            fn(callable $path) => \rikmeijer\purposeplan\lib\Functional\Functional::find(
+                fn(string $acceptedType) => file_exists($path($acceptedType)),
+                fn(string $acceptedType) => $found($acceptedType, file_get_contents($path($acceptedType))),
+                $missingType
+            )($acceptedTypes), 
+            $missingIdentifier
+        )(fn(string $type) => self::path($identifier, $type));
     }
     
     static function typeToExtension(string $contentType) {

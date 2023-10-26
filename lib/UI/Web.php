@@ -41,8 +41,15 @@ class Web {
                     )(Functional::arsort($typesAccepted()))), 
                     Functional::nothing()
             )($value))(['get', 'update', 'put', 'delete', 'head']);
-
-            $routings(self::resourceMatcher($methods, $path, $error));
+            
+            $routings(self::resourceMatcher(fn(callable ...$blocks) => Template::negotiate(
+                    array_keys(Functional::arsort($typesAccepted())), 
+                    strtolower($server['REQUEST_METHOD']), 
+                    fn(string $type, string $content) => $respond($type, '200 OK', Template::render($content, ...$blocks)), 
+                    fn() => $error('405', 'Method Not Allowed'),
+                    fn() => $error('406', 'Not Acceptable')
+                    ), $path, $error));
+            
             
             $error('404', 'File Not Found');
         };
@@ -52,13 +59,10 @@ class Web {
         return fn(callable ...$blocks) => $respond($contentType, '200 OK', Template::render(file_get_contents(Template::path($identifier, $contentType)), ...$blocks));
     }
     
-    static function resourceMatcher(array $methods, string $path, callable $error) {
+    static function resourceMatcher(callable $template, string $path, callable $error) {
         return fn(string $identifier, callable $resource) => Functional::if_else(
             Functional::partial_left('str_starts_with', $path), 
-            Functional::compose(
-                fn(string $resource_path) => $resource(...array_merge($methods, ['child' => self::resourceMatcher($methods, substr($path, strlen($resource_path)), $error)])), 
-                fn() => $error('405', 'Method Not Allowed'),
-            ),
+            fn(string $resource_path) => $resource($template, self::resourceMatcher($template, substr($path, strlen($resource_path)), $error)),
             fn() => Functional::nothing()
         )('/' . $identifier);
     }

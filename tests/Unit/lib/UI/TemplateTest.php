@@ -25,20 +25,29 @@ class TemplateTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
     
     public function test_selectByAcceptedType(): void
     {
-        $template_identifier = $this->prepareTemplates([
+        $this->prepareTemplates('get', [
             'text/html' => '<html>Hello World</html>',
             'text/plain' => 'Hello World'
         ]);
         
-        $this->assertEquals('<html>Hello World</html>', Template::render(Template::negotiate(['text/html', 'text/plain'], $template_identifier['text/html'], fn() => false)));
+        Template::negotiate(['text/html', 'text/plain'], 'get', fn(string $type, string $contents) => $this->assertEquals('<html>Hello World</html>', Template::render($contents)), fn() => false, fn() => false);
+    }
+    
+    public function test_selectByMissingTemplateIdentifier(): void
+    {
+        $this->prepareTemplates('get', [
+            'text/plain' => 'Hello World'
+        ]);
+        
+        Template::negotiate(['text/html'], 'post', fn(string $type, string $contents) => $this->assertEquals('flase', Template::render($contents)), fn() => $this->assertTrue(true), fn() => trigger_error('WRONG'));
     }
     
     public function test_selectByUnselectableAcceptedType(): void
     {
-        $template_identifier = $this->prepareTemplates([
+        $this->prepareTemplates('get', [
             'text/plain' => 'Hello World'
         ]);
         
-        $this->assertEquals('false', Template::render(Template::negotiate(['text/html'], $template_identifier['text/plain'], fn() => 'false')));
+        Template::negotiate(['text/html'], 'get', fn(string $type, string $contents) => trigger_error('WRONG'), fn() => trigger_error('WRONG'), fn() => $this->assertTrue(true));
     }
 }
