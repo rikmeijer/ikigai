@@ -33,7 +33,8 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     }
     
     public function prepareLogic(string $path, string $logic) {
-        $logic_path = $this->setTemplateDir() . $path . '.php';
+        $logic_path = $this->setTemplateDir() . ($path === '/' ? '' : $path) . '.php';
+        echo $logic_path;
         $this->assertGreaterThan(0, file_put_contents($logic_path, '<?php return fn() => ' . $logic . ';'), 'Nothing written to `'.$logic_path.'`');
         $this->assertFileExists($logic_path);
     }

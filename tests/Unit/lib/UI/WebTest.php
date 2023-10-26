@@ -178,4 +178,29 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
         $body = $this->expectBodySent('Hello Universe');
         $response($headers, $body);
     }
+    
+    
+    public function test_entryRenderRootTemplate(): void
+    {
+        $method = uniqid();
+        $path = '/';
+        $this->prepareTemplate($path, $method . '.txt', '<block name="content" />');
+        $this->prepareLogic($path, "[
+                            'content' => fn() => 'Hello Universe'
+                        ]");
+        
+        $response = Web::entry([
+            'REQUEST_METHOD' => strtoupper($method),
+            'REQUEST_URI' => $path,
+            'SERVER_PROTOCOL' => 'HTTP/2',
+            'HTTP_ACCEPT' => 'text/plain, application/xhtml+xml, application/json;q=0.9, */*;q=0.8'
+        ]);
+        
+        $headers = $this->expectHeadersSent([
+            'HTTP/2 200 OK',
+            'Content-Type: text/plain',
+        ]);
+        $body = $this->expectBodySent('Hello Universe');
+        $response($headers, $body);
+    }
 }

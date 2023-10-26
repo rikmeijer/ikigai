@@ -1,0 +1,1 @@
+<?php return fn() => ['hello' => fn() => 'Hello World'];

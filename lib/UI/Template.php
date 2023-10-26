@@ -37,7 +37,7 @@ class Template {
                     '*/*' => '*'
                 })),
                 fn(callable $directory) => $missingFile($directory(''))
-        )(fn(string $file) => self::directory() . $path . $file);
+        )(fn(string $file) => self::directory() . ($path === '/' ? '' : $path) . $file);
     }
     
     static function typeToExtension(string $contentType) {
