@@ -8,18 +8,15 @@ class Web {
     
     static function entry(array $server, callable $routings) : callable {
         $protocol = fn(string $code) => $server['SERVER_PROTOCOL'] . ' ' . $code;
-        $typesAccepted = fn() => array_reduce(explode(',', $server['HTTP_ACCEPT']), function ($res, $el) {
-            list($l, $q) = array_merge(explode(';q=', $el), [1]); 
-            $res[$l] = (float) $q; 
-            return $res; 
-        }, []);
-        
-        $requestMethod = fn(string $method) => strtoupper($method) === $server['REQUEST_METHOD'];
         $path = $server['REQUEST_URI'];    
 
         
         $template = Functional::partial_left([Template::class, 'negotiate'], 
-                    array_keys(Functional::arsort($typesAccepted())), 
+                    array_keys(Functional::arsort(array_reduce(explode(',', $server['HTTP_ACCEPT']), function ($res, $el) {
+            list($l, $q) = array_merge(explode(';q=', $el), [1]); 
+            $res[$l] = (float) $q; 
+            return $res; 
+        }, []))), 
                     strtolower($server['REQUEST_METHOD']));
         
         return function(callable $headers, callable $body) use ($protocol, $template, $path, $routings) : void  {
