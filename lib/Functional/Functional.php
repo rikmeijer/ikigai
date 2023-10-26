@@ -43,7 +43,7 @@ final class Functional {
         return fn(mixed $intial = null) => self::reduce(fn($carry, callable $fn) => $fn($carry))($fns, $intial);
     }
     
-    static function tail(callable ...$fns) : callable {
+    static function recurseTail(callable ...$fns) : callable {
         $tail_fn = array_pop($fns);
         $composed = self::compose(...$fns);
         return fn(mixed ...$args) => $tail_fn($composed(...$args), ...$args);
