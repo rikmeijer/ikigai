@@ -30,12 +30,7 @@ class Template {
                         $missingType
                     )($acceptedTypes), 
                     fn(callable $template) => $missingIdentifier($template('*/*'))
-                )(fn(string $type) => $directory(DIRECTORY_SEPARATOR . $identifier . '.' . match ($type) {
-                    'text/html' => 'html',
-                    'text/plain' => 'txt',
-                    'application/json' => 'json.php',
-                    '*/*' => '*'
-                })),
+                )(fn(string $type) => $directory(DIRECTORY_SEPARATOR . $identifier . '.' . self::typeToExtension($type))),
                 fn(callable $directory) => $missingFile($directory(''))
         )(fn(string $file) => self::directory() . ($path === '/' ? '' : $path) . $file);
     }
@@ -44,8 +39,8 @@ class Template {
         return match ($contentType) {
             'text/html' => 'html',
             'text/plain' => 'txt',
-            'application/json' => 'json',
-            default => ''
+            'application/json' => 'json.php',
+            '*/*' => '*'
         };
     }
     
