@@ -31,13 +31,13 @@ class Web {
                 $body($content);
                 $sent = true;
             };
-            $error = fn(string $code, string $description) => $respond('text/plain', $code . ' ' . $description, $description);
+            $error = fn(string $code, string $description) => fn() => $respond('text/plain', $code . ' ' . $description, $description);
             
             $template(
                     fn(string $type, callable $render) => $respond($type, '200 OK', $render()), 
-                    fn() => $error('404', 'File Not Found'),
-                    fn() => $error('405', 'Method Not Allowed'),
-                    fn() => $error('406', 'Not Acceptable')
+                    $error('404', 'File Not Found'),
+                    $error('405', 'Method Not Allowed'),
+                    $error('406', 'Not Acceptable')
                     );
         };
     }
