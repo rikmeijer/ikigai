@@ -28,7 +28,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     }
     
     private function setTemplateDir() {
-        $_ENV['TEMPLATE_DIR'] = sys_get_temp_dir();
+        $_ENV['TEMPLATE_DIR'] = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'ikigai';
         return $_ENV['TEMPLATE_DIR'];
     }
     
