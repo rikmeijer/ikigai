@@ -20,13 +20,12 @@ class Web {
                     strtolower($server['REQUEST_METHOD']));
         
         return function(callable $headers, callable $body) use ($protocol, $template) : void  {
-            $protocol = fn(string $code) => $headers($protocol($code));
             $respond = function(string $contentType, string $status, string $content) use ($protocol, $body, $headers) : void {
                 static $sent = false;
                 if ($sent) {
                     return;
                 }
-                $protocol($status);
+                $headers($protocol($status));
                 $headers('Content-Type: ' . $contentType);
                 $body($content);
                 $sent = true;
