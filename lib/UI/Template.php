@@ -10,9 +10,9 @@ class Template {
         return preg_replace_callback('/<block\s+name="(\w+)"\s+\/>/', fn(array $matches) => $blocks[$matches[1]](), $html);
     }
     
-    static function directory() : string {
+    static function path(string $path) : callable {
         chdir(dirname(dirname(__DIR__)));
-        return realpath($_ENV['TEMPLATE_DIR']);
+        return fn(string $file) => realpath($_ENV['TEMPLATE_DIR']) . ($path === '/' ? '' : $path) . $file;
     }
     
     static function open(string $filepath) : array {
@@ -32,7 +32,7 @@ class Template {
                     fn(callable $template) => $missingIdentifier($template('*/*'))
                 )(fn(string $type) => $directory(DIRECTORY_SEPARATOR . $identifier . '.' . self::typeToExtension($type))),
                 fn(callable $directory) => $missingFile($directory(''))
-        )(fn(string $file) => self::directory() . ($path === '/' ? '' : $path) . $file);
+        )(self::path($path));
     }
     
     static function typeToExtension(string $contentType) {
