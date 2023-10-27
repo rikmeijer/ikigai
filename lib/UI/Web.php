@@ -16,7 +16,7 @@ class Web {
             list($l, $q) = array_merge(explode(';q=', $el), [1]); 
             $res[$l] = (float) $q; 
             return $res; 
-        }, []))), $path,  
+        }, []))), Template::path($path),  
                     strtolower($server['REQUEST_METHOD']));
         
         return function(callable $headers, callable $body) use ($protocol, $template) : void  {

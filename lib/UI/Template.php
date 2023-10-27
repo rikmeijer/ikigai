@@ -19,7 +19,7 @@ class Template {
         return file_exists($filepath) ? (require $filepath)() : [];
     }
     
-    static function negotiate(array $acceptedTypes, string $path, string $identifier, callable $found, callable $missingFile, callable $missingIdentifier, callable $missingType) : void {
+    static function negotiate(array $acceptedTypes, callable $path, string $identifier, callable $found, callable $missingFile, callable $missingIdentifier, callable $missingType) : void {
         \rikmeijer\purposeplan\lib\Functional\Functional::if_else(
                 fn(callable $directory) => is_dir($directory('')),
                 fn(callable $directory) => \rikmeijer\purposeplan\lib\Functional\Functional::if_else(
@@ -32,7 +32,7 @@ class Template {
                     fn(callable $template) => $missingIdentifier($template('*/*'))
                 )(fn(string $type) => $directory(DIRECTORY_SEPARATOR . $identifier . '.' . self::typeToExtension($type))),
                 fn(callable $directory) => $missingFile($directory(''))
-        )(self::path($path));
+        )($path);
     }
     
     static function typeToExtension(string $contentType) {
