@@ -16,6 +16,7 @@ jobs:
     
     env:
       SERVE_HOST: 127.0.0.1:8000
+      TEMPLATE_DIR: ./resources/view
 
     steps:
     - uses: actions/checkout@v3
