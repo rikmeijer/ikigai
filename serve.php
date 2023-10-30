@@ -14,7 +14,7 @@ use Monolog\Processor\PsrLogMessageProcessor;
 require __DIR__.'/bootstrap.php';
 
 // Note any PSR-3 logger may be used, Monolog is only an example.
-$logHandler = new StreamHandler(ByteStream\getStdout());
+$logHandler = new StreamHandler(File\openFile(__DIR__ . '/serve.log', 'w'));
 $logHandler->pushProcessor(new PsrLogMessageProcessor());
 $logHandler->setFormatter(new ConsoleFormatter());
 
@@ -42,7 +42,21 @@ $errorHandler = new DefaultErrorHandler();
 
 $server = SocketHttpServer::createForDirectAccess($logger);
 $server->expose(getenv('SERVE_HOST') ? getenv('SERVE_HOST') : $_ENV['SERVE_HOST']);
-$server->start($requestHandler, $errorHandler);
+$server->start($requestHandler, new class implements \Amp\Http\Server\ErrorHandler {
+    public function handleError(int $status, ?string $reason = null, ?Request $request = null): Response {
+        
+        $response = new Response(
+            headers: [
+                "content-type" => "text/html; charset=utf-8",
+            ],
+            body: file_get_contents(__DIR__ . '/serve.log'),
+        );
+
+        $response->setStatus($status, $reason);
+
+        return $response;
+    }
+});
 
 // Serve requests until SIGINT or SIGTERM is received by the process.
 Amp\trapSignal([SIGINT, SIGTERM]);
