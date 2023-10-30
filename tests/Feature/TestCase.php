@@ -9,7 +9,11 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     private $curl;
     
     public function open(string $path) {
-        $address = 'http://' . getenv('SERVE_HOST') . $path;
+        $host = getenv('SERVE_HOST') ? getenv('SERVE_HOST') : $_ENV['SERVE_HOST'];
+        
+        $this->assertNotEmpty($host, 'env var SERVE_HOST missing');
+        
+        $address = 'http://' . $host . $path;
         $this->curl = curl_init($address);
         curl_setopt_array($this->curl, [
             CURLOPT_HTTPHEADER => [

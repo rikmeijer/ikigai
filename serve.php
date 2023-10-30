@@ -41,7 +41,7 @@ $requestHandler = new class() implements RequestHandler {
 $errorHandler = new DefaultErrorHandler();
 
 $server = SocketHttpServer::createForDirectAccess($logger);
-$server->expose(getenv('SERVE_HOST'));
+$server->expose(getenv('SERVE_HOST') ? getenv('SERVE_HOST') : $_ENV['SERVE_HOST']);
 $server->start($requestHandler, $errorHandler);
 
 // Serve requests until SIGINT or SIGTERM is received by the process.
