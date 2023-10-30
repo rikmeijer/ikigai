@@ -1,54 +1,42 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace rikmeijer\purposeplan\lib\UI;
 
 use rikmeijer\purposeplan\lib\Functional\Functional;
 
 class Web {
-    
-    static function entry(array $server) : callable {
-        $protocol = fn(string $code) => $server['SERVER_PROTOCOL'] . ' ' . $code;
-        $path = $server['REQUEST_URI'];    
 
-        
-        $template = Functional::partial_left([Template::class, 'negotiate'], 
-                    array_keys(Functional::arsort(array_reduce(explode(',', $server['HTTP_ACCEPT']), function ($res, $el) {
-            list($l, $q) = array_merge(explode(';q=', $el), [1]); 
-            $res[$l] = (float) $q; 
-            return $res; 
-        }, []))), Template::path($path),  
-                    strtolower($server['REQUEST_METHOD']));
-        
-        return function(callable $headers, callable $body) use ($protocol, $template) : void  {
-            $respond = function(string $contentType, string $status, string $content) use ($protocol, $body, $headers) : void {
-                static $sent = false;
-                if ($sent) {
-                    return;
-                }
-                $headers($protocol($status));
-                $headers('Content-Type: ' . $contentType);
-                $body($content);
-                $sent = true;
-            };
-            $error = fn(string $code, string $description) => fn() => $respond('text/plain', $code . ' ' . $description, $description);
-            
-            $template(
-                    fn(string $type, callable $render) => $respond($type, '200 OK', $render()), 
-                    $error('404', 'File Not Found'),
-                    $error('405', 'Method Not Allowed'),
-                    $error('406', 'Not Acceptable')
-                    );
-        };
+    static function error(callable $respond) {
+        return fn(string $code, string $description) => fn() => $respond('text/plain', $code . ' ' . $description, $description);
     }
-    
+
+    static function entry(array $server): callable {
+        $path = $server['REQUEST_URI'];
+        
+        return fn(callable $respond) => Functional::partial_left([Template::class, 'negotiate'],
+                        array_keys(Functional::arsort(array_reduce(explode(',', $server['HTTP_ACCEPT']), function ($res, $el) {
+                                            list($l, $q) = array_merge(explode(';q=', $el), [1]);
+                                            $res[$l] = (float) $q;
+                                            return $res;
+                                        }, []))), Template::path($path),
+                        strtolower($server['REQUEST_METHOD']))(
+                        fn(string $type, callable $render) => $respond($type, '200 OK', $render()),
+                        self::error($respond)('404', 'File Not Found'),
+                        self::error($respond)('405', 'Method Not Allowed'),
+                        self::error($respond)('406', 'Not Acceptable')
+        );
+    }
+
     static function resourceMatcher(callable $template, string $path, callable $error) {
         return fn(string $identifier, callable $resource) => Functional::if_else(
-            Functional::partial_left('str_starts_with', $path), 
-            Functional::recurseTail(
-               fn(string $resource_path) => $resource($template),
-               fn(mixed $composed, string $resource_path) => fn(callable $router) => $router(self::resourceMatcher($template, substr($path, strlen($resource_path)), $error))
-            ),
-            fn() => Functional::nothing()
-        )('/' . $identifier);
+                        Functional::partial_left('str_starts_with', $path),
+                        Functional::recurseTail(
+                                fn(string $resource_path) => $resource($template),
+                                fn(mixed $composed, string $resource_path) => fn(callable $router) => $router(self::resourceMatcher($template, substr($path, strlen($resource_path)), $error))
+                        ),
+                        fn() => Functional::nothing()
+                )('/' . $identifier);
     }
 }

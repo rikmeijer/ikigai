@@ -10,6 +10,14 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         $this->assertTrue((new \ReflectionProperty($object, $property))->isReadOnly(), $message);
     }
     
+    public function expectResponse(string $expectedContentType, string $expectedStatus, string $expectedBody) {
+        return function(string $contentType, string $status, string $body) use ($expectedContentType, $expectedStatus, $expectedBody) {
+            $this->assertEquals($expectedContentType, $contentType);
+            $this->assertEquals($expectedStatus, $status);
+            $this->assertEquals($expectedBody, $body);
+        };
+    }
+    
     public function expectHeadersSent(array $expectedHeaders) : callable {
         return function(?string $header = null) use (&$expectedHeaders) { 
             $this->assertEquals(array_shift($expectedHeaders), $header); 

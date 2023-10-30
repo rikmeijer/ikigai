@@ -9,7 +9,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     private $curl;
     
     public function open(string $path) {
-        $this->curl = curl_init('http://localhost:8000' . $path);
+        $this->curl = curl_init('http://' . $_ENV['HTTP_HOST'] . $path);
         curl_setopt_array($this->curl, [
             CURLOPT_HTTPHEADER => [
                 'Accept: text/html'

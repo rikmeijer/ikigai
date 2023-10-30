@@ -23,7 +23,9 @@ jobs:
         php-version: '8.2'
 
     - name: Start internal PHP Webserver to run feature tests
-      run: nohup php -S localhost:8000 -t public/ > phpd.log 2>&1 &
+      env:
+        HTTP_HOST: "localhost:8000"
+      run: nohup php serve.php 2>&1 &
 
     - name: Validate composer.json and composer.lock
       run: composer validate --strict
