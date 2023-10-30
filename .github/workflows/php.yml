@@ -16,7 +16,6 @@ jobs:
     
     env:
       SERVE_HOST: 127.0.0.1:8000
-      TEMPLATE_DIR: ./resources/view
 
     steps:
     - uses: actions/checkout@v3
@@ -45,6 +44,8 @@ jobs:
     # Docs: https://getcomposer.org/doc/articles/scripts.md
 
     - name: Start internal PHP Webserver to run feature tests
+      env:
+        TEMPLATE_DIR: ./resources/view
       run: RUNNER_TRACKING_ID="" && php serve.php 2>&1 &
       
     - name: Run test suite
