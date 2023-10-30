@@ -39,11 +39,6 @@ jobs:
 
     # Add a test script to composer.json, for instance: "test": "vendor/bin/phpunit"
     # Docs: https://getcomposer.org/doc/articles/scripts.md
-
-    - name: Start internal PHP Webserver to run feature tests
-      env:
-        SERVE_HOST: 127.0.0.1:8000
-      run: nohup php serve.php 2>&1 &
       
     - name: Run test suite
-      run: composer run-script test
+      run: composer test
