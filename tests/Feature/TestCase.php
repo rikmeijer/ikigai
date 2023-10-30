@@ -9,7 +9,8 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     private $curl;
     
     public function open(string $path) {
-        $this->curl = curl_init('http://' . getenv('SERVE_HOST') . $path);
+        $address = 'http://' . getenv('SERVE_HOST') . $path;
+        $this->curl = curl_init($address);
         curl_setopt_array($this->curl, [
             CURLOPT_HTTPHEADER => [
                 'Accept: text/html'
@@ -17,7 +18,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
             CURLOPT_RETURNTRANSFER => true
         ]);
         $this->result = curl_exec($this->curl);
-        $this->assertNotFalse($this->result, curl_error($this->curl));
+        $this->assertNotFalse($this->result, '['.$address.'] ' . curl_error($this->curl));
         $this->assertStringNotContainsString('Warning', $this->result);
         $this->assertStringNotContainsString('Error', $this->result);
     }
