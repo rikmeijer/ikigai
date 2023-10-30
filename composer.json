@@ -27,8 +27,6 @@
     "prefer-stable": true,
     "scripts": {
         "test": [
-            "@putenv SERVE_HOST=127.0.0.1:8001",
-            "@php serve.php &",
             "vendor/bin/phpunit -c phpunit.xml"
         ]
     }
