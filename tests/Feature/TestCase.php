@@ -17,6 +17,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
             CURLOPT_RETURNTRANSFER => true
         ]);
         $this->result = curl_exec($this->curl);
+        $this->assertNotFalse($this->result, curl_error($this->curl));
         $this->assertStringNotContainsString('Warning', $this->result);
         $this->assertStringNotContainsString('Error', $this->result);
     }
