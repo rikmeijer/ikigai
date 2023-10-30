@@ -1,6 +1,4 @@
 <?php
-use Amp\ByteStream;
-use Amp\Http\HttpStatus;
 use Amp\Http\Server\DefaultErrorHandler;
 use Amp\Http\Server\Request;
 use Amp\Http\Server\RequestHandler;
@@ -14,7 +12,7 @@ use Monolog\Processor\PsrLogMessageProcessor;
 require __DIR__.'/bootstrap.php';
 
 // Note any PSR-3 logger may be used, Monolog is only an example.
-$logHandler = new StreamHandler(File\openFile(__DIR__ . '/serve.log', 'w'));
+$logHandler = new StreamHandler(Amp\File\openFile(__DIR__ . '/serve.log', 'w'));
 $logHandler->pushProcessor(new PsrLogMessageProcessor());
 $logHandler->setFormatter(new ConsoleFormatter());
 
