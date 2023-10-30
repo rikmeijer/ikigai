@@ -43,7 +43,7 @@ jobs:
     - name: Start internal PHP Webserver to run feature tests
       env:
         SERVE_HOST: 127.0.0.1:8000
-      run: RUNNER_TRACKING_ID="" && php serve.php 2>&1
+      run: RUNNER_TRACKING_ID="" && php serve.php 2>&1 &
       
     - name: Run test suite
       run: composer test
