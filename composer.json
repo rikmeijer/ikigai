@@ -9,7 +9,8 @@
         "vlucas/phpdotenv": "^5.5",
         "lambdish/phunctional": "^2.1",
         "amphp/http-server": "^3.2",
-        "amphp/log": "^2.0"
+        "amphp/log": "^2.0",
+        "ext-pcntl": "*"
     },
     "require-dev": {
         "phpunit/phpunit": "^10.1"
@@ -26,6 +27,10 @@
     "minimum-stability": "stable",
     "prefer-stable": true,
     "scripts": {
+        "serve": [
+            "Composer\\Config::disableProcessTimeout",
+            "php serve.php"
+        ],
         "test": [
             "vendor/bin/phpunit -c phpunit.xml"
         ]
