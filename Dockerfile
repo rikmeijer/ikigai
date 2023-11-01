@@ -5,7 +5,7 @@ ARG SERVE_HOST="0.0.0.0:$SERVE_PORT"
 
 RUN ["apt-get", "update"]
 RUN ["apt-get", "install", "-y", "libmcrypt-dev", "libzip-dev", "zip"]
-RUN ["docker-php-ext-install", "-j$(nproc)", "pcntl"]
+RUN ["docker-php-ext-install", "pcntl"]
 RUN ["docker-php-ext-install", "zip"]
 
 COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
