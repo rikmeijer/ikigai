@@ -92,6 +92,7 @@ jobs:
           context: .
           platforms: ${{ matrix.platform }}
           push: true
+          provenance: false
           labels: ${{ steps.meta.outputs.labels }}
           tags: ghcr.io/${{ env.REGISTRY_IMAGE }}:latest
 
