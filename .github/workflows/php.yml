@@ -10,8 +10,7 @@ permissions:
   contents: read
 
 jobs:
-  build:
-
+  test:
     runs-on: ubuntu-latest
     
     env:
@@ -50,3 +49,24 @@ jobs:
       
     - name: Run test suite
       run: composer test
+      
+  push-store-image:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: '.'
+    steps:
+      - name: 'Checkout GitHub Action'
+        uses: actions/checkout@main
+  
+      - name: 'Login to GitHub Container Registry'
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{github.actor}}
+          password: ${{secrets.GITHUB_TOKEN}}
+  
+      - name: 'Build Container'
+        run: |
+          docker build . --tag ghcr.io/rikmeijer/ikigai:latest
+          docker push ghcr.io/rikmeijer/ikigai:latest
