@@ -52,6 +52,9 @@ jobs:
       
   push-store-image:
     needs: test
+    permissions:
+      contents: read
+      packages: write
     runs-on: ubuntu-latest
     defaults:
       run:
