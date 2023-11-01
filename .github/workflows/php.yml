@@ -80,4 +80,4 @@ jobs:
   
       - name: 'Build Container'
         run: |
-          docker buildx build -t ghcr.io/rikmeijer/ikigai:latest --platform ${{ matrix.platform }} --push ghcr.io/rikmeijer/ikigai:latest
+          docker buildx build -t "ghcr.io/rikmeijer/ikigai:latest" --platform ${{ matrix.platform }} --push .
