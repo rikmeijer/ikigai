@@ -1,6 +1,8 @@
 version: '3.8'
 services:
   ikigai:
+    environment:
+      - SERVE_HOST=${SERVE_HOST}
     image: "ghcr.io/rikmeijer/ikigai:latest"
     ports:
       - "8081:8000"
