@@ -1,8 +1,6 @@
 version: '3.8'
 services:
   ikigai:
-    build: 
-      context: .
-      dockerfile: Dockerfile
+    image: "ghcr.io/rikmeijer/ikigai:latest"
     ports:
       - "8081:8000"
