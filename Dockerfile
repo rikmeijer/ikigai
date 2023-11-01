@@ -22,4 +22,4 @@ EXPOSE $SERVE_PORT
 USER www-data
 
 RUN ["composer", "install", "--no-dev"]
-RUN ["composer", "serve"]
+ENTRYPOINT ["composer", "serve"]
