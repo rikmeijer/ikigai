@@ -51,6 +51,7 @@ jobs:
       run: composer test
       
   push-store-image:
+    needs: test
     runs-on: ubuntu-latest
     defaults:
       run:
