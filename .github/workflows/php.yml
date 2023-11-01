@@ -93,5 +93,5 @@ jobs:
           platforms: ${{ matrix.platform }}
           push: true
           labels: ${{ steps.meta.outputs.labels }}
-          tags: ghcr.io/${{ env.REGISTRY_IMAGE }}
+          tags: ghcr.io/${{ env.REGISTRY_IMAGE }}:latest
 
