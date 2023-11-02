@@ -21,16 +21,22 @@ class Template {
         return file_exists($filepath) ? (require $filepath) : fn(string $identifier) => null;
     }
     
+    
+    
     static function negotiate(array $acceptedTypes, callable $path, string $identifier, callable $found, callable $missingFile, callable $missingIdentifier, callable $missingType) : void {
+
+        
+        $findType = fn(callable $directory, callable $template) => \rikmeijer\purposeplan\lib\Functional\Functional::find(
+            fn(string $acceptedType) => file_exists($template($acceptedType)),
+            fn(string $acceptedType) => $found(fn(callable $send) => $send($acceptedType, Template::render(file_get_contents($template($acceptedType)))(self::open($directory('.php'))))),
+            $missingType
+        )($acceptedTypes);
+        
         \rikmeijer\purposeplan\lib\Functional\Functional::if_else(
                 fn(callable $directory) => is_dir($directory('')),
                 fn(callable $directory) => \rikmeijer\purposeplan\lib\Functional\Functional::if_else(
                     fn(callable $template) => count(glob($template('*/*'))) > 0, 
-                    fn(callable $template) => \rikmeijer\purposeplan\lib\Functional\Functional::find(
-                        fn(string $acceptedType) => file_exists($template($acceptedType)),
-                        fn(string $acceptedType) => $found(fn(callable $send) => $send($acceptedType, Template::render(file_get_contents($template($acceptedType)))(self::open($directory('.php'))))),
-                        $missingType
-                    )($acceptedTypes), 
+                    fn(callable $template) => Functional::partial_left($findType, $directory), 
                     fn(callable $template) => $missingIdentifier($template('*/*'))
                 )(fn(string $type) => $directory(DIRECTORY_SEPARATOR . $identifier . '.' . self::typeToExtension($type))),
                 fn(callable $directory) => $missingFile($directory(''))
