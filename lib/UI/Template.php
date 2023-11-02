@@ -28,7 +28,7 @@ class Template {
                     fn(callable $template) => count(glob($template('*/*'))) > 0, 
                     fn(callable $template) => \rikmeijer\purposeplan\lib\Functional\Functional::find(
                         fn(string $acceptedType) => file_exists($template($acceptedType)),
-                        fn(string $acceptedType) => $found(fn(callable $sendType) => $sendType($acceptedType, Template::render(file_get_contents($template($acceptedType)), self::open($directory('.php'))))),
+                        fn(string $acceptedType) => $found(fn(callable $send) => $send($acceptedType, Template::render(file_get_contents($template($acceptedType)), self::open($directory('.php'))))),
                         $missingType
                     )($acceptedTypes), 
                     fn(callable $template) => $missingIdentifier($template('*/*'))
