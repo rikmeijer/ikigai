@@ -8,9 +8,9 @@ use \rikmeijer\purposeplan\lib\Functional\Functional;
 
 class Template {
     
-    static function render(callable $sendType, string $html, callable ...$blocks) {
+    static function render(callable $sendType, string $html, callable $blocks) {
         $sendType();
-        return preg_replace_callback('/<block\s+name="(\w+)"\s+\/>/', fn(array $matches) => $blocks[$matches[1]](), $html);
+        return preg_replace_callback('/<block\s+name="(\w+)"\s+\/>/', fn(array $matches) => $blocks()[$matches[1]](), $html);
     }
     
     static function path(string $path) : callable {
@@ -18,8 +18,8 @@ class Template {
         return fn(string $file) => realpath(getenv('TEMPLATE_DIR') ? getenv('TEMPLATE_DIR') : $_ENV['TEMPLATE_DIR']) . ($path === '/' ? '' : $path) . $file;
     }
     
-    static function open(string $filepath) : array {
-        return file_exists($filepath) ? (require $filepath)() : [];
+    static function open(string $filepath) : callable {
+        return fn() => file_exists($filepath) ? (require $filepath)() : [];
     }
     
     static function negotiate(array $acceptedTypes, callable $path, string $identifier, callable $found, callable $missingFile, callable $missingIdentifier, callable $missingType) : mixed {
@@ -29,7 +29,7 @@ class Template {
                     fn(callable $template) => count(glob($template('*/*'))) > 0, 
                     fn(callable $template) => \rikmeijer\purposeplan\lib\Functional\Functional::find(
                         fn(string $acceptedType) => file_exists($template($acceptedType)),
-                        fn(string $acceptedType) => $found(fn(callable $sendType) => Template::render(fn() => $sendType($acceptedType), file_get_contents($template($acceptedType)), ...self::open($directory('.php')))),
+                        fn(string $acceptedType) => $found(fn(callable $sendType) => Template::render(fn() => $sendType($acceptedType), file_get_contents($template($acceptedType)), self::open($directory('.php')))),
                         $missingType
                     )($acceptedTypes), 
                     fn(callable $template) => $missingIdentifier($template('*/*'))
