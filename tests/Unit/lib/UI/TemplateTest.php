@@ -11,12 +11,12 @@ class TemplateTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
     
     public function test_replaceBlockElement(): void
     {
-        $this->assertEquals('<html>Hello World</html>', Template::render(fn() => null, '<html><block name="world" /></html>', fn(string $identifier) => match($identifier) {'world' => 'Hello World'}));
+        $this->assertEquals('<html>Hello World</html>', Template::render('<html><block name="world" /></html>', fn(string $identifier) => match($identifier) {'world' => 'Hello World'}));
     }
     
     public function test_replaceBlockElements(): void
     {
-        $this->assertEquals('<html>Hello WorldHello Universe</html>', Template::render(fn() => null, '<html><block name="world" /><block name="universe" /></html>', fn(string $identifier) => match($identifier) {
+        $this->assertEquals('<html>Hello WorldHello Universe</html>', Template::render('<html><block name="world" /><block name="universe" /></html>', fn(string $identifier) => match($identifier) {
             'world' => 'Hello World',
             'universe' => 'Hello Universe'
         }));
@@ -29,7 +29,10 @@ class TemplateTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
         $this->prepareTemplate('/', $method . '.html', '<html>Hello World</html>');
         $this->prepareTemplate('/', $method . '.txt', 'Hello World');
         
-        Template::negotiate(['text/html', 'text/plain'], Template::path('/'), $method, fn(callable $contents) => $this->assertEquals('<html>Hello World</html>', $contents(fn() => 'text/html')), fn() => false, fn() => false, fn() => false);
+        Template::negotiate(['text/html', 'text/plain'], Template::path('/'), $method, fn(callable $contents) => $contents(function(string $type, string $body) {
+            $this->assertEquals('text/html', $type);
+            $this->assertEquals('<html>Hello World</html>', $body);
+        }), fn() => false, fn() => false, fn() => false);
     }
     
     
