@@ -10,7 +10,7 @@ class Template {
     
     static function render(callable $sendType, string $html, callable $blocks) {
         $sendType();
-        return preg_replace_callback('/<block\s+name="(\w+)"\s+\/>/', fn(array $matches) => $blocks()[$matches[1]](), $html);
+        return preg_replace_callback('/<block\s+name="(\w+)"\s+\/>/', fn(array $matches) => $blocks($matches[1]), $html);
     }
     
     static function path(string $path) : callable {
@@ -19,7 +19,7 @@ class Template {
     }
     
     static function open(string $filepath) : callable {
-        return fn() => file_exists($filepath) ? (require $filepath)() : [];
+        return file_exists($filepath) ? (require $filepath) : fn(string $identifier) => null;
     }
     
     static function negotiate(array $acceptedTypes, callable $path, string $identifier, callable $found, callable $missingFile, callable $missingIdentifier, callable $missingType) : mixed {

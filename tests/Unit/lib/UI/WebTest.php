@@ -125,9 +125,7 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
         $method = uniqid();
         $path = '/test';
         $this->prepareTemplate($path, $method . '.txt', '<block name="content" />');
-        $this->prepareLogic($path, "[
-                            'content' => fn() => 'Hello Universe'
-                        ]");
+        $this->prepareLogic($path, "'content' => 'Hello Universe'");
 
         $response = Web::entry([
                     'REQUEST_METHOD' => strtoupper($method),
@@ -143,9 +141,7 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
         $method = uniqid();
         $path = '/';
         $this->prepareTemplate($path, $method . '.txt', '<block name="content" />');
-        $this->prepareLogic($path, "[
-                            'content' => fn() => 'Hello Universe'
-                        ]");
+        $this->prepareLogic($path, "'content' => 'Hello Universe'");
 
         $response = Web::entry([
                     'REQUEST_METHOD' => strtoupper($method),
