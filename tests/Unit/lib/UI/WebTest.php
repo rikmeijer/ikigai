@@ -115,7 +115,7 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
                     'REQUEST_METHOD' => strtoupper($method),
                     'REQUEST_URI' => $path,
                     'SERVER_PROTOCOL' => 'HTTP/2',
-                    'HTTP_ACCEPT' => 'text/plain, application/xhtml+xml, application/json;q=0.9, */*;q=0.8'
+                    'HTTP_ACCEPT' => 'text/plain,application/xhtml+xml,application/json;q=0.8,*/*;q=0.7'
         ]);
 
         $response($this->expectResponse('text/plain', '200 OK', 'Hello World'));
@@ -131,7 +131,7 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
                     'REQUEST_METHOD' => strtoupper($method),
                     'REQUEST_URI' => $path,
                     'SERVER_PROTOCOL' => 'HTTP/2',
-                    'HTTP_ACCEPT' => 'text/plain, application/xhtml+xml, application/json;q=0.9, */*;q=0.8'
+                    'HTTP_ACCEPT' => 'text/plain,application/xhtml+xml,application/json;q=0.9,*/*;q=0.8'
         ]);
 
         $response($this->expectResponse('text/plain', '200 OK', 'Hello Universe'));
@@ -147,7 +147,7 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
                     'REQUEST_METHOD' => strtoupper($method),
                     'REQUEST_URI' => $path,
                     'SERVER_PROTOCOL' => 'HTTP/2',
-                    'HTTP_ACCEPT' => 'text/plain, application/xhtml+xml, application/json;q=0.9, */*;q=0.8'
+                    'HTTP_ACCEPT' => 'text/plain,application/xhtml+xml,application/json;q=0.9,*/*;q=0.8'
         ]);
 
         $response($this->expectResponse('text/plain', '200 OK', 'Hello Universe'));

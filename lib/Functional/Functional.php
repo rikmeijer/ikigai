@@ -16,6 +16,27 @@ final class Functional {
         return fn(mixed ...$args) => $fn(...array_merge($args, $args_right));
     }
     
+    static function each(callable $fn, callable $empty) : callable {
+        return fn(array $array) => empty($array) ? $empty() : array_walk($array, $fn);
+    }
+    
+    static function first(callable $fn, callable $empty) : callable {
+        $each = self::each($fn, $empty);
+        return fn(array $array) => $each(array_slice($array, 0, 1));
+    }
+    
+    static function filter(callable $fn) : callable {
+        return function(array $array) use ($fn) {
+            $filtered = [];
+            foreach ($array as $key => $value) {
+                if ($fn($value, $key) === true) {
+                    $filtered[$key] = $value;
+                }
+            }
+            return $filtered;
+        };
+    }
+    
     static function map(callable $fn) : callable {
         return function(array $array) use ($fn) {
             $map = [];
@@ -30,7 +51,7 @@ final class Functional {
     static function find(callable $condition, callable $if, callable $else) : callable {
         return function(array $array) use ($condition, $if, $else) {
             foreach ($array as $key => $value) {
-                if ($condition($value, $key)) {
+                if ($condition($value, $key) === true) {
                     return $if($value, $key);
                 }
             }

@@ -24,18 +24,15 @@ class Template {
     
     
     static function negotiate(array $acceptedTypes, callable $directory, string $identifier, callable $found, callable $missingFile, callable $missingIdentifier, callable $missingType) : void {
-
-        
         $template = fn(string $type) => $directory(DIRECTORY_SEPARATOR . $identifier . '.' . self::typeToExtension($type));
-        
-        $findType = fn(string $templatePath) => \rikmeijer\purposeplan\lib\Functional\Functional::find(
-            fn(string $acceptedType) => file_exists($template($acceptedType)),
-            fn(string $acceptedType) => $found(fn(callable $send) => $send($acceptedType, Template::render(file_get_contents($template($acceptedType)))(self::open($directory('.php'))))),
+
+        $findType = Functional::first(
+            fn(string $typePath, string $acceptedType) => $found(fn(callable $send) => $send($acceptedType, Template::render(file_get_contents($typePath))(self::open($directory('.php'))))),
             $missingType
-        )($acceptedTypes);
+        );
         
         $templatesAvailable = fn(string $templatePath) => count(glob($templatePath)) > 0;
-        $findMethod = fn(string $path) => \rikmeijer\purposeplan\lib\Functional\Functional::if_else($templatesAvailable, $findType, $missingIdentifier)($template('*/*'));
+        $findMethod = fn(string $path) => \rikmeijer\purposeplan\lib\Functional\Functional::if_else($templatesAvailable, fn(string $templatePath) => $findType(Functional::filter(fn(string $v, string $k) => file_exists($v))(Functional::map(fn(float $v, string $k) => $template($k))($acceptedTypes))), $missingIdentifier)($template('*/*'));
         \rikmeijer\purposeplan\lib\Functional\Functional::if_else('is_dir', $findMethod, $missingFile)($directory(''));
     }
     
@@ -44,6 +41,7 @@ class Template {
             'text/html' => 'html',
             'text/plain' => 'txt',
             'application/json' => 'json.php',
+            'application/xhtml+xml' => 'xhtml',
             '*/*' => '*'
         };
     }

@@ -81,6 +81,32 @@ class FunctionalTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
         
     }
     
+    public function test_eachWhenNotEmpty() {
+        $each = Functional::each(fn($value, $key) => $this->assertEquals(1, $value), fn() => $this->assertFalse(true));
+        
+        $each([1]);
+    }
+    
+    public function test_eachWhenEmpty() {
+        $each = Functional::each(fn($value, $key) => $this->assertFalse(true), Functional::nothing());
+        $each([]);
+    }
+
+    public function test_firstWhenNotEmpty() {
+        $each = Functional::first(fn($value, $key) => $this->assertEquals(1, $value), fn() => $this->assertFalse(true));
+        
+        $each([1,2,3]);
+    }
+    
+    public function test_firstWhenEmpty() {
+        $each = Functional::first(fn($value, $key) => $this->assertFalse(true), Functional::nothing());
+        $each([]);
+    }
+    
+    public function test_filter() {
+        $filter = Functional::filter(fn($v, $k) => $v === 1);
+        $this->assertEquals([1], $filter([1,2,3]));
+    }
     
     public function test_nothing() {
         $this->assertNull(Functional::nothing()());
