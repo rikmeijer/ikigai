@@ -103,6 +103,10 @@ class FunctionalTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
         $each([]);
     }
     
+    public function test_intersect() {
+        $this->assertEquals(['a' => 1, 'c' => 3, 'e' =>5], Functional::intersect(['a' => 1, 'b' => 2, 'c' => 3, 'd'=>4, 'e' => 5])([1,3,5,6,7,8]));
+    }
+    
     public function test_filter() {
         $filter = Functional::filter(fn($v, $k) => $v === 1);
         $this->assertEquals([1], $filter([1,2,3]));

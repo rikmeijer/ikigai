@@ -31,8 +31,8 @@ class Template {
             $missingType
         );
         
-        $templatesAvailable = fn(string $templatePath) => count(glob($templatePath)) > 0;
-        $findMethod = fn(string $path) => \rikmeijer\purposeplan\lib\Functional\Functional::if_else($templatesAvailable, fn(string $templatePath) => $findType(Functional::filter(fn(string $v, string $k) => file_exists($v))(Functional::map(fn(float $v, string $k) => $template($k))($acceptedTypes))), $missingIdentifier)($template('*/*'));
+        $ifTemplatesUnavailable = Functional::partial_left([Functional::class, 'if_else'], fn(array $availableTemplates) => count($availableTemplates) === 0, $missingIdentifier);
+        $findMethod = fn(string $path) => $ifTemplatesUnavailable(fn(array $availableTemplates) => $findType(Functional::intersect(Functional::map(fn(float $v, string $k) => $template($k))($acceptedTypes))($availableTemplates)))(glob($template('*/*')));
         \rikmeijer\purposeplan\lib\Functional\Functional::if_else('is_dir', $findMethod, $missingFile)($directory(''));
     }
     

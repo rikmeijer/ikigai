@@ -9,6 +9,10 @@ namespace rikmeijer\purposeplan\lib\Functional;
  */
 final class Functional {
     
+    static function intersect(array $origin) : callable {
+        return fn(array $array) => array_intersect($origin, $array);
+    }
+    
     static function partial_left(callable $fn, mixed ...$args_left) {
         return fn(mixed ...$args) => $fn(...array_merge($args_left, $args));
     }
