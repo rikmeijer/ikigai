@@ -23,24 +23,20 @@ class Template {
     
     
     
-    static function negotiate(array $acceptedTypes, callable $path, string $identifier, callable $found, callable $missingFile, callable $missingIdentifier, callable $missingType) : void {
+    static function negotiate(array $acceptedTypes, callable $directory, string $identifier, callable $found, callable $missingFile, callable $missingIdentifier, callable $missingType) : void {
 
         
-        $findType = fn(callable $directory, callable $template) => \rikmeijer\purposeplan\lib\Functional\Functional::find(
+        $template = fn(string $type) => $directory(DIRECTORY_SEPARATOR . $identifier . '.' . self::typeToExtension($type));
+        
+        $findType = fn(string $templatePath) => \rikmeijer\purposeplan\lib\Functional\Functional::find(
             fn(string $acceptedType) => file_exists($template($acceptedType)),
             fn(string $acceptedType) => $found(fn(callable $send) => $send($acceptedType, Template::render(file_get_contents($template($acceptedType)))(self::open($directory('.php'))))),
             $missingType
         )($acceptedTypes);
         
-        \rikmeijer\purposeplan\lib\Functional\Functional::if_else(
-                fn(callable $directory) => is_dir($directory('')),
-                fn(callable $directory) => \rikmeijer\purposeplan\lib\Functional\Functional::if_else(
-                    fn(callable $template) => count(glob($template('*/*'))) > 0, 
-                    fn(callable $template) => Functional::partial_left($findType, $directory), 
-                    fn(callable $template) => $missingIdentifier($template('*/*'))
-                )(fn(string $type) => $directory(DIRECTORY_SEPARATOR . $identifier . '.' . self::typeToExtension($type))),
-                fn(callable $directory) => $missingFile($directory(''))
-        )($path);
+        $templatesAvailable = fn(string $templatePath) => count(glob($templatePath)) > 0;
+        $findMethod = fn(string $path) => \rikmeijer\purposeplan\lib\Functional\Functional::if_else($templatesAvailable, $findType, $missingIdentifier)($template('*/*'));
+        \rikmeijer\purposeplan\lib\Functional\Functional::if_else('is_dir', $findMethod, $missingFile)($directory(''));
     }
     
     static function typeToExtension(string $contentType) {
