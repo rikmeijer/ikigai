@@ -21,11 +21,12 @@ class Template {
         return file_exists($filepath) ? (require $filepath) : fn(string $identifier) => null;
     }
     
+    static function filepath(callable $directory, string $identifier) {
+        return fn(string $type) => $directory(DIRECTORY_SEPARATOR . $identifier . '.' . self::typeToExtension($type));
+    }
     
     
-    static function negotiate(array $acceptedTypes, callable $directory, string $identifier, callable $found, callable $missingFile, callable $missingIdentifier, callable $missingType) : void {
-        $template = fn(string $type) => $directory(DIRECTORY_SEPARATOR . $identifier . '.' . self::typeToExtension($type));
-
+    static function negotiate(array $acceptedTypes, callable $directory, callable $template, callable $found, callable $missingFile, callable $missingIdentifier, callable $missingType) : void {
         $findType = Functional::first(
             fn(string $typePath, string $acceptedType) => $found(fn(callable $send) => $send($acceptedType, Template::render(file_get_contents($typePath))(self::open($directory('.php'))))),
             $missingType

@@ -14,14 +14,14 @@ class Web {
 
     static function entry(array $server): callable {
         $path = $server['REQUEST_URI'];
-        
+        $directory = Template::path($path);
         return fn(callable $respond) => Functional::partial_left([Template::class, 'negotiate'],
                         Functional::arsort(array_reduce(explode(',', $server['HTTP_ACCEPT']), function ($res, $el) {
                                             list($l, $q) = array_merge(explode(';q=', $el), [1]);
                                             $res[$l] = (float) $q;
                                             return $res;
-                                        }, [])), Template::path($path),
-                        strtolower($server['REQUEST_METHOD']))(
+                                        }, [])), $directory,
+                        Template::filepath($directory, strtolower($server['REQUEST_METHOD'])))(
                         Functional::partial_left($respond, '200 OK'),
                         self::error($respond)('404', 'File Not Found'),
                         self::error($respond)('405', 'Method Not Allowed'),
