@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace rikmeijer\purposeplan\lib\UI;
 
+use \rikmeijer\purposeplan\lib\Functional\Functional;
+
 class Template {
     
     static function render(string $html, callable ...$blocks) {

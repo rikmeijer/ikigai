@@ -9,7 +9,7 @@ use rikmeijer\purposeplan\lib\Functional\Functional;
 class Web {
 
     static function error(callable $respond) {
-        return fn(string $code, string $description) => fn() => $respond('text/plain', $code . ' ' . $description, $description);
+        return fn(string $code, string $description) => fn() => $respond($code . ' ' . $description, 'text/plain', fn() => $description);
     }
 
     static function entry(array $server): callable {
@@ -22,7 +22,7 @@ class Web {
                                             return $res;
                                         }, []))), Template::path($path),
                         strtolower($server['REQUEST_METHOD']))(
-                        fn(string $type, callable $render) => $respond($type, '200 OK', $render()),
+                        Functional::partial_left($respond, '200 OK'),
                         self::error($respond)('404', 'File Not Found'),
                         self::error($respond)('405', 'Method Not Allowed'),
                         self::error($respond)('406', 'Not Acceptable')
