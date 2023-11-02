@@ -6,7 +6,7 @@ namespace rikmeijer\purposeplan\tests\Feature;
 
 class IndexTest extends \rikmeijer\purposeplan\Tests\Feature\TestCase {
     
-    public function testIndexPageShowsHelloWorld() {
+    public function testIndexPageContainsHTMLtags() {
         $this->open('/');
         
         $this->assertResponseCode('200');
@@ -15,4 +15,11 @@ class IndexTest extends \rikmeijer\purposeplan\Tests\Feature\TestCase {
         $this->assertBodyContains('</html>');
     }
     
+    
+    public function testIndexPageContainsApplicationVersion() {
+        $this->open('/');
+        
+        $this->assertResponseCode('200');
+        $this->assertBodyContains(file_get_contents(dirname(dirname(__DIR__)) . '/VERSION'));
+    }
 }
