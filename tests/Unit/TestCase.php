@@ -59,9 +59,4 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         
         return $template_identifier; 
     }
-    
-    public function prepareTemplates(string $method, array $templateByContentType) {
-        $_ENV['TEMPLATE_DIR'] = sys_get_temp_dir();
-        return \rikmeijer\purposeplan\lib\Functional\Functional::map(fn(string $contents, string $contentType) => file_put_contents($_ENV['TEMPLATE_DIR'] . DIRECTORY_SEPARATOR . $method . '.' . \rikmeijer\purposeplan\lib\UI\Template::typeToExtension($contentType), $contents))($templateByContentType);
-    }
 }
