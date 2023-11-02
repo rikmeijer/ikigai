@@ -30,10 +30,10 @@ $requestHandler = new class() implements RequestHandler {
             'SERVER_PROTOCOL' => $request->getProtocolVersion(),
             'HTTP_ACCEPT' => $request->getHeader('Accept')
         ]);
-        return $response(fn(string $status, string $type, callable $body) => new Response(
+        return $response(fn(string $status, callable $body) => new Response(
             status: substr($status, 0, 3),
-            headers: ['Content-Type' => $type],
-            body: $body()
+            body: $body(function(string $contentType) use (&$type) { $type = $contentType; }),
+            headers: ['Content-Type' => $type]
         ));
     }
 };

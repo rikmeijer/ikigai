@@ -11,10 +11,11 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     }
     
     public function expectResponse(string $expectedContentType, string $expectedStatus, string $expectedBody) {
-        return function(string $status, string $contentType, callable $body) use ($expectedContentType, $expectedStatus, $expectedBody) {
-            $this->assertEquals($expectedContentType, $contentType);
+        return function(string $status, callable $body) use ($expectedContentType, $expectedStatus, $expectedBody) {
             $this->assertEquals($expectedStatus, $status);
-            $this->assertEquals($expectedBody, $body());
+            $this->assertEquals($expectedBody, $body(function(string $contentType) use ($expectedContentType) {
+                $this->assertEquals($expectedContentType, $contentType);
+            }));
         };
     }
     

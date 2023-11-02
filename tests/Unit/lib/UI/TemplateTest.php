@@ -11,12 +11,12 @@ class TemplateTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
     
     public function test_replaceBlockElement(): void
     {
-        $this->assertEquals('<html>Hello World</html>', Template::render('<html><block name="world" /></html>', ...['world' => fn() => 'Hello World']));
+        $this->assertEquals('<html>Hello World</html>', Template::render(fn() => null, '<html><block name="world" /></html>', ...['world' => fn() => 'Hello World']));
     }
     
     public function test_replaceBlockElements(): void
     {
-        $this->assertEquals('<html>Hello WorldHello Universe</html>', Template::render('<html><block name="world" /><block name="universe" /></html>', ...[
+        $this->assertEquals('<html>Hello WorldHello Universe</html>', Template::render(fn() => null, '<html><block name="world" /><block name="universe" /></html>', ...[
             'world' => fn() => 'Hello World',
             'universe' => fn() => 'Hello Universe'
         ]));
@@ -29,7 +29,7 @@ class TemplateTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
         $this->prepareTemplate('/', $method . '.html', '<html>Hello World</html>');
         $this->prepareTemplate('/', $method . '.txt', 'Hello World');
         
-        Template::negotiate(['text/html', 'text/plain'], Template::path('/'), $method, fn(string $type, callable $contents) => $this->assertEquals('<html>Hello World</html>', $contents()), fn() => false, fn() => false, fn() => false);
+        Template::negotiate(['text/html', 'text/plain'], Template::path('/'), $method, fn(callable $contents) => $this->assertEquals('<html>Hello World</html>', $contents(fn() => 'text/html')), fn() => false, fn() => false, fn() => false);
     }
     
     
@@ -38,7 +38,7 @@ class TemplateTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
         $method = uniqid();
         $this->prepareTemplate('/', $method . '.html', 'Hello World');
         
-        Template::negotiate(['text/html'], Template::path('/blabla'), 'post', fn(string $type, string $contents) => $this->assertNull(true), fn() => $this->assertTrue(true), fn() => $this->assertFalse(true), fn() => $this->assertFalse(true));
+        Template::negotiate(['text/html'], Template::path('/blabla'), 'post', fn(callable $contents) => $this->assertNull(true), fn() => $this->assertTrue(true), fn() => $this->assertFalse(true), fn() => $this->assertFalse(true));
     }
     
     public function test_selectByMissingTemplateIdentifier(): void
@@ -46,7 +46,7 @@ class TemplateTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
         $method = uniqid();
         $this->prepareTemplate('/', $method . '.html', 'Hello World');
         
-        Template::negotiate(['text/html'], Template::path('/'), 'post', fn(string $type, string $contents) => $this->assertNull(true), fn() => $this->assertFalse(true), fn() => $this->assertTrue(true), fn() => $this->assertFalse(true));
+        Template::negotiate(['text/html'], Template::path('/'), 'post', fn(callable $contents) => $this->assertNull(true), fn() => $this->assertFalse(true), fn() => $this->assertTrue(true), fn() => $this->assertFalse(true));
     }
     
     public function test_selectByUnselectableAcceptedType(): void
@@ -54,6 +54,6 @@ class TemplateTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
         $method = uniqid();
         $this->prepareTemplate('/', $method . '.txt', 'Hello World');
         
-        Template::negotiate(['text/html'], Template::path('/'), $method, fn(string $type, string $contents) => $this->assertFalse(true), fn() => $this->assertFalse(true), fn() => $this->assertNull(true), fn() => $this->assertTrue(true));
+        Template::negotiate(['text/html'], Template::path('/'), $method, fn(callable $contents) => $this->assertFalse(true), fn() => $this->assertFalse(true), fn() => $this->assertNull(true), fn() => $this->assertTrue(true));
     }
 }

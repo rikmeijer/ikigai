@@ -31,6 +31,11 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         $this->assertEquals($expectedCode, curl_getinfo($this->curl,  CURLINFO_RESPONSE_CODE));
     }
     
+    
+    public function assertContentType(string $expectedContentType) {
+        $this->assertEquals($expectedContentType, curl_getinfo($this->curl, CURLINFO_CONTENT_TYPE));
+    }
+    
     public function assertBodyEquals(string $expectedBody) {
         $this->assertEquals($expectedBody, $this->result);
     }

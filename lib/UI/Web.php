@@ -9,7 +9,7 @@ use rikmeijer\purposeplan\lib\Functional\Functional;
 class Web {
 
     static function error(callable $respond) {
-        return fn(string $code, string $description) => fn() => $respond($code . ' ' . $description, 'text/plain', fn() => $description);
+        return fn(string $code, string $description) => fn() => $respond($code . ' ' . $description, fn(callable $type) => $description);
     }
 
     static function entry(array $server): callable {
