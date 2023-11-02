@@ -12,6 +12,9 @@ final class Functional {
     static function partial_left(callable $fn, mixed ...$args_left) {
         return fn(mixed ...$args) => $fn(...array_merge($args_left, $args));
     }
+    static function partial_right(callable $fn, mixed ...$args_right) {
+        return fn(mixed ...$args) => $fn(...array_merge($args, $args_right));
+    }
     
     static function map(callable $fn) : callable {
         return function(array $array) use ($fn) {
