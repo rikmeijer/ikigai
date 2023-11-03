@@ -26,7 +26,7 @@ class Web {
                         self::error($respond)('404', 'File Not Found'),
                         self::error($respond)('405', 'Method Not Allowed'),
                         self::error($respond)('406', 'Not Acceptable')
-                )($directory(''));
+                );
     }
 
     static function resourceMatcher(callable $template, string $path, callable $error) {

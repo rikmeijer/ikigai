@@ -26,7 +26,7 @@ class Template {
     }
     
     
-    static function negotiate(array $acceptedTypes, callable $directory, callable $template, callable $found, callable $missingFile, callable $missingIdentifier, callable $missingType) : callable {
+    static function negotiate(array $acceptedTypes, callable $directory, callable $template, callable $found, callable $missingFile, callable $missingIdentifier, callable $missingType) : void {
         $findType = Functional::first(
             fn(string $typePath, string $acceptedType) => $found(fn(callable $send) => $send($acceptedType, Template::render(file_get_contents($typePath))(self::open($directory('.php'))))),
             $missingType
@@ -34,7 +34,8 @@ class Template {
         
         $ifTemplatesUnavailable = Functional::partial_left([Functional::class, 'if_else'], fn(array $availableTemplates) => count($availableTemplates) === 0, $missingIdentifier);
         $findMethod = fn(string $path) => $ifTemplatesUnavailable(fn(array $availableTemplates) => $findType(Functional::intersect(Functional::map(fn(float $v, string $k) => $template($k))($acceptedTypes))($availableTemplates)))(glob($template('*/*')));
-        return \rikmeijer\purposeplan\lib\Functional\Functional::if_else('is_dir', $findMethod, $missingFile);
+        
+        \rikmeijer\purposeplan\lib\Functional\Functional::if_else('is_dir', $findMethod, $missingFile)($directory(''));
     }
     
     static function typeToExtension(string $contentType) {

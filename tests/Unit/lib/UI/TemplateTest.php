@@ -43,8 +43,7 @@ class TemplateTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
         $this->prepareTemplate('/', $method . '.html', 'Hello World');
         $directory = Template::path('/blabla');
         
-        $negotiator = Template::negotiate(['text/html' => 1], $directory, Template::filepath($directory, 'post'), fn(callable $contents) => $this->assertNull(true), fn() => $this->assertTrue(true), fn() => $this->assertFalse(true), fn() => $this->assertFalse(true));
-        $negotiator(($directory('')));
+        $negotiator =Template::negotiate(['text/html' => 1], $directory, Template::filepath($directory, 'post'), fn(callable $contents) => $this->assertNull(true), fn() => $this->assertTrue(true), fn() => $this->assertFalse(true), fn() => $this->assertFalse(true));
     }
     
     public function test_selectByMissingTemplateIdentifier(): void
@@ -53,9 +52,7 @@ class TemplateTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
         $this->prepareTemplate('/', $method . '.html', 'Hello World');
         $directory = Template::path('/');
         
-        $negotiator = Template::negotiate(['text/html' => 1], $directory, Template::filepath($directory, 'post'), fn(callable $contents) => $this->assertNull(true), fn() => $this->assertFalse(true), fn() => $this->assertTrue(true), fn() => $this->assertFalse(true));
-    
-        $negotiator(($directory('')));
+        Template::negotiate(['text/html' => 1], $directory, Template::filepath($directory, 'post'), fn(callable $contents) => $this->assertNull(true), fn() => $this->assertFalse(true), fn() => $this->assertTrue(true), fn() => $this->assertFalse(true));
     }
     
     public function test_selectByUnselectableAcceptedType(): void
@@ -64,8 +61,6 @@ class TemplateTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
         $this->prepareTemplate('/', $method . '.txt', 'Hello World');
         $directory = Template::path('/');
         
-        $negotiator = Template::negotiate(['text/html' => 1], $directory, Template::filepath($directory, $method), fn(callable $contents) => $this->assertFalse(true), fn() => $this->assertFalse(true), fn() => $this->assertNull(true), fn() => $this->assertTrue(true));
-    
-        $negotiator(($directory('')));
+        Template::negotiate(['text/html' => 1], $directory, Template::filepath($directory, $method), fn(callable $contents) => $this->assertFalse(true), fn() => $this->assertFalse(true), fn() => $this->assertNull(true), fn() => $this->assertTrue(true));
     }
 }
