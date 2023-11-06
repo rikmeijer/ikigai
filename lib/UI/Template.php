@@ -36,8 +36,8 @@ class Template {
         return $reflection->getStaticVariables()['value'];
     }
     
-    static function negotiateType(callable $directory, callable $templateExists) {
-        return fn(callable $found, callable $missingType) => $templateExists(
+    static function negotiateType(callable $directory) {
+        return fn(callable $templateExists) => fn(callable $found, callable $missingType) => $templateExists(
             [Functional::class, 'populated'],
             Functional::first(
                 fn(string $typePath, string $acceptedType) => $found(fn(callable $send) => $send($acceptedType, self::render(file_get_contents($typePath))(self::open($directory('.php'))))),
@@ -46,32 +46,23 @@ class Template {
         );
     }
     
-    static function negotiateMethod(callable $typeNegotiator, callable $mapTypes, callable $methodExists) {
-        return fn(array $acceptedTypes, callable $missingIdentifier) => $typeNegotiator($methodExists(
+    static function negotiateMethod(callable $typeNegotiator, callable $mapTypes) {
+        return fn(callable $methodExists) => fn(array $acceptedTypes, callable $missingIdentifier) => $typeNegotiator($methodExists(
             $mapTypes($acceptedTypes), 
             $missingIdentifier
         ));
     }
     
     static function negotiateResource(callable $resourceExists, callable $methodNegotiator) {
-        return fn(callable $missingFile) => $methodNegotiator(
-            Functional::partial_left(
-                $resourceExists($missingFile),
-                [Functional::class, 'populated']
-            )
-        );
+        return fn(callable $missingFile) => $methodNegotiator(Functional::partial_left($resourceExists($missingFile), [Functional::class, 'populated']));
     }
     
     static function negotiate(callable $directory, callable $template) : callable {
         return self::negotiateResource(
             Functional::partial_left(self::try($directory('')), 'is_dir', fn(string $path) => glob($template('*/*'))),
             
-            Functional::partial_left(
-                [self::class, 'negotiateMethod'],
-                Functional::partial_left(
-                    [self::class, 'negotiateType'], 
-                    $directory
-                ), 
+            self::negotiateMethod(
+                self::negotiateType($directory), 
                 fn(array $acceptedTypes) => Functional::intersect(Functional::map(fn(float $v, string $k) => $template($k))($acceptedTypes))
             )
         );
