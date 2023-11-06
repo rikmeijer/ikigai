@@ -93,14 +93,19 @@ class FunctionalTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
     }
 
     public function test_firstWhenNotEmpty() {
-        $each = Functional::first(fn($value, $key) => $this->assertEquals(1, $value), fn() => $this->assertFalse(true));
-        
-        $each([1,2,3]);
+        $this->assertEquals(2, Functional::first(fn(int $value) => $value * 2)([1,2,3]));
     }
     
     public function test_firstWhenEmpty() {
-        $each = Functional::first(fn($value, $key) => $this->assertFalse(true), Functional::nothing());
-        $each([]);
+        Functional::first(fn($value) => $this->assertFalse(true));
+    }
+    public function test_empty() {
+        $this->assertTrue(Functional::empty([]));
+        $this->assertFalse(Functional::empty([0]));
+    }
+    public function test_populated() {
+        $this->assertFalse(Functional::populated([]));
+        $this->assertTrue(Functional::populated([0]));
     }
     
     public function test_intersect() {

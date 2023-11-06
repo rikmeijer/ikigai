@@ -25,17 +25,33 @@ class Template {
         return fn(string $type) => $directory(DIRECTORY_SEPARATOR . $identifier . '.' . self::typeToExtension($type));
     }
     
+    static function fail(mixed $value) : callable {
+        return fn() => self::fail($value);
+    }
+    static function try(mixed $value) : callable {
+        return fn(callable $try, callable $success, callable $fail) => $try($value) ? self::try($success($value)) : self::fail($fail($value));
+    }
+    static function extract(callable $try) : mixed {
+        $reflection = new \ReflectionFunction($try);
+        return $reflection->getStaticVariables()['value'];
+    }
     
     static function negotiate(array $acceptedTypes, callable $directory, callable $template, callable $found, callable $missingFile, callable $missingIdentifier, callable $missingType) : void {
-        $findType = Functional::first(
-            fn(string $typePath, string $acceptedType) => $found(fn(callable $send) => $send($acceptedType, Template::render(file_get_contents($typePath))(self::open($directory('.php'))))),
-            $missingType
+
+        $resourceExists = self::try($directory(''));
+        $methodExists = $resourceExists('is_dir', fn(string $path) => glob($template('*/*')), fn(string $path) => $missingFile());
+        $templateExists = $methodExists(
+            [Functional::class, 'populated'],
+            fn(array $availableTemplates) => Functional::intersect(Functional::map(fn(float $v, string $k) => $template($k))($acceptedTypes))($availableTemplates), 
+            fn(array $availableTemplates) => $missingIdentifier()
         );
-        
-        $ifTemplatesUnavailable = Functional::partial_left([Functional::class, 'if_else'], fn(array $availableTemplates) => count($availableTemplates) === 0, $missingIdentifier);
-        $findMethod = fn(string $path) => $ifTemplatesUnavailable(fn(array $availableTemplates) => $findType(Functional::intersect(Functional::map(fn(float $v, string $k) => $template($k))($acceptedTypes))($availableTemplates)))(glob($template('*/*')));
-        
-        \rikmeijer\purposeplan\lib\Functional\Functional::if_else('is_dir', $findMethod, $missingFile)($directory(''));
+        $templateExists(
+            [Functional::class, 'populated'],
+            Functional::first(
+                fn(string $typePath, string $acceptedType) => $found(fn(callable $send) => $send($acceptedType, Template::render(file_get_contents($typePath))(self::open($directory('.php'))))),
+            ), 
+            fn(array $selectedTemplates) => $missingType()
+        );
     }
     
     static function typeToExtension(string $contentType) {

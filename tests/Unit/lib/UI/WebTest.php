@@ -20,6 +20,7 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
         ]);
 
         $response($this->expectResponse('text/html', '200 OK', '<!DOCTYPE html></html>'));
+        $this->assertReponseSent();
     }
 
     public function test_entryChildResource(): void {
@@ -34,6 +35,7 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
         ]);
 
         $response($this->expectResponse('text/html', '200 OK', '<!DOCTYPE html></html>'));
+        $this->assertReponseSent();
     }
 
     public function test_entryMultipleChildrenResource(): void {
@@ -48,6 +50,7 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
         ]);
 
         $response($this->expectResponse('text/html', '200 OK', '<!DOCTYPE html></html>'));
+        $this->assertReponseSent();
     }
 
     public function test_entryMissingResourceResultsIn404(): void {
@@ -61,6 +64,7 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
         ]);
 
         $response($this->expectResponse('text/plain', '404 File Not Found', 'File Not Found'));
+        $this->assertReponseSent();
     }
 
     public function test_entryUnsupportedRequestMethodResultsIn405(): void {
@@ -75,6 +79,7 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
         ]);
 
         $response($this->expectResponse('text/plain', '405 Method Not Allowed', 'Method Not Allowed'));
+        $this->assertReponseSent();
     }
 
     public function test_entryMismatchInAcceptedContentTypeResultsIn406(): void {
@@ -89,6 +94,7 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
         ]);
 
         $response($this->expectResponse('text/plain', '406 Not Acceptable', 'Not Acceptable'));
+        $this->assertReponseSent();
     }
 
     public function test_entryAcceptingApplicationJson(): void {
@@ -104,6 +110,7 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
         ]);
 
         $response($this->expectResponse('application/json', '200 OK', 'Hello World'));
+        $this->assertReponseSent();
     }
 
     public function test_entryAcceptingRelativeQualities(): void {
@@ -119,6 +126,7 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
         ]);
 
         $response($this->expectResponse('text/plain', '200 OK', 'Hello World'));
+        $this->assertReponseSent();
     }
 
     public function test_entryRenderTemplate(): void {
@@ -135,6 +143,7 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
         ]);
 
         $response($this->expectResponse('text/plain', '200 OK', 'Hello Universe'));
+        $this->assertReponseSent();
     }
 
     public function test_entryRenderRootTemplate(): void {
@@ -151,5 +160,6 @@ class WebTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
         ]);
 
         $response($this->expectResponse('text/plain', '200 OK', 'Hello Universe'));
+        $this->assertReponseSent();
     }
 }

@@ -21,29 +21,26 @@ $logHandler->setFormatter(new ConsoleFormatter());
 $logger = new Logger('server');
 $logger->pushHandler($logHandler);
 
-$requestHandler = new class() implements RequestHandler {
+$requestHandler = new class() implements RequestHandler { 
+    
+    private Response $response;
+    
     public function handleRequest(Request $request) : Response
     {
-        $response = rikmeijer\purposeplan\lib\UI\Web::entry([
+        $responder = rikmeijer\purposeplan\lib\UI\Web::entry([
             'REQUEST_METHOD' => strtoupper($request->getMethod()),
             'REQUEST_URI' => $request->getUri()->getPath(),
             'SERVER_PROTOCOL' => $request->getProtocolVersion(),
             'HTTP_ACCEPT' => $request->getHeader('Accept')
         ]);
         
-        $responseCode = $type = $body = null;
+        $responder(fn(string $status, callable $content) => $content(fn(string $contentType, string $contents) => $this->response = new Response(
+            status: substr($status, 0, 3),
+            body: $contents,
+            headers: ['Content-Type' => $contentType]
+        )));
         
-        $response(fn(string $status, callable $content) => $content(function(string $contentType, string $contents) use (&$responseCode, &$type, &$body) { 
-            $responseCode = substr($status, 0, 3);
-            $type = $contentType; 
-            $body = $contents;
-        }));
-        
-        return new Response(
-            status: $responseCode,
-            body: $body,
-            headers: ['Content-Type' => $type]
-        );
+        return $this->response;
     }
 };
 

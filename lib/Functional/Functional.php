@@ -24,9 +24,15 @@ final class Functional {
         return fn(array $array) => empty($array) ? $empty() : array_walk($array, $fn);
     }
     
-    static function first(callable $fn, callable $empty) : callable {
-        $each = self::each($fn, $empty);
-        return fn(array $array) => $each(array_slice($array, 0, 1));
+    static function first(callable $fn) : callable {
+        return fn(array $array) => $fn(reset($array), key($array));
+    }
+    
+    static function empty(array $array) : bool {
+        return count($array) === 0;
+    }
+    static function populated(array $array) : bool {
+        return !self::empty($array);
     }
     
     static function filter(callable $fn) : callable {
