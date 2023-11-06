@@ -36,23 +36,28 @@ class Template {
         return $reflection->getStaticVariables()['value'];
     }
     
-    static function negotiate(array $acceptedTypes, callable $directory, callable $template, callable $found, callable $missingFile, callable $missingIdentifier, callable $missingType) : void {
-        $resourceExists = self::try($directory(''));
-        $methodExists = $resourceExists('is_dir', fn(string $path) => glob($template('*/*')), $missingFile);
+    static function negotiate(callable $directory, callable $template, callable $found, callable $missingType) : callable {
+        return function(callable $missingFile) use ($directory, $template, $found, $missingType) {
+            $resourceExists = self::try($directory(''));
+            $methodExists = $resourceExists('is_dir', fn(string $path) => glob($template('*/*')), $missingFile);
+
+            return function(array $acceptedTypes, callable $missingIdentifier) use ($methodExists, $directory, $template, $found, $missingType) {
+                $mapTypes = Functional::intersect(Functional::map(fn(float $v, string $k) => $template($k))($acceptedTypes));
+                $templateExists = $methodExists(
+                    [Functional::class, 'populated'],
+                    $mapTypes, 
+                    $missingIdentifier
+                );
+                $templateExists(
+                    [Functional::class, 'populated'],
+                    Functional::first(
+                        fn(string $typePath, string $acceptedType) => $found(fn(callable $send) => $send($acceptedType, Template::render(file_get_contents($typePath))(self::open($directory('.php'))))),
+                    ), 
+                    $missingType
+                );
+            };
+        };
         
-        $mapTypes = Functional::intersect(Functional::map(fn(float $v, string $k) => $template($k))($acceptedTypes));
-        $templateExists = $methodExists(
-            [Functional::class, 'populated'],
-            $mapTypes, 
-            $missingIdentifier
-        );
-        $templateExists(
-            [Functional::class, 'populated'],
-            Functional::first(
-                fn(string $typePath, string $acceptedType) => $found(fn(callable $send) => $send($acceptedType, Template::render(file_get_contents($typePath))(self::open($directory('.php'))))),
-            ), 
-            $missingType
-        );
     }
     
     static function typeToExtension(string $contentType) {
