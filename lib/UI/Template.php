@@ -47,11 +47,10 @@ class Template {
     }
     
     static function negotiateMethod(callable $typeNegotiator, callable $mapTypes, callable $methodExists) {
-        return fn(array $acceptedTypes, callable $missingIdentifier) => 
-                 $typeNegotiator($methodExists(
-                    $mapTypes($acceptedTypes), 
-                    $missingIdentifier
-                ));
+        return fn(array $acceptedTypes, callable $missingIdentifier) => $typeNegotiator($methodExists(
+            $mapTypes($acceptedTypes), 
+            $missingIdentifier
+        ));
     }
     
     static function negotiateResource(callable $resourceExists, callable $methodNegotiator) {
