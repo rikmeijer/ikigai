@@ -30,10 +30,10 @@ class TemplateTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
         $this->prepareTemplate('/', $method . '.txt', 'Hello World');
         $directory = Template::path('/');
         
-        Template::negotiate($directory, Template::filepath($directory, $method))(fn() => false)(['text/html' => 1, 'text/plain' => 0.8], fn() => false)(fn(callable $contents) => $contents(function(string $type, string $body) {
+        Template::negotiate($directory, Template::filepath($directory, $method))(fn() => false)(['text/html' => 1, 'text/plain' => 0.8], fn() => false)(function(string $type, string $body) {
             $this->assertEquals('text/html', $type);
             $this->assertEquals('<html>Hello World</html>', $body);
-        }), fn() => false);
+        }, fn() => false);
     }
     
     

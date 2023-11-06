@@ -40,7 +40,7 @@ class Template {
         return fn(callable $templateExists) => fn(callable $found, callable $missingType) => $templateExists(
             [Functional::class, 'populated'],
             Functional::first(
-                fn(string $typePath, string $acceptedType) => $found(fn(callable $send) => $send($acceptedType, self::render(file_get_contents($typePath))(self::open($directory('.php'))))),
+                fn(string $typePath, string $acceptedType) => $found($acceptedType, self::render(file_get_contents($typePath))(self::open($directory('.php')))),
             ), 
             $missingType
         );

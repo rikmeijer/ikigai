@@ -18,12 +18,10 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     
     public function expectResponse(string $expectedContentType, string $expectedStatus, string $expectedBody) {
         $this->responseSent = false;
-        return function(string $status, callable $content) use ($expectedContentType, $expectedStatus, $expectedBody) {
-            $content(function(string $contentType, string $body) use ($expectedContentType, $expectedBody) {
+        return function(string $status, string $contentType, string $body) use ($expectedStatus, $expectedContentType, $expectedBody) {
                 $this->assertEquals($expectedBody, $body);
                 $this->assertEquals($expectedContentType, $contentType);
                 $this->responseSent = true;
-            });
             $this->assertEquals($expectedStatus, $status);
         };
     }

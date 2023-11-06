@@ -34,11 +34,11 @@ $requestHandler = new class() implements RequestHandler {
             'HTTP_ACCEPT' => $request->getHeader('Accept')
         ]);
         
-        $responder(fn(string $status, callable $content) => $content(fn(string $contentType, string $contents) => $this->response = new Response(
+        $responder(fn(string $status, string $contentType, string $contents) => $this->response = new Response(
             status: substr($status, 0, 3),
             body: $contents,
             headers: ['Content-Type' => $contentType]
-        )));
+        ));
         
         return $this->response;
     }
