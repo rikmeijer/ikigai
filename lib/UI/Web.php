@@ -17,16 +17,16 @@ class Web {
         $directory = Template::path($path);
         return fn(callable $respond) => Template::negotiate(
                         $directory,
-                        Template::filepath($directory, strtolower($server['REQUEST_METHOD'])),
-                        Functional::partial_left($respond, '200 OK'),
-                        self::error($respond)('406', 'Not Acceptable')
+                        Template::filepath($directory, strtolower($server['REQUEST_METHOD']))
                 )
                 (self::error($respond)('404', 'File Not Found'))
                 (Functional::arsort(array_reduce(explode(',', $server['HTTP_ACCEPT']), function ($res, $el) {
                                     list($l, $q) = array_merge(explode(';q=', $el), [1]);
                                     $res[$l] = (float) $q;
                                     return $res;
-                                }, [])), self::error($respond)('405', 'Method Not Allowed'));
+                                }, [])), self::error($respond)('405', 'Method Not Allowed'))
+                                        (Functional::partial_left($respond, '200 OK'),
+                        self::error($respond)('406', 'Not Acceptable'));
     }
 
     static function resourceMatcher(callable $template, string $path, callable $error) {

@@ -36,25 +36,29 @@ class Template {
         return $reflection->getStaticVariables()['value'];
     }
     
-    static function negotiate(callable $directory, callable $template, callable $found, callable $missingType) : callable {
-        return function(callable $missingFile) use ($directory, $template, $found, $missingType) {
+    static function negotiate(callable $directory, callable $template) : callable {
+        return function(callable $missingFile) use ($directory, $template) {
             $resourceExists = self::try($directory(''));
             $methodExists = $resourceExists('is_dir', fn(string $path) => glob($template('*/*')), $missingFile);
 
-            return function(array $acceptedTypes, callable $missingIdentifier) use ($methodExists, $directory, $template, $found, $missingType) {
-                $mapTypes = Functional::intersect(Functional::map(fn(float $v, string $k) => $template($k))($acceptedTypes));
+            
+            $mapTypes = fn(array $acceptedTypes) => Functional::intersect(Functional::map(fn(float $v, string $k) => $template($k))($acceptedTypes));
+            return function(array $acceptedTypes, callable $missingIdentifier) use ($methodExists, $directory, $mapTypes) {
                 $templateExists = $methodExists(
                     [Functional::class, 'populated'],
-                    $mapTypes, 
+                    $mapTypes($acceptedTypes), 
                     $missingIdentifier
                 );
-                $templateExists(
-                    [Functional::class, 'populated'],
-                    Functional::first(
-                        fn(string $typePath, string $acceptedType) => $found(fn(callable $send) => $send($acceptedType, Template::render(file_get_contents($typePath))(self::open($directory('.php'))))),
-                    ), 
-                    $missingType
-                );
+                
+                return function(callable $found, callable $missingType) use ($methodExists, $templateExists, $directory) {
+                    $templateExists(
+                        [Functional::class, 'populated'],
+                        Functional::first(
+                            fn(string $typePath, string $acceptedType) => $found(fn(callable $send) => $send($acceptedType, Template::render(file_get_contents($typePath))(self::open($directory('.php'))))),
+                        ), 
+                        $missingType
+                    );
+                };
             };
         };
         

@@ -30,10 +30,10 @@ class TemplateTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
         $this->prepareTemplate('/', $method . '.txt', 'Hello World');
         $directory = Template::path('/');
         
-        Template::negotiate($directory, Template::filepath($directory, $method), fn(callable $contents) => $contents(function(string $type, string $body) {
+        Template::negotiate($directory, Template::filepath($directory, $method))(fn() => false)(['text/html' => 1, 'text/plain' => 0.8], fn() => false)(fn(callable $contents) => $contents(function(string $type, string $body) {
             $this->assertEquals('text/html', $type);
             $this->assertEquals('<html>Hello World</html>', $body);
-        }), fn() => false)(fn() => false)(['text/html' => 1, 'text/plain' => 0.8], fn() => false);
+        }), fn() => false);
     }
     
     
@@ -45,10 +45,7 @@ class TemplateTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
         
         $negotiator =Template::negotiate(
                 $directory, 
-                Template::filepath($directory, 'post'), 
-                fn(callable $contents) => $this->assertNull(true), 
-                fn() => $this->assertFalse(true)
-                )(fn() => $this->assertTrue(true));
+                Template::filepath($directory, 'post'))(fn() => $this->assertTrue(true));
     }
     
     public function test_selectByMissingTemplateIdentifier(): void
@@ -59,10 +56,7 @@ class TemplateTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
         
         Template::negotiate(
                 $directory, 
-                Template::filepath($directory, 'post'), 
-                fn(callable $contents) => $this->assertNull(true), 
-                fn() => $this->assertFalse(true)
-                )
+                Template::filepath($directory, 'post'))
                 (fn() => $this->assertFalse(true))
                 (['text/html' => 1], fn() => $this->assertTrue(true));
     }
@@ -75,11 +69,10 @@ class TemplateTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
         
         Template::negotiate(
                 $directory, 
-                Template::filepath($directory, $method), 
-                fn(callable $contents) => $this->assertFalse(true),
-                fn() => $this->assertTrue(true)
-                )
+                Template::filepath($directory, $method),)
                 (fn() => $this->assertFalse(true))
-                (['text/html' => 1], fn() => $this->assertNull(true));
+                (['text/html' => 1], fn() => $this->assertNull(true))
+                (fn(callable $contents) => $this->assertFalse(true),
+                fn() => $this->assertTrue(true));
     }
 }
