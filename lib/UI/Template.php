@@ -36,7 +36,7 @@ class Template {
         return $reflection->getStaticVariables()['value'];
     }
     
-    static function negotiateType(callable $templateExists, callable $directory) {
+    static function negotiateType(callable $directory, callable $templateExists) {
         return fn(callable $found, callable $missingType) => $templateExists(
             [Functional::class, 'populated'],
             Functional::first(
@@ -46,22 +46,28 @@ class Template {
         );
     }
     
-    static function negotiateMethod(callable $methodExists, callable $mapTypes) {
-        return fn(callable $directory, array $acceptedTypes, callable $missingIdentifier) => 
-                        self::negotiateType($methodExists(
-                    [Functional::class, 'populated'],
+    static function negotiateMethod(callable $typeNegotiator, callable $methodExists, callable $mapTypes) {
+        return fn(array $acceptedTypes, callable $missingIdentifier) => 
+                 $typeNegotiator($methodExists(
                     $mapTypes($acceptedTypes), 
                     $missingIdentifier
-                ), $directory);
+                ));
     }
     
     static function negotiate(callable $directory, callable $template) : callable {
         return Functional::partial_left(
-                fn(callable $resourceExists, callable $missingFile) => Functional::partial_left(
-                        self::negotiateMethod(
-                            $resourceExists('is_dir', fn(string $path) => glob($template('*/*')), $missingFile), 
-                            fn(array $acceptedTypes) => Functional::intersect(Functional::map(fn(float $v, string $k) => $template($k))($acceptedTypes))
-                        ), $directory),
+                fn(callable $resourceExists, callable $missingFile) => self::negotiateMethod(
+                    Functional::partial_left(
+                        [self::class, 'negotiateType'], 
+                        $directory
+                    ),    
+
+                    Functional::partial_left(
+                        $resourceExists('is_dir', fn(string $path) => glob($template('*/*')), $missingFile),
+                        [Functional::class, 'populated']
+                    ), 
+                    fn(array $acceptedTypes) => Functional::intersect(Functional::map(fn(float $v, string $k) => $template($k))($acceptedTypes))
+                ),
         self::try($directory('')));
     }
     
