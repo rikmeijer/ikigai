@@ -46,7 +46,7 @@ class Template {
         );
     }
     
-    static function negotiateMethod(callable $typeNegotiator, callable $methodExists, callable $mapTypes) {
+    static function negotiateMethod(callable $typeNegotiator, callable $mapTypes, callable $methodExists) {
         return fn(array $acceptedTypes, callable $missingIdentifier) => 
                  $typeNegotiator($methodExists(
                     $mapTypes($acceptedTypes), 
@@ -54,21 +54,29 @@ class Template {
                 ));
     }
     
+    static function negotiateResource(callable $resourceExists, callable $methodNegotiator, callable $availableTemplates) {
+        return fn(callable $missingFile) => $methodNegotiator(
+            Functional::partial_left(
+                $resourceExists('is_dir', fn(string $path) => $availableTemplates(), $missingFile),
+                [Functional::class, 'populated']
+            )
+        );
+    }
+    
     static function negotiate(callable $directory, callable $template) : callable {
-        return Functional::partial_left(
-                fn(callable $resourceExists, callable $missingFile) => self::negotiateMethod(
-                    Functional::partial_left(
-                        [self::class, 'negotiateType'], 
-                        $directory
-                    ),    
-
-                    Functional::partial_left(
-                        $resourceExists('is_dir', fn(string $path) => glob($template('*/*')), $missingFile),
-                        [Functional::class, 'populated']
-                    ), 
-                    fn(array $acceptedTypes) => Functional::intersect(Functional::map(fn(float $v, string $k) => $template($k))($acceptedTypes))
-                ),
-        self::try($directory('')));
+        return self::negotiateResource(
+            self::try($directory('')),
+            
+            Functional::partial_left(
+                [self::class, 'negotiateMethod'],
+                Functional::partial_left(
+                    [self::class, 'negotiateType'], 
+                    $directory
+                ), 
+                fn(array $acceptedTypes) => Functional::intersect(Functional::map(fn(float $v, string $k) => $template($k))($acceptedTypes))
+            ),
+            fn() => glob($template('*/*'))
+        );
     }
     
     static function typeToExtension(string $contentType) {
