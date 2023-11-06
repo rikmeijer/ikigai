@@ -54,10 +54,10 @@ class Template {
                 ));
     }
     
-    static function negotiateResource(callable $resourceExists, callable $methodNegotiator, callable $availableTemplates) {
+    static function negotiateResource(callable $resourceExists, callable $methodNegotiator) {
         return fn(callable $missingFile) => $methodNegotiator(
             Functional::partial_left(
-                $resourceExists('is_dir', fn(string $path) => $availableTemplates(), $missingFile),
+                $resourceExists($missingFile),
                 [Functional::class, 'populated']
             )
         );
@@ -65,7 +65,7 @@ class Template {
     
     static function negotiate(callable $directory, callable $template) : callable {
         return self::negotiateResource(
-            self::try($directory('')),
+            Functional::partial_left(self::try($directory('')), 'is_dir', fn(string $path) => glob($template('*/*'))),
             
             Functional::partial_left(
                 [self::class, 'negotiateMethod'],
@@ -74,8 +74,7 @@ class Template {
                     $directory
                 ), 
                 fn(array $acceptedTypes) => Functional::intersect(Functional::map(fn(float $v, string $k) => $template($k))($acceptedTypes))
-            ),
-            fn() => glob($template('*/*'))
+            )
         );
     }
     
