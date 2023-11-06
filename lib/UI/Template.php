@@ -38,20 +38,20 @@ class Template {
     
     static function negotiate(array $acceptedTypes, callable $directory, callable $template, callable $found, callable $missingFile, callable $missingIdentifier, callable $missingType) : void {
         $resourceExists = self::try($directory(''));
-        $methodExists = $resourceExists('is_dir', fn(string $path) => glob($template('*/*')), fn(string $path) => $missingFile());
+        $methodExists = $resourceExists('is_dir', fn(string $path) => glob($template('*/*')), $missingFile);
         
         $mapTypes = Functional::intersect(Functional::map(fn(float $v, string $k) => $template($k))($acceptedTypes));
         $templateExists = $methodExists(
             [Functional::class, 'populated'],
             $mapTypes, 
-            fn(array $availableTemplates) => $missingIdentifier()
+            $missingIdentifier
         );
         $templateExists(
             [Functional::class, 'populated'],
             Functional::first(
                 fn(string $typePath, string $acceptedType) => $found(fn(callable $send) => $send($acceptedType, Template::render(file_get_contents($typePath))(self::open($directory('.php'))))),
             ), 
-            fn(array $selectedTemplates) => $missingType()
+            $missingType
         );
     }
     
