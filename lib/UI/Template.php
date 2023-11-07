@@ -44,13 +44,14 @@ class Template {
     
     static function negotiateMethod(callable $typeNegotiator, callable $mapTypes) {
         return fn(callable $methodExists) => fn(callable $acceptedTypes, callable $missingIdentifier) => $typeNegotiator($methodExists(
+                [Functional::class, 'populated'],
             $acceptedTypes($mapTypes), 
             $missingIdentifier
         ));
     }
     
     static function negotiateResource(callable $resourceExists, callable $methodNegotiator) {
-        return fn(callable $missingFile) => $methodNegotiator(Functional::partial_left($resourceExists($missingFile), [Functional::class, 'populated']));
+        return fn(callable $missingFile) => $methodNegotiator($resourceExists($missingFile));
     }
     
     static function negotiate(callable $directory, string $method) : callable {
