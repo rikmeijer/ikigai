@@ -21,10 +21,6 @@ class Template {
         return file_exists($filepath) ? (require $filepath) : fn(string $identifier) => null;
     }
     
-    static function filepath(callable $directory, string $identifier) {
-        return fn(string $type) => $directory(DIRECTORY_SEPARATOR . $identifier . '.' . self::typeToExtension($type));
-    }
-    
     static function fail(mixed $value) : callable {
         return fn() => self::fail($value);
     }
@@ -58,10 +54,9 @@ class Template {
     }
     
     static function negotiate(callable $directory, string $method) : callable {
-        $template = self::filepath($directory, $method);
         return self::negotiateResource(
-            Functional::curry(self::try($directory('')))('is_dir')(fn(string $path) => glob($template('*/*'))),
-            self::negotiateMethod(self::negotiateType($directory), Functional::map(fn(float $v, string $k) => $template($k)))
+            Functional::curry(self::try($directory('')))('is_dir')(fn(string $path) => glob($path . DIRECTORY_SEPARATOR . $method . '.*')),
+            self::negotiateMethod(self::negotiateType($directory), Functional::map(fn(float $v, string $k) => $directory(DIRECTORY_SEPARATOR . $method . '.' . self::typeToExtension($k))))
         );
     }
     
