@@ -23,7 +23,7 @@ class Web {
     static function entry(array $server): callable {
         $path = $server['REQUEST_URI'];
         $directory = Template::path($path);
-        return fn(callable $respond) => Template::negotiate($directory, Template::filepath($directory, strtolower($server['REQUEST_METHOD'])))
+        return fn(callable $respond) => Template::negotiate($directory, strtolower($server['REQUEST_METHOD']))
                         (self::error($respond)('404', 'File Not Found'))
                         (self::acceptableTypes($server['HTTP_ACCEPT']), self::error($respond)('405', 'Method Not Allowed'))
                         (Functional::partial_left($respond, '200 OK'),

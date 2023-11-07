@@ -57,10 +57,10 @@ class Template {
         return fn(callable $missingFile) => $methodNegotiator(Functional::partial_left($resourceExists($missingFile), [Functional::class, 'populated']));
     }
     
-    static function negotiate(callable $directory, callable $template) : callable {
+    static function negotiate(callable $directory, string $method) : callable {
+        $template = self::filepath($directory, $method);
         return self::negotiateResource(
             Functional::curry(self::try($directory('')))('is_dir')(fn(string $path) => glob($template('*/*'))),
-            
             self::negotiateMethod(self::negotiateType($directory), Functional::map(fn(float $v, string $k) => $template($k)))
         );
     }
