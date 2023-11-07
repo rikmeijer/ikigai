@@ -50,10 +50,14 @@ class Template {
         ));
     }
     
+    static function negotiateResource(callable $resourceExists, callable $methodNegotiator) {
+        return fn(callable $missingFile) => $methodNegotiator($resourceExists($missingFile));
+    }
     
     static function negotiate(callable $directory, string $method) : callable {
-        return fn(callable $missingFile) => self::negotiateMethod(self::negotiateType(self::open($directory('.php'))), Functional::map(fn(float $v, string $k) => $directory(DIRECTORY_SEPARATOR . $method . '.' . self::typeToExtension($k))))(
-            self::try($directory(''))('is_dir', fn(string $path) => glob($path . DIRECTORY_SEPARATOR . $method . '.*'), $missingFile),
+        return self::negotiateResource(
+            Functional::curry(self::try($directory('')))('is_dir')(fn(string $path) => glob($path . DIRECTORY_SEPARATOR . $method . '.*')),
+            self::negotiateMethod(self::negotiateType(self::open($directory('.php'))), Functional::map(fn(float $v, string $k) => $directory(DIRECTORY_SEPARATOR . $method . '.' . self::typeToExtension($k))))
         );
     }
     
