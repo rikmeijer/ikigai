@@ -32,11 +32,11 @@ class Template {
         return $reflection->getStaticVariables()['value'];
     }
     
-    static function negotiateType(callable $directory) {
+    static function negotiateType(callable $blocks) {
         return fn(callable $templateExists) => fn(callable $found, callable $missingType) => $templateExists(
             [Functional::class, 'populated'],
             Functional::first(
-                fn(string $typePath, string $acceptedType) => $found($acceptedType, self::render(file_get_contents($typePath))(self::open($directory('.php')))),
+                fn(string $typePath, string $acceptedType) => $found($acceptedType, self::render(file_get_contents($typePath))($blocks)),
             ), 
             $missingType
         );
@@ -56,7 +56,7 @@ class Template {
     static function negotiate(callable $directory, string $method) : callable {
         return self::negotiateResource(
             Functional::curry(self::try($directory('')))('is_dir')(fn(string $path) => glob($path . DIRECTORY_SEPARATOR . $method . '.*')),
-            self::negotiateMethod(self::negotiateType($directory), Functional::map(fn(float $v, string $k) => $directory(DIRECTORY_SEPARATOR . $method . '.' . self::typeToExtension($k))))
+            self::negotiateMethod(self::negotiateType(self::open($directory('.php'))), Functional::map(fn(float $v, string $k) => $directory(DIRECTORY_SEPARATOR . $method . '.' . self::typeToExtension($k))))
         );
     }
     
