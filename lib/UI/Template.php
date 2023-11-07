@@ -61,10 +61,7 @@ class Template {
         return self::negotiateResource(
             Functional::partial_left(self::try($directory('')), 'is_dir', fn(string $path) => glob($template('*/*'))),
             
-            self::negotiateMethod(
-                self::negotiateType($directory), 
-                Functional::map(fn(float $v, string $k) => $template($k))
-            )
+            self::negotiateMethod(self::negotiateType($directory), Functional::map(fn(float $v, string $k) => $template($k)))
         );
     }
     
