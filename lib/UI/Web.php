@@ -13,11 +13,11 @@ class Web {
     }
     
     static function acceptableTypes(string $acceptHeader) {
-        return fn(callable $map) => $map(Functional::arsort(array_reduce(explode(',', $acceptHeader), function ($res, $el) {
+        return fn(callable $map) => Functional::intersect($map(Functional::arsort(array_reduce(explode(',', $acceptHeader), function ($res, $el) {
             list($l, $q) = array_merge(explode(';q=', $el), [1]);
             $res[$l] = (float) $q;
             return $res;
-        }, [])));
+        }, []))));
     }
 
     static function entry(array $server): callable {

@@ -48,7 +48,7 @@ class Template {
     
     static function negotiateMethod(callable $typeNegotiator, callable $mapTypes) {
         return fn(callable $methodExists) => fn(callable $acceptedTypes, callable $missingIdentifier) => $typeNegotiator($methodExists(
-            Functional::intersect($acceptedTypes($mapTypes)), 
+            $acceptedTypes($mapTypes), 
             $missingIdentifier
         ));
     }
