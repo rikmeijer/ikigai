@@ -44,20 +44,16 @@ class Template {
     
     static function negotiateMethod(callable $typeNegotiator, callable $mapTypes) {
         return fn(callable $methodExists) => fn(callable $acceptedTypes, callable $missingIdentifier) => $typeNegotiator($methodExists(
-                [Functional::class, 'populated'],
+            [Functional::class, 'populated'],
             $acceptedTypes($mapTypes), 
             $missingIdentifier
         ));
     }
     
-    static function negotiateResource(callable $resourceExists, callable $methodNegotiator) {
-        return fn(callable $missingFile) => $methodNegotiator($resourceExists($missingFile));
-    }
     
     static function negotiate(callable $directory, string $method) : callable {
-        return self::negotiateResource(
-            Functional::curry(self::try($directory('')))('is_dir')(fn(string $path) => glob($path . DIRECTORY_SEPARATOR . $method . '.*')),
-            self::negotiateMethod(self::negotiateType(self::open($directory('.php'))), Functional::map(fn(float $v, string $k) => $directory(DIRECTORY_SEPARATOR . $method . '.' . self::typeToExtension($k))))
+        return fn(callable $missingFile) => self::negotiateMethod(self::negotiateType(self::open($directory('.php'))), Functional::map(fn(float $v, string $k) => $directory(DIRECTORY_SEPARATOR . $method . '.' . self::typeToExtension($k))))(
+            self::try($directory(''))('is_dir', fn(string $path) => glob($path . DIRECTORY_SEPARATOR . $method . '.*'), $missingFile),
         );
     }
     
