@@ -11,21 +11,22 @@ class Web {
     static function error(callable $respond) {
         return fn(string $code, string $description) => fn() => $respond($code . ' ' . $description, 'text/plain', $description);
     }
+    
+    static function acceptableTypes(string $acceptHeader) {
+        return Functional::arsort(array_reduce(explode(',', $acceptHeader), function ($res, $el) {
+            list($l, $q) = array_merge(explode(';q=', $el), [1]);
+            $res[$l] = (float) $q;
+            return $res;
+        }, []));
+    }
 
     static function entry(array $server): callable {
         $path = $server['REQUEST_URI'];
         $directory = Template::path($path);
-        return fn(callable $respond) => Template::negotiate(
-                        $directory,
-                        Template::filepath($directory, strtolower($server['REQUEST_METHOD']))
-                )
-                (self::error($respond)('404', 'File Not Found'))
-                (Functional::arsort(array_reduce(explode(',', $server['HTTP_ACCEPT']), function ($res, $el) {
-                                    list($l, $q) = array_merge(explode(';q=', $el), [1]);
-                                    $res[$l] = (float) $q;
-                                    return $res;
-                                }, [])), self::error($respond)('405', 'Method Not Allowed'))
-                                        (Functional::partial_left($respond, '200 OK'),
+        return fn(callable $respond) => Template::negotiate($directory, Template::filepath($directory, strtolower($server['REQUEST_METHOD'])))
+                        (self::error($respond)('404', 'File Not Found'))
+                        (self::acceptableTypes($server['HTTP_ACCEPT']), self::error($respond)('405', 'Method Not Allowed'))
+                        (Functional::partial_left($respond, '200 OK'),
                         self::error($respond)('406', 'Not Acceptable'));
     }
 
