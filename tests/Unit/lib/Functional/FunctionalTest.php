@@ -14,6 +14,12 @@ class FunctionalTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
         $this->assertEquals(25, $fn_partial(5));
     }
     
+    public function test_curry() {
+        $fn = fn($a, $b) => $a * $b;
+        
+        $this->assertEquals(25, Functional::curry($fn)(5)(5));
+    }
+    
     public function test_partial_right() {
         $fn = fn($a, $b) => $a / $b;
         

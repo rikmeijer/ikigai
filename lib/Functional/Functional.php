@@ -20,6 +20,16 @@ final class Functional {
         return fn(mixed ...$args) => $fn(...array_merge($args, $args_right));
     }
     
+    static function curry(callable $fn) {
+        $parameters = (new \ReflectionFunction($fn))->getParameters();
+        $curry = [];
+        $var = 'a';
+        while ($parameter = array_shift($parameters)) {
+            $curry['$'.$var] = 'fn($' . $var++ . ') => ';
+        }
+        return eval('return ' . implode($curry) . ' $fn('.implode(',', array_keys($curry)).');');
+    }
+    
     static function each(callable $fn, callable $empty) : callable {
         return fn(array $array) => empty($array) ? $empty() : array_walk($array, $fn);
     }
