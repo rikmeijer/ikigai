@@ -48,7 +48,7 @@ class Template {
     
     static function negotiateMethod(callable $typeNegotiator, callable $mapTypes) {
         return fn(callable $methodExists) => fn(array $acceptedTypes, callable $missingIdentifier) => $typeNegotiator($methodExists(
-            $mapTypes($acceptedTypes), 
+            Functional::intersect($mapTypes($acceptedTypes)), 
             $missingIdentifier
         ));
     }
@@ -63,7 +63,7 @@ class Template {
             
             self::negotiateMethod(
                 self::negotiateType($directory), 
-                fn(array $acceptedTypes) => Functional::intersect(Functional::map(fn(float $v, string $k) => $template($k))($acceptedTypes))
+                Functional::map(fn(float $v, string $k) => $template($k))
             )
         );
     }
