@@ -59,7 +59,7 @@ class Template {
     
     static function negotiate(callable $directory, callable $template) : callable {
         return self::negotiateResource(
-            Functional::partial_left(self::try($directory('')), 'is_dir', fn(string $path) => glob($template('*/*'))),
+            Functional::curry(self::try($directory('')))('is_dir')(fn(string $path) => glob($template('*/*'))),
             
             self::negotiateMethod(self::negotiateType($directory), Functional::map(fn(float $v, string $k) => $template($k)))
         );
