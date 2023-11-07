@@ -30,7 +30,7 @@ class TemplateTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
         $this->prepareTemplate('/', $method . '.txt', 'Hello World');
         $directory = Template::path('/');
         
-        Template::negotiate($directory, Template::filepath($directory, $method))(fn() => false)(['text/html' => 1, 'text/plain' => 0.8], fn() => false)(function(string $type, string $body) {
+        Template::negotiate($directory, Template::filepath($directory, $method))(fn() => false)(\rikmeijer\purposeplan\lib\UI\Web::acceptableTypes('text/html,text/plain;q=0.0'), fn() => false)(function(string $type, string $body) {
             $this->assertEquals('text/html', $type);
             $this->assertEquals('<html>Hello World</html>', $body);
         }, fn() => false);
@@ -58,7 +58,7 @@ class TemplateTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
                 $directory, 
                 Template::filepath($directory, 'post'))
                 (fn() => $this->assertFalse(true))
-                (['text/html' => 1], fn() => $this->assertTrue(true));
+                (\rikmeijer\purposeplan\lib\UI\Web::acceptableTypes('text/html'), fn() => $this->assertTrue(true));
     }
     
     public function test_selectByUnselectableAcceptedType(): void
@@ -71,7 +71,7 @@ class TemplateTest extends \rikmeijer\purposeplan\Tests\Unit\TestCase {
                 $directory, 
                 Template::filepath($directory, $method),)
                 (fn() => $this->assertFalse(true))
-                (['text/html' => 1], fn() => $this->assertNull(true))
+                (\rikmeijer\purposeplan\lib\UI\Web::acceptableTypes('text/html'), fn() => $this->assertNull(true))
                 (fn(callable $contents) => $this->assertFalse(true),
                 fn() => $this->assertTrue(true));
     }
