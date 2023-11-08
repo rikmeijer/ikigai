@@ -61,13 +61,14 @@ class Template {
         );
     }
     
-    static function typeToExtension(string $contentType) {
+    static function typeToExtension(string $contentType) : null|string {
         return match ($contentType) {
             'text/html' => 'html',
             'text/plain' => 'txt',
             'application/json' => 'json.php',
             'application/xhtml+xml' => 'xhtml',
-            '*/*' => '*'
+            '*/*' => '*',
+            default => null
         };
     }
     

@@ -8,7 +8,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     private $result;
     private $curl;
     
-    public function open(string $path) {
+    public function open(string $path, string $acceptHeader) {
         $host = getenv('SERVE_HOST') ? getenv('SERVE_HOST') : $_ENV['SERVE_HOST'];
         
         $this->assertNotEmpty($host, 'env var SERVE_HOST missing');
@@ -17,7 +17,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         $this->curl = curl_init($address);
         curl_setopt_array($this->curl, [
             CURLOPT_HTTPHEADER => [
-                'Accept: text/html'
+                'Accept: ' . $acceptHeader
             ],
             CURLOPT_RETURNTRANSFER => true
         ]);
