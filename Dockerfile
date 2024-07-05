@@ -17,4 +17,4 @@ USER www-data
 
 
 RUN ["composer", "install", "--no-dev"]
-ENTRYPOINT ["rr", "serve"]
+ENTRYPOINT ["./rr", "serve"]
