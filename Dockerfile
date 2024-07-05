@@ -7,6 +7,7 @@ RUN ["docker-php-ext-install", "zip", "mbstring", "sockets"]
 COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
 
 COPY . /ikigai
+WORKDIR /ikigai
 RUN ["chown", "www-data:www-data", "-R" , "."]
 
 EXPOSE 8080
@@ -14,6 +15,6 @@ EXPOSE 8080
 # Set the user
 USER www-data
 
-WORKDIR /ikigai
+
 RUN ["composer", "install", "--no-dev"]
 ENTRYPOINT ["rr", "serve"]
