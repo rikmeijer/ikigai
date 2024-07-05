@@ -17,4 +17,5 @@ USER www-data
 
 
 RUN ["composer", "install", "--no-dev"]
-ENTRYPOINT ["./vendor/bin/rr", "serve"]
+RUN ["./vendor/bin/rr", "get-binary"]  
+ENTRYPOINT ["./rr", "serve"]
