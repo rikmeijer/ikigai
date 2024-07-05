@@ -1,21 +1,21 @@
-FROM php:8.3-cli-bullseye
+FROM php:8.3-cli-alpine3.20 as backend
 
-RUN ["apt-get", "update"]
-RUN ["apt-get", "install", "-y", "zip", "libzip-dev", "libonig-dev"]
-RUN ["docker-php-ext-install", "zip", "mbstring", "sockets"]
+RUN  --mount=type=bind,from=mlocati/php-extension-installer:1.5,source=/usr/bin/install-php-extensions,target=/usr/local/bin/install-php-extensions \
+      install-php-extensions opcache zip xsl dom exif intl pcntl bcmath sockets && \
+     apk del --no-cache  ${PHPIZE_DEPS} ${BUILD_DEPENDS}
 
-COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
+WORKDIR /app
 
-COPY . /ikigai
-WORKDIR /ikigai
-RUN ["chown", "www-data:www-data", "-R" , "."]
+ENV COMPOSER_ALLOW_SUPERUSER=1
 
-EXPOSE 8080
+COPY ./composer.* .
+RUN composer config --no-plugins allow-plugins.spiral/composer-publish-plugin false && \
+    composer install --optimize-autoloader --no-dev
 
-# Set the user
-USER www-data
+COPY --from=spiralscout/roadrunner:latest /usr/bin/rr /app
 
+EXPOSE 8080/tcp
 
-RUN ["composer", "install", "--no-dev"]
-RUN ["./vendor/bin/rr", "get-binary"]  
-ENTRYPOINT ["./rr", "serve"]
+COPY ./ .
+
+CMD ./rr serve -c .rr.yaml
