@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     
     env:
-      SERVE_HOST: 127.0.0.1:8000
+      SERVE_HOST: 127.0.0.1:8080
 
     steps:
     - uses: actions/checkout@v3
@@ -25,7 +25,7 @@ jobs:
     - name: Setup PHP with PECL extension
       uses: shivammathur/setup-php@v2
       with:
-        php-version: '8.2'
+        php-version: '8.3'
 
     - name: Validate composer.json and composer.lock
       run: composer validate --strict

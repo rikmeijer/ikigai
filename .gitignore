@@ -1,6 +1,10 @@
-/.phpunit.cache
-/vendor
+.idea
+vendor
+runtime
+rr*
+protoc-gen-php-grpc*
 .env
-.env.backup
-.env.production
 .phpunit.result.cache
+.phpunit.cache
+.deptrac.cache
+.phpunit.cache/
