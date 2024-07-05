@@ -2,8 +2,7 @@ version: '3.8'
 services:
   ikigai:
     environment:
-      - SERVE_HOST=${SERVE_HOST:-0.0.0.0:8000}
       - TEMPLATE_DIR=${TEMPLATE_DIR:-./resources/view}
     image: "ghcr.io/rikmeijer/ikigai:latest"
     ports:
-      - "8081:8000"
+      - "${SERVE_HOST:-8080}:8080"
