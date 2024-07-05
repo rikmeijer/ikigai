@@ -1,8 +1,9 @@
-version: '3.8'
+version: '3'
 services:
   ikigai:
     environment:
-      - TEMPLATE_DIR=${TEMPLATE_DIR:-./resources/view}
+      - DEBUG=false
+      - APP_ENV=production
     image: "ghcr.io/rikmeijer/ikigai:latest"
     ports:
       - "${SERVE_HOST:-8080}:8080"
