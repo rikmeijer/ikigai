@@ -46,8 +46,6 @@ jobs:
     # Docs: https://getcomposer.org/doc/articles/scripts.md
 
     - name: Start internal PHP Webserver to run feature tests
-      env:
-        TEMPLATE_DIR: ./resources/view
       run: RUNNER_TRACKING_ID="" && php serve.php 2>&1 &
       
     - name: Run test suite
