@@ -1,11 +1,8 @@
 FROM php:8.3-cli-bullseye
 
-ARG SERVE_PORT=8080
-ARG SERVE_HOST="0.0.0.0:$SERVE_PORT"
-
 RUN ["apt-get", "update"]
-RUN ["apt-get", "install", "-y", "libonig-dev"]
-RUN ["docker-php-ext-install", "mbstring", "sockets"]
+RUN ["apt-get", "install", "-y", "zip", "libzip-dev", "libonig-dev"]
+RUN ["docker-php-ext-install", "zip", "mbstring", "sockets"]
 
 COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
 
@@ -13,7 +10,7 @@ WORKDIR /ikigai
 COPY . /ikigai
 RUN ["chown", "www-data:www-data", "-R" , "."]
 
-EXPOSE $SERVE_PORT
+EXPOSE 8080
 
 # Set the user
 USER www-data
