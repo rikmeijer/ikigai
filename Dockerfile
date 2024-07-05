@@ -4,9 +4,8 @@ ARG SERVE_PORT=8080
 ARG SERVE_HOST="0.0.0.0:$SERVE_PORT"
 
 RUN ["apt-get", "update"]
-RUN ["apt-get", "install", "-y", "libmcrypt-dev", "libzip-dev", "zip"]
-RUN ["docker-php-ext-install", "mbstring"]
-RUN ["docker-php-ext-install", "sockets"]
+RUN ["apt-get", "install", "-y", "libonig-dev"]
+RUN ["docker-php-ext-install", "mbstring", "sockets"]
 
 COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
 
