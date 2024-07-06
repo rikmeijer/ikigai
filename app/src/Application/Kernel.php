@@ -10,7 +10,7 @@ use Spiral\Bootloader\Http\HttpBootloader;
 use Spiral\Bootloader\I18nBootloader;
 use Spiral\Bootloader\Views\TranslatedCacheBootloader;
 use Spiral\Cycle\Bootloader as CycleBridge;
-use Spiral\Debug\Bootloader\DumperBootloader;
+//use Spiral\Debug\Bootloader\DumperBootloader;
 use Spiral\DotEnv\Bootloader\DotenvBootloader;
 use Spiral\Monolog\Bootloader\MonologBootloader;
 use Spiral\Nyholm\Bootloader\NyholmBootloader;
@@ -33,7 +33,7 @@ class Kernel extends \Spiral\Framework\Kernel
             DotenvBootloader::class,
             TokenizerListenerBootloader::class,
 
-            DumperBootloader::class,
+            // DumperBootloader::class,
         ];
     }
 
