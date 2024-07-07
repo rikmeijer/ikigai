@@ -1,9 +1,0 @@
-version: '3'
-services:
-  ikigai:
-    environment:
-      - DEBUG=false
-      - APP_ENV=production
-    image: "ghcr.io/rikmeijer/ikigai:latest"
-    ports:
-      - "${SERVE_HOST:-8080}:8080"
