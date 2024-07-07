@@ -50,7 +50,7 @@ jobs:
     # Docs: https://getcomposer.org/doc/articles/scripts.md
 
     - name: Start internal PHP Webserver to run feature tests
-      run: RUNNER_TRACKING_ID="" && php serve.php 2>&1 &
+      run: RUNNER_TRACKING_ID="" && artisan serve 2>&1 &
       
     - name: Run test suite
       run: ./artisan test
