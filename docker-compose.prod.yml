@@ -5,6 +5,7 @@ services:
             - '${APP_PORT:-80}:80'
             - '${VITE_PORT:-5173}:${VITE_PORT:-5173}'
         networks:
+            - frontend
             - backend
         depends_on:
             - mysql
@@ -31,6 +32,10 @@ services:
                 - '-p${DB_PASSWORD}'
             retries: 3
             timeout: 5s
+
+networks:
+  frontend:
+  backend:
 volumes:
   database:
       
