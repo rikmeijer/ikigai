@@ -17,7 +17,8 @@ jobs:
     runs-on: ubuntu-latest
     
     env:
-      SERVE_HOST: 127.0.0.1:8080
+      SERVE_HOST: 127.0.0.1
+      SERVE_PORT: 8080
       APP_ENV: test
       APP_DEBUG: true
       APP_TIMEZONE: UTC
@@ -86,8 +87,7 @@ jobs:
         id: build
         uses: docker/build-push-action@v5
         with:
-          context: ./vendor/laravel/sail/runtimes/8.3
-          dockerfile: Dockerfile
+          context: .
           platforms: ${{ matrix.platform }}
           push: true
           provenance: false
