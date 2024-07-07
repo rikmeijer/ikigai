@@ -85,7 +85,8 @@ jobs:
         id: build
         uses: docker/build-push-action@v5
         with:
-          context: .
+          context: ./vendor/laravel/sail/runtimes/8.3
+          dockerfile: Dockerfile
           platforms: ${{ matrix.platform }}
           push: true
           provenance: false
