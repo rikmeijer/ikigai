@@ -10,7 +10,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Spiral\Bootloader\Http\RoutesBootloader as BaseRoutesBootloader;
 use Spiral\Cookies\Middleware\CookiesMiddleware;
 use Spiral\Csrf\Middleware\CsrfMiddleware;
-use Spiral\Debug\Middleware\DumperMiddleware;
+//use Spiral\Debug\Middleware\DumperMiddleware;
 use Spiral\Debug\StateCollector\HttpCollector;
 use Spiral\Filter\ValidationHandlerMiddleware;
 use Spiral\Http\Middleware\ErrorHandlerMiddleware;
@@ -33,7 +33,7 @@ final class RoutesBootloader extends BaseRoutesBootloader
         return [
             LocaleSelector::class,
             ErrorHandlerMiddleware::class,
-            DumperMiddleware::class,
+            //DumperMiddleware::class,
             JsonPayloadMiddleware::class,
             HttpCollector::class,
         ];
