@@ -17,8 +17,6 @@ jobs:
     runs-on: ubuntu-latest
     
     env:
-      SERVE_HOST: 127.0.0.1
-      SERVE_PORT: 8080
       APP_ENV: test
       APP_DEBUG: true
       APP_TIMEZONE: UTC

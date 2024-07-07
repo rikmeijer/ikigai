@@ -7,5 +7,5 @@ WORKDIR /app
 COPY . /app
 RUN ["composer", "install"]
 
-CMD ["php", "artisan", "serve", "--host=${SERVE_HOST}", "--port=${SERVE_PORT}"]
-EXPOSE ${SERVE_PORT}
+CMD ["php", "artisan", "serve"]
+EXPOSE 80
