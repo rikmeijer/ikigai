@@ -46,7 +46,7 @@ jobs:
       run: composer install --prefer-dist --no-progress
 
     - name: Start internal PHP Webserver to run feature tests
-      run: RUNNER_TRACKING_ID="" && artisan serve 2>&1 &
+      run: RUNNER_TRACKING_ID="" && ./artisan serve 2>&1 &
       
     - name: Run test suite
       run: ./artisan test
