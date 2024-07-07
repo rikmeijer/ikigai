@@ -2,7 +2,7 @@ services:
     web:
         image: ghcr.io/rikmeijer/ikigai:latest
         ports:
-            - '${APP_PORT:-8080}:8080'
+            - '${APP_PORT:-8080}:80'
             - '${VITE_PORT:-5173}:${VITE_PORT:-5173}'
         networks:
             - frontend
