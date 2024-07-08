@@ -9,6 +9,8 @@ services:
             - backend
         depends_on:
             - mysql
+        volumes:
+            - storage:/var/www/html/storage
     mysql:
         image: 'mysql/mysql-server:8.0'
         ports:
@@ -21,7 +23,7 @@ services:
             MYSQL_PASSWORD: '${DB_PASSWORD}'
             MYSQL_ALLOW_EMPTY_PASSWORD: 1
         volumes:
-            - 'database:/var/lib/mysql'
+            - database:/var/lib/mysql
         networks:
             - backend
         healthcheck:
@@ -38,4 +40,5 @@ networks:
   backend:
 volumes:
   database:
+  storage:
       
