@@ -7,8 +7,11 @@ RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf
 
 RUN ["apt-get", "update", "-y"]
 RUN ["apt-get", "install", "-y", "openssl", "zip", "unzip", "git"]
+
+RUN ["docker-php-ext-install", "pdo", "pdo_mysql", "bcmath"]
+
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-RUN ["docker-php-ext-install", "pdo"]
+
 WORKDIR /var/www/html
 COPY . /var/www/html
 RUN ["composer", "install", "--no-dev"]
