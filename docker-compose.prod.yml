@@ -9,12 +9,14 @@ services:
             - backend
         depends_on:
             - mysql
+        env_file: ${ENV_FILE}
         volumes:
             - storage:/var/www/html/storage
     mysql:
         image: 'mysql/mysql-server:8.0'
         ports:
             - '${FORWARD_DB_PORT:-3306}:3306'
+        env_file: ${ENV_FILE}
         environment:
             MYSQL_ROOT_PASSWORD: '${DB_PASSWORD}'
             MYSQL_ROOT_HOST: '%'
