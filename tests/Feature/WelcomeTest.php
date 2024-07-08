@@ -14,11 +14,19 @@ class WelcomeTest extends TestCase
         $response->assertSeeText("Ikigai v0.1");
     }
     
-    
     public function test_the_welcome_screen_shows_name_and_tagline(): void
     {
         $response = $this->get('/');
         $response->assertOk();
-        $response->assertSeeText("Ikigai: Planning your life goals");
+        $response->assertSeeText("Ikigai");
+        $response->assertSeeText("Planning your life goals");
+    }
+    
+    
+    public function test_the_welcome_screen_asks_what_is_your_dream(): void
+    {
+        $response = $this->get('/');
+        $response->assertOk();
+        $response->assertSeeText("What is your dream?");
     }
 }
