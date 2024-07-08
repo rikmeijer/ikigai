@@ -13,7 +13,9 @@ return [
     |
     */
 
-    'name' => env('APP_NAME', 'Laravel'),
+    'name' => env('APP_NAME', 'Ikigai'),
+    'tagline' => 'Planning your life goals',
+    'version' => '0.1',
 
     /*
     |--------------------------------------------------------------------------
