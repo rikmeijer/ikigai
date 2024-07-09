@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     
     env:
-      APP_ENV: test
+      APP_ENV: testing
       APP_DEBUG: true
       APP_KEY: base64:QJHLNLDn66cw060laj0zlrsVbkhFNTEboQCKU36ALsw=
       DB_DATABASE: testing
