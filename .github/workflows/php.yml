@@ -20,6 +20,9 @@ jobs:
       APP_ENV: test
       APP_DEBUG: true
       APP_KEY: base64:QJHLNLDn66cw060laj0zlrsVbkhFNTEboQCKU36ALsw=
+      DB_DATABASE: testing
+      DB_CONNECTION: sqlite
+      LOG_CHANNEL: syslog
 
     steps:
     - uses: actions/checkout@v4
@@ -39,9 +42,6 @@ jobs:
         touch storage/database/testing.sqlite
         php artisan migrate:fresh
     - name: Execute tests (Unit and Feature tests) via PHPUnit
-      env:
-        DB_CONNECTION: sqlite
-        LOG_CHANNEL: syslog
       run: php artisan test
       
   build:
