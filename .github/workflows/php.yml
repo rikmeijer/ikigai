@@ -42,7 +42,7 @@ jobs:
         DB_CONNECTION: sqlite
       run: |
         php artisan serve --quiet --no-interaction &
-        php artisan test --recreate-databases --parallel
+        php artisan test --recreate-databases
       
   build:
     runs-on: ubuntu-latest
