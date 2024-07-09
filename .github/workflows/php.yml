@@ -45,7 +45,7 @@ jobs:
       run: php artisan test
     - name: Laraval logs
       if: ${{ failure() }}
-      run: cat storage/logs/laravel.log
+      run: cat .env.example
 
       
   build:
