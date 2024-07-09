@@ -41,6 +41,7 @@ jobs:
     - name: Execute tests (Unit and Feature tests) via PHPUnit
       env:
         DB_CONNECTION: sqlite
+        LOG_CHANNEL: syslog
       run: php artisan test
       
   build:
