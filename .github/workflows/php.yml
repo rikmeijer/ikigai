@@ -43,6 +43,10 @@ jobs:
         php artisan migrate:fresh
     - name: Execute tests (Unit and Feature tests) via PHPUnit
       run: php artisan test
+    - name: Laraval logs
+      if: ${{ failure() }}
+      run: cat storage/logs/laravel.log
+
       
   build:
     runs-on: ubuntu-latest
