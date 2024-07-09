@@ -41,9 +41,7 @@ jobs:
     - name: Execute tests (Unit and Feature tests) via PHPUnit
       env:
         DB_CONNECTION: sqlite
-      run: |
-        php artisan serve --quiet --no-interaction &
-        php artisan test
+      run: php artisan test
       
   build:
     runs-on: ubuntu-latest
